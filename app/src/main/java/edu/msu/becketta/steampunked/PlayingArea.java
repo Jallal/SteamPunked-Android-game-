@@ -1,11 +1,11 @@
 package edu.msu.becketta.steampunked;
 
-import android.os.Bundle;
+import java.io.Serializable;
 
 /**
  * A representation of the playing area
  */
-public class PlayingArea {
+public class PlayingArea implements Serializable {
     /**
      * Width of the playing area (integer number of cells)
      */
@@ -101,11 +101,11 @@ public class PlayingArea {
         return start.search();
     }
 
-    public void saveState(Bundle bundle) {
-        // TODO: add any variables to the bundle, may use a serializable nested object
-    }
+    /**
+     * Iterate through each pipe in the playing area to set its loaction and
+     * ensure it has the reference to this PlayingArea
+     */
+    public void syncPipes() {
 
-    public void loadState(Bundle bundle) {
-        // TODO: load the saved variables from the bundle
     }
 }

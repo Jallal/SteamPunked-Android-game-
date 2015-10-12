@@ -1,14 +1,16 @@
 package edu.msu.becketta.steampunked;
 
+import java.io.Serializable;
+
 /**
  * A representation of a pipe
  */
-public class Pipe {
+public class Pipe implements Serializable {
 
     /**
      * Playing area this pipe is a member of
      */
-    private PlayingArea playingArea = null;
+    private transient PlayingArea playingArea = null;
 
     /**
      * Array that indicates which sides of this pipe
@@ -34,7 +36,7 @@ public class Pipe {
     /**
      * Depth-first visited visited
      */
-    private boolean visited = false;
+    private transient boolean visited = false;
 
 
     /**

@@ -57,15 +57,15 @@ public class GameView extends View {
     }
 
     public void saveState(Bundle bundle) {
-        // TODO: add any variables to the bundle, may use a serializable nested object
-
-        gameField.saveState(bundle);
+        // TODO: add Serializable PlayingArea "gameField" to the bundle
     }
 
     public void loadState(Bundle bundle) {
-        // TODO: load the saved variables from the bundle
+        // TODO: load Serializable PlayingArea back into "gameField"
 
-        gameField.loadState(bundle);
+        // Need to sync the pipes restored in gameField so that they get the reference
+        // to the PlayingArea they are in
+        gameField.syncPipes();
     }
 
     @Override
