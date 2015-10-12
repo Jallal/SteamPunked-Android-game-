@@ -8,22 +8,6 @@ import android.view.View;
 public class MainActivity extends AppCompatActivity {
 
     /**
-     * Valid board sizes:
-     *      SMALL: 5x5
-     *      MEDIUM: 10x10
-     *      LARGE: 20x20
-     */
-    public enum dimension {
-        SMALL,
-        MEDIUM,
-        LARGE
-    }
-
-    public final String PLAYER_ONE_NAME = "edu.msu.becketta.steampunked.PLAYER_ONE_NAME";
-    public final String PLAYER_TWO_NAME = "edu.msu.becketta.steampunked.PLAYER_TWO_NAME";
-    public final String BOARD_SIZE = "edu.msu.becketta.steampunked.BOARD_SIZE";
-
-    /**
      * Create the activity
      * @param savedInstanceState Stored activity bundle
      */
@@ -40,14 +24,15 @@ public class MainActivity extends AppCompatActivity {
     public void onStartGame(View view) {
         Intent intent = new Intent(this, GameActivity.class);
 
+        // TODO: get variable values from button and spinners views
         // Get player names from views and get board size from spinner
         String playerOne = "";
         String playerTwo = "";
-        int boardSize = 0;
+        GameView.dimension boardSize = GameView.dimension.SMALL;
 
-        intent.putExtra(PLAYER_ONE_NAME, playerOne);
-        intent.putExtra(PLAYER_TWO_NAME, playerTwo);
-        intent.putExtra(BOARD_SIZE, boardSize);
+        intent.putExtra(GameActivity.PLAYER_ONE_NAME, playerOne);
+        intent.putExtra(GameActivity.PLAYER_TWO_NAME, playerTwo);
+        intent.putExtra(GameView.BOARD_SIZE, boardSize);
 
         startActivity(intent);
     }
