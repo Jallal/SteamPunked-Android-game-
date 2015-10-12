@@ -2,6 +2,8 @@ package edu.msu.becketta.steampunked;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.os.Bundle;
 import android.util.AttributeSet;
@@ -33,6 +35,29 @@ public class GameView extends View {
      */
     private PlayingArea gameField = null;
 
+    /**
+     * Bitmaps for each type of pipe
+     */
+    private Bitmap rightAngle = null;
+    private Bitmap straight = null;
+    private Bitmap tee = null;
+    private Bitmap cap = null;
+
+    /**
+     * Bitmap for a gauge
+     */
+    private Bitmap gauge = null;
+
+    /**
+     * Bitmap for a pipe handle drawn on initial pipe
+     */
+    private Bitmap handle = null;
+
+    /**
+     * Bitmap for a leak in the pipe system
+     */
+    private Bitmap leak = null;
+
 
     public GameView(Context context) {
         super(context);
@@ -50,7 +75,20 @@ public class GameView extends View {
     }
 
     private void init(AttributeSet attrs, int defStyle) {
-        // TODO???: add any default setup here, not sure if needed yet
+        /*
+         * Load bitmap images
+         */
+        loadBitmaps();
+    }
+
+    private void loadBitmaps() {
+        rightAngle = BitmapFactory.decodeResource(getResources(), R.drawable.a90);
+        straight = BitmapFactory.decodeResource(getResources(), R.drawable.straight);
+        tee = BitmapFactory.decodeResource(getResources(), R.drawable.tee);
+        cap = BitmapFactory.decodeResource(getResources(), R.drawable.cap);
+        gauge = BitmapFactory.decodeResource(getResources(), R.drawable.gauge);
+        handle = BitmapFactory.decodeResource(getResources(), R.drawable.handle);
+        leak = BitmapFactory.decodeResource(getResources(), R.drawable.leak);
     }
 
     public void initialize(Intent intent) {
@@ -63,6 +101,7 @@ public class GameView extends View {
     }
 
     public void loadState(Bundle bundle) {
+        loadBitmaps();
         gameField = (PlayingArea)bundle.getSerializable(PLAYING_AREA);
 
         // Need to sync the pipes restored in gameField so that they get the reference
