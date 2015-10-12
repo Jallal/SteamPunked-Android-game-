@@ -14,6 +14,8 @@ public class GameView extends View {
 
     public final static String BOARD_SIZE = "edu.msu.becketta.steampunked.BOARD_SIZE";
 
+    public final static String PLAYING_AREA = "playingArea";
+
     /**
      * Valid board sizes:
      *      SMALL: 5x5
@@ -57,11 +59,11 @@ public class GameView extends View {
     }
 
     public void saveState(Bundle bundle) {
-        // TODO: add Serializable PlayingArea "gameField" to the bundle
+        bundle.putSerializable(PLAYING_AREA, gameField);
     }
 
     public void loadState(Bundle bundle) {
-        // TODO: load Serializable PlayingArea back into "gameField"
+        gameField = (PlayingArea)bundle.getSerializable(PLAYING_AREA);
 
         // Need to sync the pipes restored in gameField so that they get the reference
         // to the PlayingArea they are in

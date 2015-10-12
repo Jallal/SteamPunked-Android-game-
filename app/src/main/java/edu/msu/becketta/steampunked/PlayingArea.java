@@ -106,6 +106,15 @@ public class PlayingArea implements Serializable {
      * ensure it has the reference to this PlayingArea
      */
     public void syncPipes() {
-
+        /*
+         * Set the position of each pipe and give it a reference to this PlayingArea
+         */
+        for(int x = 0; x < width; x++) {
+            for(int y = 0; y < height; y++) {
+                if (pipes[x][y] != null) {
+                    pipes[x][y].set(this, x, y);
+                }
+            }
+        }
     }
 }
