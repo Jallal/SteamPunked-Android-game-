@@ -1,6 +1,7 @@
 package edu.msu.becketta.steampunked;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.os.Bundle;
 import android.util.AttributeSet;
@@ -11,10 +12,25 @@ import android.view.View;
  */
 public class GameView extends View {
 
+    public final static String BOARD_SIZE = "edu.msu.becketta.steampunked.BOARD_SIZE";
+
+    /**
+     * Valid board sizes:
+     *      SMALL: 5x5
+     *      MEDIUM: 10x10
+     *      LARGE: 20x20
+     */
+    public enum dimension {
+        SMALL,
+        MEDIUM,
+        LARGE
+    }
+
     /**
      * Member object that represents the playing field
      */
     private PlayingArea gameField = null;
+
 
     public GameView(Context context) {
         super(context);
@@ -35,6 +51,11 @@ public class GameView extends View {
         // TODO???: add any default setup here, not sure if needed yet
     }
 
+    public void initialize(Intent intent) {
+        dimension size = (dimension)intent.getSerializableExtra(BOARD_SIZE);
+        initializeGameArea(size);
+    }
+
     public void saveState(Bundle bundle) {
         // TODO: add any variables to the bundle, may use a serializable nested object
     }
@@ -50,7 +71,24 @@ public class GameView extends View {
         // TODO: draw the playing field and bank of pipes to add
     }
 
-    public void initializeGameArea(int x, int y) {
-        gameField = new PlayingArea(x, y);
+    /**
+     * Create the PlayingArea object with the given dimension
+     * @param board Dimension of the playing field
+     */
+    public void initializeGameArea(dimension board) {
+        switch (board) {
+            case SMALL:
+                gameField = new PlayingArea(5, 5);
+                break;
+            case MEDIUM:
+                gameField = new PlayingArea(10, 10);
+                break;
+            case LARGE:
+                gameField = new PlayingArea(20, 20);
+                break;
+            default:
+                gameField = new PlayingArea(10, 10);
+                break;
+        }
     }
 }

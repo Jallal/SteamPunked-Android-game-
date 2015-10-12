@@ -28,11 +28,11 @@ public class MainActivity extends AppCompatActivity {
         // Get player names from views and get board size from spinner
         String playerOne = "";
         String playerTwo = "";
-        GameActivity.dimension boardSize = GameActivity.dimension.SMALL;
+        GameView.dimension boardSize = GameView.dimension.SMALL;
 
         intent.putExtra(GameActivity.PLAYER_ONE_NAME, playerOne);
         intent.putExtra(GameActivity.PLAYER_TWO_NAME, playerTwo);
-        intent.putExtra(GameActivity.BOARD_SIZE, boardSize);
+        intent.putExtra(GameView.BOARD_SIZE, boardSize);
 
         startActivity(intent);
     }
