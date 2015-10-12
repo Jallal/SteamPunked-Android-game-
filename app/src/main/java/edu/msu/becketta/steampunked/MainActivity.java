@@ -1,8 +1,8 @@
 package edu.msu.becketta.steampunked;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 public class MainActivity extends AppCompatActivity {
@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
      * Start the game activity
      * @param view The view calling this function
      */
-    void onStartGame(View view) {
+    public void onStartGame(View view) {
         Intent intent = new Intent(this, GameActivity.class);
 
         // Get player names from views and get board size from spinner

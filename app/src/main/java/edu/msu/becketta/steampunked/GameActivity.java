@@ -15,7 +15,7 @@ public class GameActivity extends AppCompatActivity {
         setContentView(R.layout.activity_game);
     }
 
-    void onForfeit(View view) {
+    public void onForfeit(View view) {
         String winner = "Player One";
         onGameOver(winner);
     }
@@ -23,7 +23,7 @@ public class GameActivity extends AppCompatActivity {
     /**
      * Once someone wins or there is a forfeit
      */
-    void onGameOver(String winner) {
+    public void onGameOver(String winner) {
         Intent intent = new Intent(this, EndGameActivity.class);
 
         intent.putExtra(WINNER, winner);
