@@ -34,8 +34,6 @@ public class GameActivity extends AppCompatActivity {
 
         if(savedInstanceState != null) {
             // TODO: load the bundle info for GameActivity
-
-            getGameView().loadState(savedInstanceState);
         } else { // There is no saved state, use the intent for initialization
             Intent intent = getIntent();
             playerOneName = intent.getStringExtra(PLAYER_ONE_NAME);
@@ -43,7 +41,11 @@ public class GameActivity extends AppCompatActivity {
             boardSize = (dimension)intent.getSerializableExtra(BOARD_SIZE);
         }
 
-        switch (boardSize) {
+        initializeGameView(boardSize, savedInstanceState);
+    }
+
+    private void initializeGameView(dimension board, Bundle savedState) {
+        switch (board) {
             case SMALL:
                 getGameView().initializeGameArea(5, 5);
                 break;
@@ -53,6 +55,10 @@ public class GameActivity extends AppCompatActivity {
             case LARGE:
                 getGameView().initializeGameArea(20, 20);
                 break;
+        }
+
+        if(savedState != null) {
+            getGameView().loadState(savedState);
         }
     }
 
