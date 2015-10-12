@@ -5,6 +5,8 @@ import android.os.Bundle;
 
 public class EndGameActivity extends AppCompatActivity {
 
+    public final static String WINNER = "edu.msu.becketta.steampunked.WINNER";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
