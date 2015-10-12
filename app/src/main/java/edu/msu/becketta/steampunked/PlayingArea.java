@@ -1,5 +1,7 @@
 package edu.msu.becketta.steampunked;
 
+import android.os.Bundle;
+
 /**
  * A representation of the playing area
  */
@@ -99,4 +101,11 @@ public class PlayingArea {
         return start.search();
     }
 
+    public void saveState(Bundle bundle) {
+        // TODO: add any variables to the bundle, may use a serializable nested object
+    }
+
+    public void loadState(Bundle bundle) {
+        // TODO: load the saved variables from the bundle
+    }
 }

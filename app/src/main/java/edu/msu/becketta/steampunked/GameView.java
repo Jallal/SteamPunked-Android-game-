@@ -58,10 +58,14 @@ public class GameView extends View {
 
     public void saveState(Bundle bundle) {
         // TODO: add any variables to the bundle, may use a serializable nested object
+
+        gameField.saveState(bundle);
     }
 
     public void loadState(Bundle bundle) {
         // TODO: load the saved variables from the bundle
+
+        gameField.loadState(bundle);
     }
 
     @Override
@@ -69,6 +73,19 @@ public class GameView extends View {
         super.onDraw(canvas);
 
         // TODO: draw the playing field and bank of pipes to add
+        // Use normalized coordinates:
+        //      0 <= y < .8   draw the playing field
+        //     .8 <= y <= 1   draw the pipe bank
+        /*
+         * Draw playing field
+         */
+
+        /*
+         * Draw pipe bank
+         */
+        // Green rectangle
+
+        // New pipes: 5 new pipes evenly spaced with normalized coordinates
     }
 
     /**
