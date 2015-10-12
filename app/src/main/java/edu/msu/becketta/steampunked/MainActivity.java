@@ -40,10 +40,11 @@ public class MainActivity extends AppCompatActivity {
     void onStartGame(View view) {
         Intent intent = new Intent(this, GameActivity.class);
 
+        // TODO: get variable values from button and spinners views
         // Get player names from views and get board size from spinner
         String playerOne = "";
         String playerTwo = "";
-        int boardSize = 0;
+        dimension boardSize = dimension.SMALL;
 
         intent.putExtra(PLAYER_ONE_NAME, playerOne);
         intent.putExtra(PLAYER_TWO_NAME, playerTwo);
