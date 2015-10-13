@@ -38,7 +38,7 @@ public class GameActivity extends AppCompatActivity {
         getGameView().saveState(bundle);
     }
 
-    void onForfeit(View view) {
+    public void onForfeit(View view) {
         String winner = "Player One";
         onGameOver(winner);
     }
@@ -46,7 +46,7 @@ public class GameActivity extends AppCompatActivity {
     /**
      * Once someone wins or there is a forfeit
      */
-    void onGameOver(String winner) {
+    public void onGameOver(String winner) {
         Intent intent = new Intent(this, EndGameActivity.class);
 
         intent.putExtra(EndGameActivity.WINNER, winner);
