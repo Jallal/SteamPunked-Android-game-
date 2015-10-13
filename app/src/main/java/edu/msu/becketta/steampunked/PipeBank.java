@@ -1,0 +1,31 @@
+package edu.msu.becketta.steampunked;
+
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+
+/**
+ * Created by Aaron Beckett on 10/12/2015.
+ *
+ * An object that manages the drawing and maintenance of a bank of randomly generated pipes
+ * that players can select from on their turn
+ */
+public class PipeBank {
+
+    /**
+     * Paint object used to draw the pipe bank rectangle
+     */
+    private Paint bankPaint;
+
+    public PipeBank() {
+        bankPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        bankPaint.setColor(Color.rgb(102, 255, 102));  // A light green
+    }
+
+    public void draw(Canvas canvas, float width, float height) {
+        // Green rectangle
+        canvas.drawRect(0f, 0f, width, height, bankPaint);
+
+        // New pipes: 5 new pipes evenly spaced with normalized coordinates
+    }
+}

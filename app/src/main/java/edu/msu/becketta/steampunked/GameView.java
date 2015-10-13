@@ -14,8 +14,10 @@ import android.view.View;
  */
 public class GameView extends View {
 
+    // Intent identifiers
     public final static String BOARD_SIZE = "edu.msu.becketta.steampunked.BOARD_SIZE";
 
+    // Bundle identifiers
     public final static String PLAYING_AREA = "playingArea";
 
     /**
@@ -31,9 +33,19 @@ public class GameView extends View {
     }
 
     /**
+     * Normalized y location of the top of the pipe bank
+     */
+    private final static float bankLocation = 0.8f;
+
+    /**
      * Member object that represents the playing field
      */
     private PlayingArea gameField = null;
+
+    /**
+     * Member object that represents the pipe bank
+     */
+    private PipeBank bank = null;
 
     /**
      * Bitmaps for each type of pipe
@@ -75,6 +87,7 @@ public class GameView extends View {
     }
 
     private void init(AttributeSet attrs, int defStyle) {
+        bank = new PipeBank();
         /*
          * Load bitmap images
          */
@@ -101,7 +114,6 @@ public class GameView extends View {
     }
 
     public void loadState(Bundle bundle) {
-        loadBitmaps();
         gameField = (PlayingArea)bundle.getSerializable(PLAYING_AREA);
 
         // Need to sync the pipes restored in gameField so that they get the reference
@@ -120,13 +132,15 @@ public class GameView extends View {
         /*
          * Draw playing field
          */
+        gameField.draw(canvas);
 
         /*
          * Draw pipe bank
          */
-        // Green rectangle
-
-        // New pipes: 5 new pipes evenly spaced with normalized coordinates
+        canvas.save();
+        canvas.translate(0f, canvas.getHeight() * bankLocation);
+        bank.draw(canvas, (float)canvas.getWidth(), canvas.getHeight() * (1 - bankLocation));
+        canvas.restore();
     }
 
     /**

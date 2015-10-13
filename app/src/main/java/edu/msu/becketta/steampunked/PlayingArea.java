@@ -1,5 +1,7 @@
 package edu.msu.becketta.steampunked;
 
+import android.graphics.Canvas;
+
 import java.io.Serializable;
 
 /**
@@ -116,5 +118,9 @@ public class PlayingArea implements Serializable {
                 }
             }
         }
+    }
+
+    public void draw(Canvas canvas) {
+
     }
 }
