@@ -4,13 +4,12 @@
     <string name="install">Install</string>
     <string name="disard">Discard</string>
     <string name="openValve">OpenValve</string>
-    <string name="Surrender">Surrender</string>
+    <string name="surrender">Surrender</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_game">GameActivity</string>
     <string name="title_activity_end_game">EndGameActivity</string>
     <string name="gameStart">Start Game</string>
     <string name="player1">Player 1:</string>
     <string name="player2">Player 2:</string>
-    <string name="forefeit">Forefeit</string>
     <string name="playerWin">Winner is: </string>
 </resources>
