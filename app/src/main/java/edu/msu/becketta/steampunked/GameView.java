@@ -19,6 +19,7 @@ public class GameView extends View {
 
     // Bundle identifiers
     public final static String PLAYING_AREA = "playingArea";
+    public final static String PIPE_BANK = "pipeBank";
 
     /**
      * Valid board sizes:
@@ -111,10 +112,12 @@ public class GameView extends View {
 
     public void saveState(Bundle bundle) {
         bundle.putSerializable(PLAYING_AREA, gameField);
+        bundle.putSerializable(PIPE_BANK, bank);
     }
 
     public void loadState(Bundle bundle) {
         gameField = (PlayingArea)bundle.getSerializable(PLAYING_AREA);
+        bank = (PipeBank)bundle.getSerializable(PIPE_BANK);
 
         // Need to sync the pipes restored in gameField so that they get the reference
         // to the PlayingArea they are in
