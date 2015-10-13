@@ -42,6 +42,15 @@ public class GameActivity extends AppCompatActivity {
         String winner = "Player One";
         onGameOver(winner);
     }
+    public void onInstall(View view) {
+
+    }
+    public void onDiscard(View view) {
+
+    }
+    public void onOpenValve(View view) {
+
+    }
 
     /**
      * Once someone wins or there is a forfeit
