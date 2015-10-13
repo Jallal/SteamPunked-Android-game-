@@ -119,11 +119,15 @@ public class GameView extends View {
         gameField = (PlayingArea)bundle.getSerializable(PLAYING_AREA);
         // Need to sync the pipes restored in gameField so that they get the reference
         // to the PlayingArea they are in
-        gameField.syncPipes();
+        if(gameField != null) {
+            gameField.syncPipes();
+        }
 
         bank = (PipeBank)bundle.getSerializable(PIPE_BANK);
         // Need to call init on the PipeBank to recreate the Paint Objects
-        bank.init();
+        if(bank != null) {
+            bank.init();
+        }
     }
 
     @Override
@@ -152,20 +156,32 @@ public class GameView extends View {
      * Create the PlayingArea object with the given dimension
      * @param board Dimension of the playing field
      */
-    public void initializeGameArea(dimension board) {
+    private void initializeGameArea(dimension board) {
         switch (board) {
             case SMALL:
                 gameField = new PlayingArea(5, 5);
+                setBoardStartsEnds(0, 1, 0, 3, 4, 2, 4, 4);
                 break;
             case MEDIUM:
                 gameField = new PlayingArea(10, 10);
+                setBoardStartsEnds(0, 2, 0, 6, 9, 3, 9, 7);
                 break;
             case LARGE:
                 gameField = new PlayingArea(20, 20);
-                break;
-            default:
-                gameField = new PlayingArea(10, 10);
+                setBoardStartsEnds(0, 6, 0, 13, 19, 8, 19, 15);
                 break;
         }
+    }
+
+    private void setBoardStartsEnds(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4) {
+        Pipe start1 = new Pipe(false, true, false, false);
+        Pipe start2 = new Pipe(false, true, false, false);
+        Pipe end1 = new Pipe(false, false, false, true);
+        Pipe end2 = new Pipe(false, false, false, true);
+
+        gameField.add(start1, x1, y1);
+        gameField.add(start2, x2, y2);
+        gameField.add(end1, x3, y3);
+        gameField.add(end2, x4, y4);
     }
 }
