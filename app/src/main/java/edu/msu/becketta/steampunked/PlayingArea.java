@@ -50,7 +50,7 @@ public class PlayingArea implements Serializable {
         pipes = new Pipe[width][height];
 
         debugPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        debugPaint.setColor(Color.BLUE);
+        debugPaint.setColor(Color.argb(25, 0, 100, 82));  // A transparent blue
     }
 
     /**

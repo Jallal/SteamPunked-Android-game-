@@ -25,7 +25,7 @@ public class PipeBank implements Serializable {
 
     public void init() {
         bankPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        bankPaint.setColor(Color.rgb(102, 255, 102));  // A light green
+        bankPaint.setColor(Color.argb(90, 0, 100, 0));  // A semi-transparent green
     }
 
     public void draw(Canvas canvas, float width, float height) {
