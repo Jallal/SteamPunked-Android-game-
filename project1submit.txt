@@ -1,0 +1,31 @@
+
+Project 1 Submission
+
+Group Name:   Bowser
+
+When you have completed the project, complete the following form and include it with your project. Include this file as a text file in the folder with your project when you turn it in. 
+
+
+Member 1: Joseph Michael Schmitz
+
+Responsiblity: The activities
+
+
+
+Member 2: Aaron Thomas Beckett
+
+Responsiblity: The custom game play view
+
+
+
+Member 3: Jallal Elhazzat
+
+Responsiblity: The pipes
+
+
+
+Member 4 (if applicable): not applicable
+
+Responsiblity:
+
+
