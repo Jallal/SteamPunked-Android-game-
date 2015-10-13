@@ -20,8 +20,8 @@ tools:context="edu.msu.becketta.steampunked.GameActivity">
     android:onClick="onInstall"
     android:layout_alignParentLeft="true"
     android:layout_alignParentStart="false"
-    android:layout_toLeftOf="@+id/view"
-    android:layout_toStartOf="@+id/view"
+    android:layout_toLeftOf="@+id/gameView"
+    android:layout_toStartOf="@+id/gameView"
     android:layout_alignParentTop="true" />
 
 <Button
@@ -33,8 +33,8 @@ tools:context="edu.msu.becketta.steampunked.GameActivity">
     android:layout_above="@+id/openValveButton"
     android:layout_alignParentLeft="true"
     android:layout_alignParentStart="false"
-    android:layout_toLeftOf="@+id/view"
-    android:layout_toStartOf="@+id/view"
+    android:layout_toLeftOf="@+id/gameView"
+    android:layout_toStartOf="@+id/gameView"
     android:layout_below="@+id/installButton"
     android:layout_alignEnd="@id/installButton" />
 
@@ -54,7 +54,7 @@ tools:context="edu.msu.becketta.steampunked.GameActivity">
     android:layout_height="50dp"
     android:text="@string/surrender"
     android:id="@+id/surrender"
-    android:onClick="onForfeit"
+    android:onClick="onSurrender"
     android:layout_alignParentBottom="true"
     android:layout_alignEnd="@+id/openValveButton"
     android:layout_alignParentLeft="true" />
@@ -62,7 +62,7 @@ tools:context="edu.msu.becketta.steampunked.GameActivity">
 <edu.msu.becketta.steampunked.GameView
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:id="@+id/view"
+    android:id="@+id/gameView"
     android:layout_centerVertical="true"
     android:layout_toEndOf="@+id/surrender" />
 
