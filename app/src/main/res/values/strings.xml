@@ -1,6 +1,10 @@
 <resources>
     <string name="app_name">Steampunked</string>
 
+    <string name="install">Install</string>
+    <string name="disard">Discard</string>
+    <string name="openValve">OpenValve</string>
+    <string name="Surrender">Surrender</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_game">GameActivity</string>
     <string name="title_activity_end_game">EndGameActivity</string>
