@@ -1,11 +1,33 @@
 package edu.msu.becketta.steampunked;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+
 import java.io.Serializable;
 
 /**
  * A representation of a pipe
  */
 public class Pipe implements Serializable {
+
+    /**
+     * Enum that describes the pipe type
+     */
+    public enum pipeType {
+        START,
+        END,
+        STRAIGHT,
+        RIGHT_ANGLE,
+        CAP,
+        TEE
+    }
+
+    /**
+     * Save the type of the pipe
+     */
+    private pipeType type;
 
     /**
      * Playing area this pipe is a member of
@@ -24,29 +46,71 @@ public class Pipe implements Serializable {
     private boolean[] connect = {false, false, false, false};
 
     /**
-     * X location in the playing area (index into array)
+     * X and Y location in the playing area (index into array)
      */
     private int x = 0;
+    private int y = 0;
 
     /**
-     * Y location in the playing area (index into array)
+     * Bitmap used to store the pipe image
      */
-    private int y = 0;
+    private transient Bitmap bitmap;
+
+    /**
+     * Bitmap use to store the start pipe handle if needed
+     */
+    private transient Bitmap handleBit = null;
+
+    /**
+     * Rotation of the bitmap and handle
+     */
+    private float bitmapRotation = 0f;
+    private float handleRotation = 0f;
 
     /**
      * Depth-first visited visited
      */
     private transient boolean visited = false;
 
-
     /**
      * Constructor
-     * @param north True if connected north
-     * @param east True if connected east
-     * @param south True if connected south
-     * @param west True if connected west
+     * @param context Context to get the pipe's bitmap from
+     * @param type Type of the pipe
      */
-    public Pipe(boolean north, boolean east, boolean south, boolean west) {
+    public Pipe(Context context, pipeType type) {
+        this.type = type;
+        switch(type) {
+            case START:
+                setConnections(false, true, false, false);
+                bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.straight);
+                bitmapRotation = 90f;
+                handleBit = BitmapFactory.decodeResource(context.getResources(), R.drawable.handle);
+                break;
+            case END:
+                setConnections(false, false, false, true);
+                bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.gauge);
+                bitmapRotation = -90f;
+                break;
+            case STRAIGHT:
+                setConnections(true, false, true, false);
+                bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.straight);
+                break;
+            case RIGHT_ANGLE:
+                setConnections(false, true, true, false);
+                bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.a90);
+                break;
+            case CAP:
+                setConnections(false, false, true, false);
+                bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.cap);
+                break;
+            case TEE:
+                setConnections(true, true, true, false);
+                bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.tee);
+                break;
+        }
+    }
+
+    private void setConnections(boolean north, boolean east, boolean south, boolean west) {
         connect[0] = north;
         connect[1] = east;
         connect[2] = south;
@@ -165,5 +229,49 @@ public class Pipe implements Serializable {
      */
     public void setVisited(boolean visited) {
         this.visited = visited;
+    }
+
+    /**
+     * Draw the pipe in relative location withing the playing area
+     * @param canvas Canvas to draw on
+     */
+    public void draw(Canvas canvas, int marginX, int marginY, int playAreaSize, float scaleFactor) {
+        // Calculate the x and y locations withing the playing area
+        float blockDim = (int)(playAreaSize * scaleFactor / playingArea.getHeight());
+        float xLoc = x * blockDim + (blockDim / 2);
+        float yLoc = y * blockDim + (blockDim / 2);
+
+        // All pipe bitmaps are square except for the gauge which has a longer width so we will use
+        // the height to calculate the scale and translations
+        float bitDim = bitmap.getHeight();
+
+        // Calculate the scale to draw the pipe
+        float scale = blockDim / bitDim;
+
+        canvas.save();
+
+        // Convert x,y locations to pixels and add the margin
+        canvas.translate(marginX + xLoc, marginY + yLoc);
+        // Scale it to the right size
+        canvas.scale(scale, scale);
+
+        canvas.save();
+
+        // Rotate the piece
+        canvas.rotate(bitmapRotation);
+        // Make the center of the piece draw at the origin
+        canvas.translate(-bitDim / 2, -bitDim / 2);
+        // Draw the bitmap
+        canvas.drawBitmap(bitmap, 0, 0, null);
+
+        canvas.restore();
+
+        if(handleBit != null) {
+            canvas.rotate(handleRotation);
+            canvas.translate(-bitDim / 2, -bitDim / 2);
+            canvas.drawBitmap(handleBit, 0, 0, null);
+        }
+
+        canvas.restore();
     }
 }

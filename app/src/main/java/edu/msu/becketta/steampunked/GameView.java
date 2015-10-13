@@ -48,29 +48,6 @@ public class GameView extends View {
      */
     private PipeBank bank = null;
 
-    /**
-     * Bitmaps for each type of pipe
-     */
-    private Bitmap rightAngle = null;
-    private Bitmap straight = null;
-    private Bitmap tee = null;
-    private Bitmap cap = null;
-
-    /**
-     * Bitmap for a gauge
-     */
-    private Bitmap gauge = null;
-
-    /**
-     * Bitmap for a pipe handle drawn on initial pipe
-     */
-    private Bitmap handle = null;
-
-    /**
-     * Bitmap for a leak in the pipe system
-     */
-    private Bitmap leak = null;
-
 
     public GameView(Context context) {
         super(context);
@@ -89,20 +66,6 @@ public class GameView extends View {
 
     private void init(AttributeSet attrs, int defStyle) {
         bank = new PipeBank();
-        /*
-         * Load bitmap images
-         */
-        loadBitmaps();
-    }
-
-    private void loadBitmaps() {
-        rightAngle = BitmapFactory.decodeResource(getResources(), R.drawable.a90);
-        straight = BitmapFactory.decodeResource(getResources(), R.drawable.straight);
-        tee = BitmapFactory.decodeResource(getResources(), R.drawable.tee);
-        cap = BitmapFactory.decodeResource(getResources(), R.drawable.cap);
-        gauge = BitmapFactory.decodeResource(getResources(), R.drawable.gauge);
-        handle = BitmapFactory.decodeResource(getResources(), R.drawable.handle);
-        leak = BitmapFactory.decodeResource(getResources(), R.drawable.leak);
     }
 
     public void initialize(Intent intent) {
@@ -141,14 +104,14 @@ public class GameView extends View {
         /*
          * Draw playing field
          */
-        gameField.draw(canvas);
+        gameField.draw(canvas, canvas.getWidth(), (int)(canvas.getHeight() * bankLocation));
 
         /*
          * Draw pipe bank
          */
         canvas.save();
         canvas.translate(0f, canvas.getHeight() * bankLocation);
-        bank.draw(canvas, (float)canvas.getWidth(), canvas.getHeight() * (1 - bankLocation));
+        bank.draw(canvas, canvas.getWidth(), (int)(canvas.getHeight() * (1 - bankLocation)));
         canvas.restore();
     }
 
@@ -174,14 +137,31 @@ public class GameView extends View {
     }
 
     private void setBoardStartsEnds(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4) {
-        Pipe start1 = new Pipe(false, true, false, false);
-        Pipe start2 = new Pipe(false, true, false, false);
-        Pipe end1 = new Pipe(false, false, false, true);
-        Pipe end2 = new Pipe(false, false, false, true);
+        Pipe start1 = new Pipe(getContext(), Pipe.pipeType.START);
+        Pipe start2 = new Pipe(getContext(), Pipe.pipeType.START);
+        Pipe end1 = new Pipe(getContext(), Pipe.pipeType.END);
+        Pipe end2 = new Pipe(getContext(), Pipe.pipeType.END);
 
         gameField.add(start1, x1, y1);
         gameField.add(start2, x2, y2);
         gameField.add(end1, x3, y3);
         gameField.add(end2, x4, y4);
+
+        //
+        // TEMPORARY PIPES FOR DEBUGGING
+        //
+        Pipe temp1 = new Pipe(getContext(), Pipe.pipeType.STRAIGHT);
+        Pipe temp2 = new Pipe(getContext(), Pipe.pipeType.STRAIGHT);
+        Pipe temp3 = new Pipe(getContext(), Pipe.pipeType.RIGHT_ANGLE);
+        Pipe temp4 = new Pipe(getContext(), Pipe.pipeType.CAP);
+        Pipe temp5 = new Pipe(getContext(), Pipe.pipeType.TEE);
+        Pipe temp6 = new Pipe(getContext(), Pipe.pipeType.TEE);
+
+        gameField.add(temp1, 1, 1);
+        gameField.add(temp2, 1, 2);
+        gameField.add(temp3, 3, 2);
+        gameField.add(temp4, 1, 0);
+        gameField.add(temp5, 3, 4);
+        gameField.add(temp6, 2, 3);
     }
 }

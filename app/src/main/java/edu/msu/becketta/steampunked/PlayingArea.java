@@ -1,6 +1,8 @@
 package edu.msu.becketta.steampunked;
 
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 
 import java.io.Serializable;
 
@@ -25,6 +27,16 @@ public class PlayingArea implements Serializable {
     private Pipe [][] pipes;
 
     /**
+     * Current scale to draw the playing area, can't go below 1.0
+     */
+    private float scaleInView = 1f;
+
+    /**
+     * TEMPORARY PAINT OBJECT FOR TESTING
+     */
+    private transient Paint debugPaint;
+
+    /**
      * Construct a playing area
      * @param width Width (integer number of cells)
      * @param height Height (integer number of cells)
@@ -36,6 +48,9 @@ public class PlayingArea implements Serializable {
         // Allocate the playing area
         // Java automatically initializes all of the locations to null
         pipes = new Pipe[width][height];
+
+        debugPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        debugPaint.setColor(Color.BLUE);
     }
 
     /**
@@ -120,7 +135,30 @@ public class PlayingArea implements Serializable {
         }
     }
 
-    public void draw(Canvas canvas) {
+    public void draw(Canvas canvas, int width, int height) {
+        // Determine the minimum of the two dimensions
+        int minDim = width < height ? width : height;
 
+        int playingAreaSize = (int)(minDim * scaleInView);
+
+        // Compute any margins if they exist
+        int marginX = (width - playingAreaSize) / 2;
+        int marginY = (height - playingAreaSize) / 2;
+
+        /*
+         * Draw the outline of the playing field for now
+         */
+        canvas.drawRect(marginX, marginY, marginX + playingAreaSize, marginY + playingAreaSize, debugPaint);
+
+        /*
+         * Draw each pipe
+         */
+        for(Pipe[] row : pipes) {
+            for(Pipe pipe : row) {
+                if(pipe != null) {
+                    pipe.draw(canvas, marginX, marginY, playingAreaSize, scaleInView);
+                }
+            }
+        }
     }
 }
