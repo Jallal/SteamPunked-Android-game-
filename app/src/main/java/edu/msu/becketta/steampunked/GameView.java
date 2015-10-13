@@ -117,11 +117,13 @@ public class GameView extends View {
 
     public void loadState(Bundle bundle) {
         gameField = (PlayingArea)bundle.getSerializable(PLAYING_AREA);
-        bank = (PipeBank)bundle.getSerializable(PIPE_BANK);
-
         // Need to sync the pipes restored in gameField so that they get the reference
         // to the PlayingArea they are in
         gameField.syncPipes();
+
+        bank = (PipeBank)bundle.getSerializable(PIPE_BANK);
+        // Need to call init on the PipeBank to recreate the Paint Objects
+        bank.init();
     }
 
     @Override

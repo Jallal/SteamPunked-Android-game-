@@ -17,9 +17,13 @@ public class PipeBank implements Serializable {
     /**
      * Paint object used to draw the pipe bank rectangle
      */
-    private Paint bankPaint;
+    private transient Paint bankPaint;
 
     public PipeBank() {
+        init();
+    }
+
+    public void init() {
         bankPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         bankPaint.setColor(Color.rgb(102, 255, 102));  // A light green
     }

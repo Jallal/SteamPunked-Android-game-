@@ -38,7 +38,7 @@ public class GameActivity extends AppCompatActivity {
         getGameView().saveState(bundle);
     }
 
-    public void onForfeit(View view) {
+    public void onSurrender(View view) {
         String winner = "Player One";
         onGameOver(winner);
     }
@@ -64,7 +64,6 @@ public class GameActivity extends AppCompatActivity {
     }
 
     GameView getGameView() {
-        // TODO: once GameView has been added to the layout, findViewByID and return
-        return new GameView(this);
+        return (GameView)findViewById(R.id.gameView);
     }
 }
