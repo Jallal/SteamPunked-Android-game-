@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.util.AttributeSet;
 import android.view.View;
 
+import java.io.Serializable;
+
 /**
  * TODO: document your custom view class.
  */
@@ -20,6 +22,7 @@ public class GameView extends View {
     // Bundle identifiers
     public final static String PLAYING_AREA = "playingArea";
     public final static String PIPE_BANK = "pipeBank";
+    public final static String PARAMETERS = "parameters";
 
     /**
      * Valid board sizes:
@@ -48,6 +51,11 @@ public class GameView extends View {
      */
     private PipeBank bank = null;
 
+    /**
+     * Object to store some view parameters
+     */
+    private Parameters params = null;
+
 
     public GameView(Context context) {
         super(context);
@@ -66,6 +74,7 @@ public class GameView extends View {
 
     private void init(AttributeSet attrs, int defStyle) {
         bank = new PipeBank();
+        params = new Parameters();
     }
 
     public void initialize(Intent intent) {
@@ -76,9 +85,12 @@ public class GameView extends View {
     public void saveState(Bundle bundle) {
         bundle.putSerializable(PLAYING_AREA, gameField);
         bundle.putSerializable(PIPE_BANK, bank);
+        bundle.putSerializable(PARAMETERS, params);
     }
 
     public void loadState(Bundle bundle) {
+        params = (Parameters)bundle.getSerializable(PARAMETERS);
+
         gameField = (PlayingArea)bundle.getSerializable(PLAYING_AREA);
         // Need to sync the pipes restored in gameField so that they get the reference
         // to the PlayingArea they are in
@@ -101,17 +113,49 @@ public class GameView extends View {
         // Use normalized coordinates:
         //      0 <= y < .8   draw the playing field
         //     .8 <= y <= 1   draw the pipe bank
+
+        // Determine which orientation to draw the view in
+        int fieldWidth = canvas.getWidth();
+        int fieldHeight = (int)(canvas.getHeight() * bankLocation);
+        int bankWidth = canvas.getWidth();
+        int bankHeight = (int)(canvas.getHeight() * (1 - bankLocation));
+        float bankXOffset = 0f;
+        float bankYOffset = canvas.getHeight() * bankLocation;
+        if(canvas.getWidth() > canvas.getHeight()) {
+            fieldWidth = (int)(canvas.getWidth() * bankLocation);
+            fieldHeight = canvas.getHeight();
+            bankWidth = (int)(canvas.getWidth() * (1 - bankLocation));
+            bankHeight = canvas.getHeight();
+            bankXOffset = canvas.getWidth() * bankLocation;
+            bankYOffset = 0f;
+        }
+
+        // Determine the scale to draw things
+        if(fieldWidth <= fieldHeight) {
+            params.gameFieldScale = fieldWidth / params.gameFieldWidth;
+        } else {
+            params.gameFieldScale = fieldHeight / params.gameFieldHeight;
+        }
+
+        // Determine the margins for the playing field
+        params.marginX = (int)((fieldWidth - params.gameFieldWidth * params.gameFieldScale) / 2);
+        params.marginY = (int)((fieldHeight - params.gameFieldHeight * params.gameFieldScale) / 2);
+
         /*
          * Draw playing field
          */
-        gameField.draw(canvas, canvas.getWidth(), (int)(canvas.getHeight() * bankLocation));
+        canvas.save();
+        canvas.translate(params.marginX, params.marginY);
+        canvas.scale(params.gameFieldScale, params.gameFieldScale);
+        gameField.draw(canvas, params.blockSize);
+        canvas.restore();
 
         /*
          * Draw pipe bank
          */
         canvas.save();
-        canvas.translate(0f, canvas.getHeight() * bankLocation);
-        bank.draw(canvas, canvas.getWidth(), (int)(canvas.getHeight() * (1 - bankLocation)));
+        canvas.translate(bankXOffset, bankYOffset);
+        bank.draw(canvas, bankWidth, bankHeight);
         canvas.restore();
     }
 
@@ -134,6 +178,9 @@ public class GameView extends View {
                 setBoardStartsEnds(0, 6, 0, 13, 19, 8, 19, 15);
                 break;
         }
+
+        params.gameFieldWidth = gameField.getWidth() * params.blockSize;
+        params.gameFieldHeight = gameField.getHeight() * params.blockSize;
     }
 
     private void setBoardStartsEnds(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4) {
@@ -141,6 +188,8 @@ public class GameView extends View {
         Pipe start2 = new Pipe(getContext(), Pipe.pipeType.START);
         Pipe end1 = new Pipe(getContext(), Pipe.pipeType.END);
         Pipe end2 = new Pipe(getContext(), Pipe.pipeType.END);
+
+        params.blockSize = start1.getBitmapHeight();
 
         gameField.add(start1, x1, y1);
         gameField.add(start2, x2, y2);
@@ -163,5 +212,29 @@ public class GameView extends View {
         gameField.add(temp4, 1, 0);
         gameField.add(temp5, 3, 4);
         gameField.add(temp6, 2, 3);
+    }
+
+    private static class Parameters implements Serializable {
+        /**
+         * Standard block size in the playing field, used to determine the scale to draw components
+         */
+        public float blockSize = 0f;
+
+        /**
+         * Width and height of the game field
+         */
+        public float gameFieldWidth = 0f;
+        public float gameFieldHeight = 0f;
+
+        /**
+         * Current X and Y margins of the playing field
+         */
+        public int marginX = 0;
+        public int marginY = 0;
+
+        /**
+         * Current scale to draw the playing field
+         */
+        public float gameFieldScale = 1f;
     }
 }

@@ -48,8 +48,14 @@ public class Pipe implements Serializable {
     /**
      * X and Y location in the playing area (index into array)
      */
-    private int x = 0;
-    private int y = 0;
+    private int xCoord = 0;
+    private int yCoord = 0;
+
+    /**
+     * X and Y location on the screen
+     */
+    private float x = 0f;
+    private float y = 0f;
 
     /**
      * Bitmap used to store the pipe image
@@ -180,16 +186,16 @@ public class Pipe implements Serializable {
     private Pipe neighbor(int d) {
         switch(d) {
             case 0:
-                return playingArea.getPipe(x, y-1);
+                return playingArea.getPipe(xCoord, yCoord-1);
 
             case 1:
-                return playingArea.getPipe(x+1, y);
+                return playingArea.getPipe(xCoord+1, yCoord);
 
             case 2:
-                return playingArea.getPipe(x, y+1);
+                return playingArea.getPipe(xCoord, yCoord+1);
 
             case 3:
-                return playingArea.getPipe(x-1, y);
+                return playingArea.getPipe(xCoord-1, yCoord);
         }
 
         return null;
@@ -204,6 +210,15 @@ public class Pipe implements Serializable {
     }
 
     /**
+     * Get the default height of the pipe bitmap when drawn,
+     * used to calculate scale in the GameView
+     * @return The height of the bitmap
+     */
+    public float getBitmapHeight() {
+        return bitmap.getHeight();
+    }
+
+    /**
      * Set the playing area and location for this pipe
      * @param playingArea Playing area we are a member of
      * @param x X index
@@ -211,6 +226,16 @@ public class Pipe implements Serializable {
      */
     public void set(PlayingArea playingArea, int x, int y) {
         this.playingArea = playingArea;
+        this.xCoord = x;
+        this.yCoord = y;
+    }
+
+    /**
+     *
+     * @param x
+     * @param y
+     */
+    public void setLocation(float x, float y) {
         this.x = x;
         this.y = y;
     }
@@ -235,43 +260,36 @@ public class Pipe implements Serializable {
      * Draw the pipe in relative location withing the playing area
      * @param canvas Canvas to draw on
      */
-    public void draw(Canvas canvas, int marginX, int marginY, int playAreaSize, float scaleFactor) {
-        // Calculate the x and y locations withing the playing area
-        float blockDim = (int)(playAreaSize * scaleFactor / playingArea.getHeight());
-        float xLoc = x * blockDim + (blockDim / 2);
-        float yLoc = y * blockDim + (blockDim / 2);
+    public void drawInPlayingArea(Canvas canvas) {
+        if(playingArea != null) {
+            // Calculate the x and y locations withing the playing area
+            float bitDim = bitmap.getHeight();
+            float xLoc = xCoord * bitDim + (bitDim / 2);
+            float yLoc = yCoord * bitDim + (bitDim / 2);
 
-        // All pipe bitmaps are square except for the gauge which has a longer width so we will use
-        // the height to calculate the scale and translations
-        float bitDim = bitmap.getHeight();
+            canvas.save();
 
-        // Calculate the scale to draw the pipe
-        float scale = blockDim / bitDim;
+            // Convert x,y locations to pixels and add the margin
+            canvas.translate(xLoc, yLoc);
 
-        canvas.save();
+            canvas.save();
 
-        // Convert x,y locations to pixels and add the margin
-        canvas.translate(marginX + xLoc, marginY + yLoc);
-        // Scale it to the right size
-        canvas.scale(scale, scale);
-
-        canvas.save();
-
-        // Rotate the piece
-        canvas.rotate(bitmapRotation);
-        // Make the center of the piece draw at the origin
-        canvas.translate(-bitDim / 2, -bitDim / 2);
-        // Draw the bitmap
-        canvas.drawBitmap(bitmap, 0, 0, null);
-
-        canvas.restore();
-
-        if(handleBit != null) {
-            canvas.rotate(handleRotation);
+            // Rotate the piece
+            canvas.rotate(bitmapRotation);
+            // Make the center of the piece draw at the origin
             canvas.translate(-bitDim / 2, -bitDim / 2);
-            canvas.drawBitmap(handleBit, 0, 0, null);
-        }
+            // Draw the bitmap
+            canvas.drawBitmap(bitmap, 0, 0, null);
 
-        canvas.restore();
+            canvas.restore();
+
+            if (handleBit != null) {
+                canvas.rotate(handleRotation);
+                canvas.translate(-bitDim / 2, -bitDim / 2);
+                canvas.drawBitmap(handleBit, 0, 0, null);
+            }
+
+            canvas.restore();
+        }
     }
 }

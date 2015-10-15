@@ -27,11 +27,6 @@ public class PlayingArea implements Serializable {
     private Pipe [][] pipes;
 
     /**
-     * Current scale to draw the playing area, can't go below 1.0
-     */
-    private float scaleInView = 1f;
-
-    /**
      * TEMPORARY PAINT OBJECT FOR TESTING
      */
     private transient Paint debugPaint;
@@ -135,20 +130,15 @@ public class PlayingArea implements Serializable {
         }
     }
 
-    public void draw(Canvas canvas, int width, int height) {
-        // Determine the minimum of the two dimensions
-        int minDim = width < height ? width : height;
+    public void draw(Canvas canvas, float blockSize) {
+        canvas.save();
 
-        int playingAreaSize = (int)(minDim * scaleInView);
-
-        // Compute any margins if they exist
-        int marginX = (width - playingAreaSize) / 2;
-        int marginY = (height - playingAreaSize) / 2;
+        int playingAreaSize = (int)(width * blockSize);
 
         /*
          * Draw the outline of the playing field for now
          */
-        canvas.drawRect(marginX, marginY, marginX + playingAreaSize, marginY + playingAreaSize, debugPaint);
+        canvas.drawRect(0, 0, playingAreaSize, playingAreaSize, debugPaint);
 
         /*
          * Draw each pipe
@@ -156,9 +146,11 @@ public class PlayingArea implements Serializable {
         for(Pipe[] row : pipes) {
             for(Pipe pipe : row) {
                 if(pipe != null) {
-                    pipe.draw(canvas, marginX, marginY, playingAreaSize, scaleInView);
+                    pipe.drawInPlayingArea(canvas);
                 }
             }
         }
+
+        canvas.restore();
     }
 }
