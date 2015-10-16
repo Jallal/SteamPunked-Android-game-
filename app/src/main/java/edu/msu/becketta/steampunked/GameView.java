@@ -194,23 +194,6 @@ public class GameView extends View {
         gameField.add(start2, x2, y2);
         gameField.add(end1, x3, y3);
         gameField.add(end2, x4, y4);
-
-        //
-        // TEMPORARY PIPES FOR DEBUGGING
-        //
-        Pipe temp1 = new Pipe(getContext(), Pipe.pipeType.STRAIGHT);
-        Pipe temp2 = new Pipe(getContext(), Pipe.pipeType.STRAIGHT);
-        Pipe temp3 = new Pipe(getContext(), Pipe.pipeType.RIGHT_ANGLE);
-        Pipe temp4 = new Pipe(getContext(), Pipe.pipeType.CAP);
-        Pipe temp5 = new Pipe(getContext(), Pipe.pipeType.TEE);
-        Pipe temp6 = new Pipe(getContext(), Pipe.pipeType.TEE);
-
-        gameField.add(temp1, 1, 1);
-        gameField.add(temp2, 1, 2);
-        gameField.add(temp3, 3, 2);
-        gameField.add(temp4, 1, 0);
-        gameField.add(temp5, 3, 4);
-        gameField.add(temp6, 2, 3);
     }
 
     private static class Parameters implements Serializable {

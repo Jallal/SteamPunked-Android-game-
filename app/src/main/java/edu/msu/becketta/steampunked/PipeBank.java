@@ -23,6 +23,11 @@ public class PipeBank implements Serializable {
     private Pipe[] pipes = new Pipe[bankSize];
 
     /**
+     * The pipe that is being dragged
+     */
+    private Pipe activePipe = null;
+
+    /**
      * The context that has the pipe drawables
      */
     private Context context;
@@ -58,6 +63,19 @@ public class PipeBank implements Serializable {
         return new Pipe(context, Pipe.pipeType.STRAIGHT);
     }
 
+    public Pipe getActivePipe() {
+        return activePipe;
+    }
+
+    public void clearActivePipe() {
+        activePipe = null;
+    }
+
+    public Pipe hitPipe(float xpod, float ypos) {
+        activePipe = null;
+        return null;
+    }
+
     /**
      * Draw the pipe bank
      * @param canvas Canvas to draw the pipe bank on
@@ -77,10 +95,17 @@ public class PipeBank implements Serializable {
             pipeDim = width / (bankSize + 2);
             spacingX = 2 * pipeDim / (bankSize + 1);
             for(int i = 0; i < bankSize; i++) {
+                if(pipes[i] == null) {
+                    pipes[i] = getRandomPipe();
+                }
+
                 canvas.save();
                 canvas.translate(spacingX*i, spacingY);
                 canvas.scale(scale, scale);
                 // Draw the pipe
+                if(pipes[i] != activePipe) {
+                    pipes[i].draw(canvas);
+                }
 
                 canvas.restore();
             }
@@ -88,10 +113,17 @@ public class PipeBank implements Serializable {
             pipeDim = height / (bankSize + 2);
             spacingY = 2 * pipeDim / (bankSize + 1);
             for(int i = 0; i < bankSize; i++) {
+                if(pipes[i] == null) {
+                    pipes[i] = getRandomPipe();
+                }
+
                 canvas.save();
                 canvas.translate(spacingX, spacingY*i);
                 canvas.scale(scale, scale);
                 // Draw the pipe
+                if(pipes[i] != activePipe) {
+                    pipes[i].draw(canvas);
+                }
 
                 canvas.restore();
             }

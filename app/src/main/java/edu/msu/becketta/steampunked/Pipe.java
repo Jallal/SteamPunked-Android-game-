@@ -292,4 +292,12 @@ public class Pipe implements Serializable {
             canvas.restore();
         }
     }
+
+    /**
+     * Draw the pipe
+     * @param canvas Canvas to draw on
+     */
+    public void draw(Canvas canvas) {
+        canvas.drawBitmap(bitmap, 0, 0, null);
+    }
 }
