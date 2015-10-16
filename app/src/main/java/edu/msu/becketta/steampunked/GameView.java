@@ -73,7 +73,7 @@ public class GameView extends View {
     }
 
     private void init(AttributeSet attrs, int defStyle) {
-        bank = new PipeBank();
+        bank = new PipeBank(getContext());
         params = new Parameters();
     }
 
@@ -99,10 +99,6 @@ public class GameView extends View {
         }
 
         bank = (PipeBank)bundle.getSerializable(PIPE_BANK);
-        // Need to call init on the PipeBank to recreate the Paint Objects
-        if(bank != null) {
-            bank.init();
-        }
     }
 
     @Override
@@ -115,12 +111,15 @@ public class GameView extends View {
         //     .8 <= y <= 1   draw the pipe bank
 
         // Determine which orientation to draw the view in
+        // Portrait layout
         int fieldWidth = canvas.getWidth();
         int fieldHeight = (int)(canvas.getHeight() * bankLocation);
         int bankWidth = canvas.getWidth();
         int bankHeight = (int)(canvas.getHeight() * (1 - bankLocation));
         float bankXOffset = 0f;
         float bankYOffset = canvas.getHeight() * bankLocation;
+
+        // Landscape layout
         if(canvas.getWidth() > canvas.getHeight()) {
             fieldWidth = (int)(canvas.getWidth() * bankLocation);
             fieldHeight = canvas.getHeight();
