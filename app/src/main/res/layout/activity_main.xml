@@ -59,4 +59,14 @@
         android:layout_alignRight="@+id/player1"
         android:layout_alignEnd="@+id/player1" />
 
+    <Spinner
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/spinnerFields"
+        android:layout_marginBottom="32dp"
+        android:layout_above="@+id/startButton"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="false"
+        />
+
 </RelativeLayout>
