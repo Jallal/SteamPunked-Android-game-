@@ -154,7 +154,7 @@ public class GameView extends View {
          */
         canvas.save();
         canvas.translate(bankXOffset, bankYOffset);
-        bank.draw(canvas, bankWidth, bankHeight);
+        bank.draw(canvas, bankWidth, bankHeight, params.blockSize);
         canvas.restore();
     }
 
