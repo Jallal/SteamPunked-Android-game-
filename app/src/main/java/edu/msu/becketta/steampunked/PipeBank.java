@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 
 import java.io.Serializable;
+import java.util.Random;
 
 /**
  * Created by Aaron Beckett on 10/12/2015.
@@ -15,7 +16,20 @@ import java.io.Serializable;
  */
 public class PipeBank implements Serializable {
 
+    /**
+     * Number of pipes in the bank
+     */
     public final int bankSize = 5;
+
+    /**
+     * Array that stores the relative probabilities of generating each pipe type
+     */
+    private final PipeProbability[] relativePipeProbs = {
+            new PipeProbability(Pipe.pipeType.STRAIGHT, 1),
+            new PipeProbability(Pipe.pipeType.RIGHT_ANGLE, 2),
+            new PipeProbability(Pipe.pipeType.TEE, 2),
+            new PipeProbability(Pipe.pipeType.CAP, 1)
+    };
 
     /**
      * Array of pipes in the bank
@@ -26,6 +40,11 @@ public class PipeBank implements Serializable {
      * The pipe that is being dragged
      */
     private Pipe activePipe = null;
+
+    /**
+     * Random number generator used to select new pipes for the bank
+     */
+    private static Random random = new Random(System.nanoTime());
 
     /**
      * The context that has the pipe drawables
@@ -55,8 +74,21 @@ public class PipeBank implements Serializable {
      * @return A random pipe
      */
     private Pipe getRandomPipe() {
-        // TODO: randomize pipe type selection
-        return new Pipe(context, Pipe.pipeType.STRAIGHT);
+        // Calculate total relative probs in order to scale the random integer generation
+        int probTotal = 0;
+        for(PipeProbability pair : relativePipeProbs) {
+            probTotal += pair.relativeProb;
+        }
+
+        // Get random integer and calculate the corresponding index
+        int index = random.nextInt(probTotal);
+        int sum = 0;
+        int i=0;
+        while(sum <= index ) {
+            sum = sum + relativePipeProbs[i++].relativeProb;
+        }
+
+        return new Pipe(context, relativePipeProbs[i-1].type);
     }
 
     public Pipe getActivePipe() {
@@ -67,7 +99,7 @@ public class PipeBank implements Serializable {
         activePipe = null;
     }
 
-    public Pipe hitPipe(float xpod, float ypos) {
+    public Pipe hitPipe(float xpos, float ypos) {
         activePipe = null;
         return null;
     }
@@ -124,6 +156,19 @@ public class PipeBank implements Serializable {
 
                 canvas.restore();
             }
+        }
+    }
+
+    /**
+     * Nested class that gives a pipe type a weighted probability
+     */
+    private static class PipeProbability implements Serializable {
+        public Pipe.pipeType type;
+        public int relativeProb;
+
+        public PipeProbability(Pipe.pipeType typ, int prob) {
+            type = typ;
+            relativeProb = prob;
         }
     }
 }
