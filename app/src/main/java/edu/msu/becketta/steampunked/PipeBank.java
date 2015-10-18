@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.util.Log;
 
 import java.io.Serializable;
 import java.util.Random;
@@ -57,6 +58,13 @@ public class PipeBank implements Serializable {
     private transient Paint bankPaint;
 
     /**
+     * Dimension and spacing of pipes used to calculate hits
+     */
+    private float pipeDim;
+    private float spacing;
+    private boolean horizontal;
+
+    /**
      * Constructor for the PipeBank
      * @param context Context passed to Pipes when generating new pipes
      */
@@ -95,12 +103,33 @@ public class PipeBank implements Serializable {
         return activePipe;
     }
 
-    public void clearActivePipe() {
-        activePipe = null;
+    public void setActivePipe(Pipe active) {
+        activePipe = active;
     }
 
+    /**
+     * Check if the location hits a pipe in the pipe bank
+     * @param xpos X position to test relative to the upper left corner of the pipe bank
+     * @param ypos Y position to test relative to the upper left corner of the pipe bank
+     * @return The pipe in the pipe bank at the location (xpos, ypos) or null if there is no pipe
+     */
     public Pipe hitPipe(float xpos, float ypos) {
         activePipe = null;
+
+        // Set the primary dimension that we care about
+        //      (x dimension for horizontal, y dimension for vertical)
+        float pos = xpos;
+        if(!horizontal) {
+            pos = ypos;
+        }
+
+        // Calculate which section the touch occurred in and if it hit a pipe
+        int section = (int)(pos / (spacing + pipeDim));
+        if(section < bankSize && pos % (spacing + pipeDim) > spacing) {
+            Log.i("Hit Pipe", "You hit pipe " + section + " in the pipe bank.");
+            return pipes[section];
+        }
+
         return null;
     }
 
@@ -111,16 +140,27 @@ public class PipeBank implements Serializable {
      * @param height Height of the pipe bank
      */
     public void draw(Canvas canvas, float width, float height, float blockSize) {
-        // Draw the green rectangle as background
+        /*
+         * Draw the green rectangle as background
+         */
         canvas.drawRect(0f, 0f, width, height, bankPaint);
 
-        // Draw the pipes
-        float pipeDim, spacingX, spacingY, scale;
+        /*
+         * Draw the pipes
+         */
+        // Create local variables that we need to calculate
+        float spacingX, spacingY, scale;
+
+        // Decide how to draw the pipes
         if(width >= height) {   // Draw pipes horizontally
+            // Set variables
+            horizontal = true;
             pipeDim = width / (bankSize + 2);
-            spacingX = 2 * pipeDim / (bankSize + 1);
+            spacing = spacingX = 2 * pipeDim / (bankSize + 1);
             scale = pipeDim < height ? pipeDim / blockSize : height / blockSize;
             spacingY = (height - blockSize*scale) / 2;
+
+            // Loop through the pipes to draw them, creating a new random pipe if necessary
             for(int i = 0; i < bankSize; i++) {
                 if(pipes[i] == null) {
                     pipes[i] = getRandomPipe();
@@ -137,10 +177,14 @@ public class PipeBank implements Serializable {
                 canvas.restore();
             }
         } else {   // Draw pipes vertically
+            // Set variables
+            horizontal = false;
             pipeDim = height / (bankSize + 2);
-            spacingY = 2 * pipeDim / (bankSize + 1);
+            spacing = spacingY = 2 * pipeDim / (bankSize + 1);
             scale = pipeDim < width ? pipeDim / blockSize : height / blockSize;
             spacingX = (width - blockSize*scale) / 2;
+
+            // Loop through the pipes to draw them, creating a new random pipe if necessary
             for(int i = 0; i < bankSize; i++) {
                 if(pipes[i] == null) {
                     pipes[i] = getRandomPipe();
