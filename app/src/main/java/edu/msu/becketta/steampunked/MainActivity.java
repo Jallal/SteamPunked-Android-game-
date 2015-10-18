@@ -85,14 +85,15 @@ public class MainActivity extends AppCompatActivity {
     public void onStartGame(View view) {
         Intent intent = new Intent(this, GameActivity.class);
 
-        // TODO: get variable values from button and spinners views
-        // Get player names from views and get board size from spinner
-        //member variables for playerone and playertwo
+        //set member variables for playerone and playertwo
+        String playerOne;
+        String playerTwo;
         TextView textview1 = (TextView) findViewById(R.id.player1);
-        String playerOne = textview1.getText().toString();
-        //String playerOne = findViewById(R.id.player1_label);
+        playerOne = textview1.getText().toString();
         TextView textview2 = (TextView) findViewById(R.id.player2);
-        String playerTwo = textview2.getText().toString();
+        playerTwo = textview2.getText().toString();
+        if (playerOne.trim().equals(""))  playerOne = "Player 1";
+        if (playerTwo.trim().equals("")) playerTwo = "Player 2";
 
 
 
