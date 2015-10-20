@@ -1,9 +1,38 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context="edu.msu.becketta.steampunked.EndGameActivity">
+    tools:context="edu.msu.becketta.steampunked.EndGameActivity"
+    android:weightSum="1">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="122dp"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/playerWin"
+        android:id="@+id/winnerLabel"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_weight="0.78"
+        android:textStyle="bold"
+        android:textColor="#0002ff"
+        android:autoText="false"
+        android:textSize="50dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="67dp"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Medium Text"
+        android:id="@+id/winner"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="4.84"
+        android:layout_centerVertical="true"
+        android:layout_alignRight="@+id/winnerLabel"
+        android:layout_alignEnd="@+id/winnerLabel" />
 
 </RelativeLayout>
