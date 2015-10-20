@@ -182,7 +182,7 @@ public class GameView extends View {
         }
     }
 
-    
+
     /**
      * Handle a touch event
      *
@@ -195,14 +195,15 @@ public class GameView extends View {
 
         switch(event.getActionMasked()) {
             case MotionEvent.ACTION_DOWN:
-                getPositions(event);
                 touch1.id = id;
                 //Log.i("Touch Id", "ACTION_DOWN" + id+ "," +id);
                 touch2.id = -1;
+
+                getPositions(event);
                 touch1.copyToLast();
 
-                float bankx = (touch1.x - params.bankXOffset);
-                float banky = (touch1.y - params.bankYOffset);
+                float bankx = (event.getX() - params.bankXOffset);
+                float banky = (event.getY() - params.bankYOffset);
 
                 if(bankx >= 0 && banky >= 0) {
                     currentPipe = bank.hitPipe(bankx, banky);
