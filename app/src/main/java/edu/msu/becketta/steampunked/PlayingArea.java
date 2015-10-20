@@ -3,6 +3,7 @@ package edu.msu.becketta.steampunked;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.util.Log;
 
 import java.io.Serializable;
 
@@ -48,6 +49,27 @@ public class PlayingArea implements Serializable {
         debugPaint.setColor(Color.argb(25, 0, 100, 82));  // A transparent blue
     }
 
+
+
+    /**
+     * Get the playing area height
+     * @return Height
+     */
+    public void SetHeight(int value) {
+        height = value;
+    }
+
+    /**
+     * Get the playing area width
+     * @return Width
+     */
+    public void SetWidth(int value) {
+
+        width = value;
+    }
+
+
+
     /**
      * Get the playing area height
      * @return Height
@@ -71,13 +93,21 @@ public class PlayingArea implements Serializable {
      * @param y Y location
      * @return Reference to Pipe object or null if none exists
      */
+
+
+
     public Pipe getPipe(int x, int y) {
+
         if(x < 0 || x >= width || y < 0 || y >= height) {
             return null;
         }
-
+      Log.i("HIT PIPE IN THE", "*********PLAYING AREA");
         return pipes[x][y];
     }
+
+
+
+
 
     /**
      * Add a pipe to the playing area

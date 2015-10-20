@@ -12,6 +12,7 @@ import java.io.Serializable;
  */
 public class Pipe implements Serializable {
 
+
     /**
      * Enum that describes the pipe type
      */
@@ -217,6 +218,9 @@ public class Pipe implements Serializable {
     public float getBitmapHeight() {
         return bitmap.getHeight();
     }
+    public float getBitmapWidth() {
+        return bitmap.getWidth();
+    }
 
     /**
      * Set the playing area and location for this pipe
@@ -267,6 +271,7 @@ public class Pipe implements Serializable {
             float xLoc = xCoord * bitDim + (bitDim / 2);
             float yLoc = yCoord * bitDim + (bitDim / 2);
 
+
             canvas.save();
 
             // Convert x,y locations to pixels and add the margin
@@ -298,6 +303,6 @@ public class Pipe implements Serializable {
      * @param canvas Canvas to draw on
      */
     public void draw(Canvas canvas) {
-        canvas.drawBitmap(bitmap, 0, 0, null);
+        canvas.drawBitmap(bitmap, x, y, null);
     }
 }

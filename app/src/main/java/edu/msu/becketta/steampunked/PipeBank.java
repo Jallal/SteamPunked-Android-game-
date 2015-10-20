@@ -107,6 +107,7 @@ public class PipeBank implements Serializable {
         activePipe = active;
     }
 
+
     /**
      * Check if the location hits a pipe in the pipe bank
      * @param xpos X position to test relative to the upper left corner of the pipe bank
@@ -116,7 +117,7 @@ public class PipeBank implements Serializable {
     public Pipe hitPipe(float xpos, float ypos) {
 
 
-        Log.i("HIT PIPE", "HIT PIPE" + xpos + "," +  ypos);
+       // Log.i("HIT PIPE", "HIT PIPE" + xpos + "," +  ypos);
 
         activePipe = null;
 
@@ -129,7 +130,7 @@ public class PipeBank implements Serializable {
 
         // Calculate which section the touch occurred in and if it hit a pipe
         int section = (int)(pos / (spacing + pipeDim));
-        if(section < bankSize && pos % (spacing + pipeDim) > spacing) {
+        if((section < bankSize) && (pos % (spacing + pipeDim) > spacing)) {
             Log.i("Hit Pipe", "You hit pipe " + section + " in the pipe bank.");
             return pipes[section];
         }
@@ -166,7 +167,8 @@ public class PipeBank implements Serializable {
 
             // Loop through the pipes to draw them, creating a new random pipe if necessary
             for(int i = 0; i < bankSize; i++) {
-                if(pipes[i] == null) {
+
+                if((pipes[i] == null)) {
                     pipes[i] = getRandomPipe();
                 }
 
@@ -175,6 +177,7 @@ public class PipeBank implements Serializable {
                 canvas.scale(scale, scale);
                 // Draw the pipe
                 if(pipes[i] != activePipe) {
+                    pipes[i].setLocation(0, 0);
                     pipes[i].draw(canvas);
                 }
 

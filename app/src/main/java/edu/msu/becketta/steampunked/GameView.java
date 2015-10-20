@@ -20,6 +20,44 @@ import java.util.ArrayList;
  */
 public class GameView extends View {
 
+    private static class Parameters implements Serializable {
+        /**
+         * Standard block size in the playing field, used to determine the scale to draw components
+         */
+        public float blockSize = 0f;
+
+        /**
+         * Width and height of the game field
+         */
+        public float gameFieldWidth = 0f;
+        public float gameFieldHeight = 0f;
+
+        /**
+         * Current X and Y margins of the playing field
+         */
+        public int marginX = 0;
+        public int marginY = 0;
+
+        public float bankXOffset = 0;
+
+        public float bankYOffset = 0;
+
+        /**
+         * Current scale to draw the playing field
+         */
+        public float gameFieldScale = 1f;
+
+        /**
+         * X location of hat relative to the image
+         */
+        public float pipeX = 0;
+
+        /**
+         * Y location of hat relative to the image
+         */
+        public float pipeY = 0;
+
+    }
 
 
     /**
@@ -88,6 +126,8 @@ public class GameView extends View {
     public final static String PIPE_BANK = "pipeBank";
     public final static String PARAMETERS = "parameters";
 
+
+
     /**
      * Valid board sizes:
      *      SMALL: 5x5
@@ -129,8 +169,9 @@ public class GameView extends View {
      */
     private Touch touch2 = new Touch();
 
+    Pipe currentPipe = null;
 
-   private Pipe currentPipe;
+
 
 
 
@@ -194,8 +235,8 @@ public class GameView extends View {
         int fieldHeight = (int)(canvas.getHeight() * bankLocation);
         int bankWidth = canvas.getWidth();
         int bankHeight = (int)(canvas.getHeight() * (1 - bankLocation));
-        float bankXOffset = 0f;
-        float bankYOffset = canvas.getHeight() * bankLocation;
+        params.bankXOffset = 0f;
+        params.bankYOffset = canvas.getHeight() * bankLocation;
 
         // Landscape layout
         if(canvas.getWidth() > canvas.getHeight()) {
@@ -203,8 +244,8 @@ public class GameView extends View {
             fieldHeight = canvas.getHeight();
             bankWidth = (int)(canvas.getWidth() * (1 - bankLocation));
             bankHeight = canvas.getHeight();
-            bankXOffset = canvas.getWidth() * bankLocation;
-            bankYOffset = 0f;
+            params.bankXOffset = canvas.getWidth() * bankLocation;
+            params.bankYOffset = 0f;
         }
 
         // Determine the scale to draw things
@@ -225,16 +266,20 @@ public class GameView extends View {
         canvas.translate(params.marginX, params.marginY);
         canvas.scale(params.gameFieldScale, params.gameFieldScale);
         gameField.draw(canvas, params.blockSize);
-
         canvas.restore();
+
 
         /*
          * Draw pipe bank
          */
         canvas.save();
-        canvas.translate(bankXOffset, bankYOffset);
+        canvas.translate(params.bankXOffset, params.bankYOffset);
         bank.draw(canvas, bankWidth, bankHeight, params.blockSize);
         canvas.restore();
+
+        if(currentPipe!=null){
+            currentPipe.draw(canvas);
+        }
     }
 
     /**
@@ -275,41 +320,6 @@ public class GameView extends View {
         gameField.add(end2, x4, y4);
     }
 
-    private static class Parameters implements Serializable {
-        /**
-         * Standard block size in the playing field, used to determine the scale to draw components
-         */
-        public float blockSize = 0f;
-
-        /**
-         * Width and height of the game field
-         */
-        public float gameFieldWidth = 0f;
-        public float gameFieldHeight = 0f;
-
-        /**
-         * Current X and Y margins of the playing field
-         */
-        public int marginX = 0;
-        public int marginY = 0;
-
-        /**
-         * Current scale to draw the playing field
-         */
-        public float gameFieldScale = 1f;
-
-
-        /**
-         * X location of hat relative to the image
-         */
-        public float pipeX = 0;
-
-        /**
-         * Y location of hat relative to the image
-         */
-        public float pipeY = 0;
-
-    }
 
 
 
@@ -323,22 +333,32 @@ public class GameView extends View {
     public boolean onTouchEvent(MotionEvent event) {
         int id = event.getPointerId(event.getActionIndex());
 
+
         switch(event.getActionMasked()) {
             case MotionEvent.ACTION_DOWN:
+                getPositions(event);
                 touch1.id = id;
                 //Log.i("Touch Id", "ACTION_DOWN" + id+ "," +id);
                 touch2.id = -1;
-                getPositions(event);
                 touch1.copyToLast();
+                float bankx = (touch1.x - params.bankXOffset);
+                float banky = (touch1.y - params.bankYOffset);
+                currentPipe = bank.hitPipe(bankx, banky);
+                bank.setActivePipe(currentPipe);
+
+                if (currentPipe!=null) {
+                    currentPipe.setLocation(touch1.x,touch1.y);
+                    invalidate();
+                    return true;
+                }
                 return true;
 
             case MotionEvent.ACTION_POINTER_DOWN:
-                if(touch1.id >= 0 && touch2.id < 0) {
+                if (touch1.id >= 0 && touch2.id < 0) {
                     touch2.id = id;
-                    getPositions(event);
                     touch2.copyToLast();
                     return true;
-               }
+                }
                 break;
 
             case MotionEvent.ACTION_UP:
@@ -350,49 +370,37 @@ public class GameView extends View {
                 return true;
 
             case MotionEvent.ACTION_POINTER_UP:
-                if(id == touch2.id) {
-                   touch2.id = -1;
-                } else if(id == touch1.id) {
-                     //Make what was touch2 now be touch1 by
+                if (id == touch2.id) {
+                    touch2.id = -1;
+                } else if (id == touch1.id) {
+                    //Make what was touch2 now be touch1 by
                     // swapping the objects.
                     Touch t = touch1;
                     touch1 = touch2;
                     touch2 = t;
-                   touch2.id = -1;
+                    touch2.id = -1;
                 }
                 invalidate();
                 return true;
 
             case MotionEvent.ACTION_MOVE:
-                getPositions(event);
-                   move();
-                bank.setActivePipe(bank.hitPipe(event.getX(id), event.getY(id)));
-                currentPipe = bank.getActivePipe();
-                currentPipe.setLocation(params.pipeX, params.pipeY);
-                invalidate();
-                return true;
+                move();
+                return false;
         }
-        gameField.add(currentPipe, (int) event.getX(id), (int) event.getY(id));
+
         return super.onTouchEvent(event);
     }
-    /**
-     * Get the positions for the two touches and put them
-     * into the appropriate touch objects.
-     *
-     * @param event the motion event
-     */
+
+
+
     private void getPositions(MotionEvent event) {
-
-
-
         for(int i=0;  i<event.getPointerCount();  i++) {
-
             // Get the pointer id
             int id = event.getPointerId(i);
 
             // Convert to image coordinates
-            float x = (event.getX(i) - params.marginX) / params.blockSize;
-            float y = (event.getY(i) - params.marginY) / params.blockSize;
+            float x = (event.getX(i) - params.marginX) / params.gameFieldScale;
+            float y = (event.getY(i) - params.marginY) / params.gameFieldScale;
 
             if(id == touch1.id) {
                 touch1.copyToLast();
@@ -405,9 +413,9 @@ public class GameView extends View {
             }
         }
 
-
         invalidate();
     }
+
 
     private void move() {
         // If no touch1, we have nothing to do
@@ -427,7 +435,6 @@ public class GameView extends View {
         }
 
     }
-
 
 
 
