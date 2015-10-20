@@ -114,6 +114,10 @@ public class PipeBank implements Serializable {
      * @return The pipe in the pipe bank at the location (xpos, ypos) or null if there is no pipe
      */
     public Pipe hitPipe(float xpos, float ypos) {
+
+
+        Log.i("HIT PIPE", "HIT PIPE" + xpos + "," +  ypos);
+
         activePipe = null;
 
         // Set the primary dimension that we care about

@@ -6,15 +6,79 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.os.Bundle;
+import android.text.method.Touch;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 /**
  * TODO: document your custom view class.
  */
 public class GameView extends View {
+
+
+
+    /**
+     * Local class to handle the touch status for one touch.
+     * We will have one object of this type for each of the
+     * two possible touches.
+     */
+    private class Touch {
+        /**
+         * Change in x value from previous
+         */
+        public float dX = 0;
+
+        /**
+         * Change in y value from previous
+         */
+        public float dY = 0;
+        /**
+         * Touch id
+         */
+        public int id = -1;
+
+        /**
+         * Current x location
+         */
+        public float x = 0;
+
+        /**
+         * Current y location
+         */
+        public float y = 0;
+
+        /**
+         * Previous x location
+         */
+        public float lastX = 0;
+
+        /**
+         * Previous y location
+         */
+        public float lastY = 0;
+        /**
+         * Copy the current values to the previous values
+         */
+        public void copyToLast() {
+            lastX = x;
+            lastY = y;
+        }
+        /**
+         * Compute the values of dX and dY
+         */
+        public void computeDeltas() {
+            dX = x - lastX;
+            dY = y - lastY;
+        }
+
+    }
+
+
 
     // Intent identifiers
     public final static String BOARD_SIZE = "edu.msu.becketta.steampunked.BOARD_SIZE";
@@ -55,6 +119,19 @@ public class GameView extends View {
      * Object to store some view parameters
      */
     private Parameters params = null;
+    /**
+     * First touch status
+     */
+    private Touch touch1 = new Touch();
+
+    /**
+     * Second touch status
+     */
+    private Touch touch2 = new Touch();
+
+
+   private Pipe currentPipe;
+
 
 
     public GameView(Context context) {
@@ -111,6 +188,7 @@ public class GameView extends View {
         //     .8 <= y <= 1   draw the pipe bank
 
         // Determine which orientation to draw the view in
+
         // Portrait layout
         int fieldWidth = canvas.getWidth();
         int fieldHeight = (int)(canvas.getHeight() * bankLocation);
@@ -147,6 +225,7 @@ public class GameView extends View {
         canvas.translate(params.marginX, params.marginY);
         canvas.scale(params.gameFieldScale, params.gameFieldScale);
         gameField.draw(canvas, params.blockSize);
+
         canvas.restore();
 
         /*
@@ -218,5 +297,156 @@ public class GameView extends View {
          * Current scale to draw the playing field
          */
         public float gameFieldScale = 1f;
+
+
+        /**
+         * X location of hat relative to the image
+         */
+        public float pipeX = 0;
+
+        /**
+         * Y location of hat relative to the image
+         */
+        public float pipeY = 0;
+
     }
+
+
+
+
+    /**
+     * Handle a touch event
+     *
+     * @param event The touch event
+     */
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        int id = event.getPointerId(event.getActionIndex());
+
+        switch(event.getActionMasked()) {
+            case MotionEvent.ACTION_DOWN:
+                touch1.id = id;
+                //Log.i("Touch Id", "ACTION_DOWN" + id+ "," +id);
+                touch2.id = -1;
+                getPositions(event);
+                touch1.copyToLast();
+
+
+                //Log.i("**********************************","%%%%%%%%%%%%%%%%%");
+                //Log.i("current Pipe"," "+currentPipe);
+                return true;
+
+            case MotionEvent.ACTION_POINTER_DOWN:
+                if(touch1.id >= 0 && touch2.id < 0) {
+                    touch2.id = id;
+                    getPositions(event);
+                    touch2.copyToLast();
+                    return true;
+               }
+                break;
+
+            case MotionEvent.ACTION_UP:
+
+            case MotionEvent.ACTION_CANCEL:
+                touch1.id = -1;
+                touch2.id = -1;
+                invalidate();
+                return true;
+
+            case MotionEvent.ACTION_POINTER_UP:
+                if(id == touch2.id) {
+                   touch2.id = -1;
+                } else if(id == touch1.id) {
+                     //Make what was touch2 now be touch1 by
+                    // swapping the objects.
+                    Touch t = touch1;
+                    touch1 = touch2;
+                    touch2 = t;
+                   touch2.id = -1;
+                }
+                invalidate();
+                return true;
+
+            case MotionEvent.ACTION_MOVE:
+                getPositions(event);
+                   move();
+                bank.setActivePipe(bank.hitPipe(event.getX(id), event.getY(id)));
+                currentPipe = bank.getActivePipe();
+                currentPipe.setLocation(params.pipeX, params.pipeY);
+                invalidate();
+                return true;
+        }
+        gameField.add(currentPipe, (int) event.getX(id), (int) event.getY(id));
+        return super.onTouchEvent(event);
+    }
+    /**
+     * Get the positions for the two touches and put them
+     * into the appropriate touch objects.
+     *
+     * @param event the motion event
+     */
+    private void getPositions(MotionEvent event) {
+
+
+
+        for(int i=0;  i<event.getPointerCount();  i++) {
+
+            // Get the pointer id
+            int id = event.getPointerId(i);
+
+            // Convert to image coordinates
+            float x = (event.getX(i) - params.marginX) / params.blockSize;
+            float y = (event.getY(i) - params.marginY) / params.blockSize;
+            Log.i("$$$$$$$$$", "&&&&&&&XX" + event.getX(i));
+            Log.i("$$$$$$$$$", "&&&&&&&YY" + event.getY(i));
+            Log.i("$$$$$$$$$", "&&&&&&&" + bank.hitPipe(event.getX(i),event.getY(i)));
+
+            if(id == touch1.id) {
+                touch1.copyToLast();
+                touch1.x = x;
+                touch1.y = y;
+            } else if(id == touch2.id) {
+                touch2.copyToLast();
+                touch2.x = x;
+                touch2.y = y;
+            }
+        }
+
+        //Log.i("Touch 1", "&&&&&&&" + bank.hitPipe(touch1.x,touch1.y));
+
+        //Log.i("Touch 2", "%%%%%%%%%" + bank.hitPipe(touch2.x,touch2.y));
+
+        invalidate();
+    }
+
+    private void move() {
+        // If no touch1, we have nothing to do
+        // This should not happen, but it never hurts
+        // to check.
+        if(touch1.id < 0) {
+            return;
+        }
+
+        if(touch1.id >= 0) {
+            // At least one touch
+            // We are moving
+            touch1.computeDeltas();
+            params.pipeX += touch1.dX;
+            params.pipeY += touch1.dY;
+
+        }
+        //currentPipe =
+        //currentPipe = bank.getActivePipe();
+        //currentPipe =
+        //Log.i("current Pipe"," "+bank.hitPipe(params.pipeX,params.pipeY));
+        //currentPipe.setLocation(params.pipeX , params.pipeY);
+
+
+        Log.i("MOVE FUNCTION", "MOVE" +params.pipeX + "," +params.pipeY);
+
+    }
+
+
+
+
 }

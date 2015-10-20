@@ -19,8 +19,7 @@
         android:onClick="onInstall"
         android:adjustViewBounds="true"
         android:layout_width="wrap_content"
-        android:layout_above="@+id/gameView"
-        android:textSize="@dimen/abc_button_inset_vertical_material" />
+        android:layout_above="@+id/gameView" />
 
     <Button
         android:layout_width="wrap_content"
@@ -31,8 +30,7 @@
         android:adjustViewBounds="true"
         android:enabled="true"
         android:layout_alignParentTop="true"
-        android:layout_toLeftOf="@+id/surrender"
-        android:textSize="@dimen/abc_button_inset_vertical_material" />
+        android:layout_toLeftOf="@+id/surrender" />
 
     <Button
         android:layout_width="wrap_content"
@@ -46,7 +44,6 @@
         android:layout_toLeftOf="@+id/discardButton"
         android:layout_toRightOf="@+id/installButton"
         android:layout_toEndOf="@+id/installButton"
-        android:textSize="@dimen/abc_button_inset_vertical_material"
         android:layout_alignParentTop="true" />
 
     <Button
@@ -58,8 +55,7 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="false"
         android:enabled="true"
-        android:layout_alignParentTop="true"
-        android:textSize="@dimen/abc_button_inset_vertical_material" />
+        android:layout_alignParentTop="true" />
 
     <edu.msu.becketta.steampunked.GameView
         android:layout_width="wrap_content"
