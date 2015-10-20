@@ -20,104 +20,6 @@ import java.util.ArrayList;
  */
 public class GameView extends View {
 
-    private static class Parameters implements Serializable {
-        /**
-         * Standard block size in the playing field, used to determine the scale to draw components
-         */
-        public float blockSize = 0f;
-
-        /**
-         * Width and height of the game field
-         */
-        public float gameFieldWidth = 0f;
-        public float gameFieldHeight = 0f;
-
-        /**
-         * Current X and Y margins of the playing field
-         */
-        public int marginX = 0;
-        public int marginY = 0;
-
-        public float bankXOffset = 0;
-
-        public float bankYOffset = 0;
-
-        /**
-         * Current scale to draw the playing field
-         */
-        public float gameFieldScale = 1f;
-
-        /**
-         * X location of hat relative to the image
-         */
-        public float pipeX = 0;
-
-        /**
-         * Y location of hat relative to the image
-         */
-        public float pipeY = 0;
-
-    }
-
-
-    /**
-     * Local class to handle the touch status for one touch.
-     * We will have one object of this type for each of the
-     * two possible touches.
-     */
-    private class Touch {
-        /**
-         * Change in x value from previous
-         */
-        public float dX = 0;
-
-        /**
-         * Change in y value from previous
-         */
-        public float dY = 0;
-        /**
-         * Touch id
-         */
-        public int id = -1;
-
-        /**
-         * Current x location
-         */
-        public float x = 0;
-
-        /**
-         * Current y location
-         */
-        public float y = 0;
-
-        /**
-         * Previous x location
-         */
-        public float lastX = 0;
-
-        /**
-         * Previous y location
-         */
-        public float lastY = 0;
-        /**
-         * Copy the current values to the previous values
-         */
-        public void copyToLast() {
-            lastX = x;
-            lastY = y;
-        }
-        /**
-         * Compute the values of dX and dY
-         */
-        public void computeDeltas() {
-            dX = x - lastX;
-            dY = y - lastY;
-        }
-
-    }
-
-
-
     // Intent identifiers
     public final static String BOARD_SIZE = "edu.msu.becketta.steampunked.BOARD_SIZE";
 
@@ -125,8 +27,6 @@ public class GameView extends View {
     public final static String PLAYING_AREA = "playingArea";
     public final static String PIPE_BANK = "pipeBank";
     public final static String PARAMETERS = "parameters";
-
-
 
     /**
      * Valid board sizes:
@@ -282,48 +182,7 @@ public class GameView extends View {
         }
     }
 
-    /**
-     * Create the PlayingArea object with the given dimension
-     * @param board Dimension of the playing field
-     */
-    private void initializeGameArea(dimension board) {
-        switch (board) {
-            case SMALL:
-                gameField = new PlayingArea(5, 5);
-                setBoardStartsEnds(0, 1, 0, 3, 4, 2, 4, 4);
-                break;
-            case MEDIUM:
-                gameField = new PlayingArea(10, 10);
-                setBoardStartsEnds(0, 2, 0, 6, 9, 3, 9, 7);
-                break;
-            case LARGE:
-                gameField = new PlayingArea(20, 20);
-                setBoardStartsEnds(0, 6, 0, 13, 19, 8, 19, 15);
-                break;
-        }
-
-        params.gameFieldWidth = gameField.getWidth() * params.blockSize;
-        params.gameFieldHeight = gameField.getHeight() * params.blockSize;
-    }
-
-    private void setBoardStartsEnds(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4) {
-        Pipe start1 = new Pipe(getContext(), Pipe.pipeType.START);
-        Pipe start2 = new Pipe(getContext(), Pipe.pipeType.START);
-        Pipe end1 = new Pipe(getContext(), Pipe.pipeType.END);
-        Pipe end2 = new Pipe(getContext(), Pipe.pipeType.END);
-
-        params.blockSize = start1.getBitmapHeight();
-
-        gameField.add(start1, x1, y1);
-        gameField.add(start2, x2, y2);
-        gameField.add(end1, x3, y3);
-        gameField.add(end2, x4, y4);
-    }
-
-
-
-
-
+    
     /**
      * Handle a touch event
      *
@@ -341,10 +200,14 @@ public class GameView extends View {
                 //Log.i("Touch Id", "ACTION_DOWN" + id+ "," +id);
                 touch2.id = -1;
                 touch1.copyToLast();
+
                 float bankx = (touch1.x - params.bankXOffset);
                 float banky = (touch1.y - params.bankYOffset);
-                currentPipe = bank.hitPipe(bankx, banky);
-                bank.setActivePipe(currentPipe);
+
+                if(bankx >= 0 && banky >= 0) {
+                    currentPipe = bank.hitPipe(bankx, banky);
+                    bank.setActivePipe(currentPipe);
+                }
 
                 if (currentPipe!=null) {
                     currentPipe.setLocation(touch1.x,touch1.y);
@@ -384,7 +247,10 @@ public class GameView extends View {
                 return true;
 
             case MotionEvent.ACTION_MOVE:
-                move();
+                getPositions(event);
+                if(currentPipe!=null) {
+                    moveCurrentPipe();
+                }
                 return false;
         }
 
@@ -417,7 +283,7 @@ public class GameView extends View {
     }
 
 
-    private void move() {
+    private void moveCurrentPipe() {
         // If no touch1, we have nothing to do
         // This should not happen, but it never hurts
         // to check.
@@ -429,13 +295,134 @@ public class GameView extends View {
             // At least one touch
             // We are moving
             touch1.computeDeltas();
-            params.pipeX += touch1.dX;
-            params.pipeY += touch1.dY;
+            currentPipe.setLocation(touch1.dX, touch1.dY);
+        }
+    }
 
+    /**
+     * Create the PlayingArea object with the given dimension
+     * @param board Dimension of the playing field
+     */
+    private void initializeGameArea(dimension board) {
+        switch (board) {
+            case SMALL:
+                gameField = new PlayingArea(5, 5);
+                setBoardStartsEnds(0, 1, 0, 3, 4, 2, 4, 4);
+                break;
+            case MEDIUM:
+                gameField = new PlayingArea(10, 10);
+                setBoardStartsEnds(0, 2, 0, 6, 9, 3, 9, 7);
+                break;
+            case LARGE:
+                gameField = new PlayingArea(20, 20);
+                setBoardStartsEnds(0, 6, 0, 13, 19, 8, 19, 15);
+                break;
         }
 
+        params.gameFieldWidth = gameField.getWidth() * params.blockSize;
+        params.gameFieldHeight = gameField.getHeight() * params.blockSize;
+    }
+
+    private void setBoardStartsEnds(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4) {
+        Pipe start1 = new Pipe(getContext(), Pipe.pipeType.START);
+        Pipe start2 = new Pipe(getContext(), Pipe.pipeType.START);
+        Pipe end1 = new Pipe(getContext(), Pipe.pipeType.END);
+        Pipe end2 = new Pipe(getContext(), Pipe.pipeType.END);
+
+        params.blockSize = start1.getBitmapHeight();
+
+        gameField.add(start1, x1, y1);
+        gameField.add(start2, x2, y2);
+        gameField.add(end1, x3, y3);
+        gameField.add(end2, x4, y4);
     }
 
 
+    /********************** NESTED CLASSES *******************************/
+
+    private static class Parameters implements Serializable {
+        /**
+         * Standard block size in the playing field, used to determine the scale to draw components
+         */
+        public float blockSize = 0f;
+
+        /**
+         * Width and height of the game field
+         */
+        public float gameFieldWidth = 0f;
+        public float gameFieldHeight = 0f;
+
+        /**
+         * Current X and Y margins of the playing field
+         */
+        public int marginX = 0;
+        public int marginY = 0;
+
+        public float bankXOffset = 0;
+
+        public float bankYOffset = 0;
+
+        /**
+         * Current scale to draw the playing field
+         */
+        public float gameFieldScale = 1f;
+    }
+
+
+    /**
+     * Local class to handle the touch status for one touch.
+     * We will have one object of this type for each of the
+     * two possible touches.
+     */
+    private class Touch {
+        /**
+         * Change in x value from previous
+         */
+        public float dX = 0;
+
+        /**
+         * Change in y value from previous
+         */
+        public float dY = 0;
+        /**
+         * Touch id
+         */
+        public int id = -1;
+
+        /**
+         * Current x location
+         */
+        public float x = 0;
+
+        /**
+         * Current y location
+         */
+        public float y = 0;
+
+        /**
+         * Previous x location
+         */
+        public float lastX = 0;
+
+        /**
+         * Previous y location
+         */
+        public float lastY = 0;
+        /**
+         * Copy the current values to the previous values
+         */
+        public void copyToLast() {
+            lastX = x;
+            lastY = y;
+        }
+        /**
+         * Compute the values of dX and dY
+         */
+        public void computeDeltas() {
+            dX = x - lastX;
+            dY = y - lastY;
+        }
+
+    }
 
 }
