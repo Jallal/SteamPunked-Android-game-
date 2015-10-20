@@ -330,10 +330,6 @@ public class GameView extends View {
                 touch2.id = -1;
                 getPositions(event);
                 touch1.copyToLast();
-
-
-                //Log.i("**********************************","%%%%%%%%%%%%%%%%%");
-                //Log.i("current Pipe"," "+currentPipe);
                 return true;
 
             case MotionEvent.ACTION_POINTER_DOWN:
@@ -397,9 +393,6 @@ public class GameView extends View {
             // Convert to image coordinates
             float x = (event.getX(i) - params.marginX) / params.blockSize;
             float y = (event.getY(i) - params.marginY) / params.blockSize;
-            Log.i("$$$$$$$$$", "&&&&&&&XX" + event.getX(i));
-            Log.i("$$$$$$$$$", "&&&&&&&YY" + event.getY(i));
-            Log.i("$$$$$$$$$", "&&&&&&&" + bank.hitPipe(event.getX(i),event.getY(i)));
 
             if(id == touch1.id) {
                 touch1.copyToLast();
@@ -412,9 +405,6 @@ public class GameView extends View {
             }
         }
 
-        //Log.i("Touch 1", "&&&&&&&" + bank.hitPipe(touch1.x,touch1.y));
-
-        //Log.i("Touch 2", "%%%%%%%%%" + bank.hitPipe(touch2.x,touch2.y));
 
         invalidate();
     }
@@ -435,14 +425,6 @@ public class GameView extends View {
             params.pipeY += touch1.dY;
 
         }
-        //currentPipe =
-        //currentPipe = bank.getActivePipe();
-        //currentPipe =
-        //Log.i("current Pipe"," "+bank.hitPipe(params.pipeX,params.pipeY));
-        //currentPipe.setLocation(params.pipeX , params.pipeY);
-
-
-        Log.i("MOVE FUNCTION", "MOVE" +params.pipeX + "," +params.pipeY);
 
     }
 
