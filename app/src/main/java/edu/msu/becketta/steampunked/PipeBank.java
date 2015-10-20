@@ -162,8 +162,9 @@ public class PipeBank implements Serializable {
             horizontal = true;
             pipeDim = width / (bankSize + 2);
             spacing = spacingX = 2 * pipeDim / (bankSize + 1);
+            spacingX += (pipeDim / 2);
             scale = pipeDim < height ? pipeDim / blockSize : height / blockSize;
-            spacingY = (height - blockSize*scale) / 2;
+            spacingY = height / 2;
 
             // Loop through the pipes to draw them, creating a new random pipe if necessary
             for(int i = 0; i < bankSize; i++) {
@@ -173,7 +174,7 @@ public class PipeBank implements Serializable {
                 }
 
                 canvas.save();
-                canvas.translate(pipeDim*i + spacingX*(i+1) , spacingY);
+                canvas.translate((pipeDim/2)*i + spacingX*(i+1) , spacingY);
                 canvas.scale(scale, scale);
                 // Draw the pipe
                 if(pipes[i] != activePipe) {
@@ -188,8 +189,9 @@ public class PipeBank implements Serializable {
             horizontal = false;
             pipeDim = height / (bankSize + 2);
             spacing = spacingY = 2 * pipeDim / (bankSize + 1);
+            spacingY += (pipeDim / 2);
             scale = pipeDim < width ? pipeDim / blockSize : height / blockSize;
-            spacingX = (width - blockSize*scale) / 2;
+            spacingX = width / 2;
 
             // Loop through the pipes to draw them, creating a new random pipe if necessary
             for(int i = 0; i < bankSize; i++) {
@@ -198,10 +200,11 @@ public class PipeBank implements Serializable {
                 }
 
                 canvas.save();
-                canvas.translate(spacingX, pipeDim*i + spacingY*(i+1));
+                canvas.translate(spacingX, (pipeDim/2)*i + spacingY*(i+1));
                 canvas.scale(scale, scale);
                 // Draw the pipe
                 if(pipes[i] != activePipe) {
+                    pipes[i].setLocation(0, 0);
                     pipes[i].draw(canvas);
                 }
 

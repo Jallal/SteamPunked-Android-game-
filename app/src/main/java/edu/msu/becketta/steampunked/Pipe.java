@@ -235,13 +235,21 @@ public class Pipe implements Serializable {
     }
 
     /**
-     *
-     * @param x
-     * @param y
+     * Set the location of the pipe
+     * @param x X location
+     * @param y Y location
      */
     public void setLocation(float x, float y) {
         this.x = x;
         this.y = y;
+    }
+
+    public float getX() {
+        return x;
+    }
+
+    public float getY() {
+        return y;
     }
 
     /**
@@ -303,6 +311,9 @@ public class Pipe implements Serializable {
      * @param canvas Canvas to draw on
      */
     public void draw(Canvas canvas) {
-        canvas.drawBitmap(bitmap, x, y, null);
+        canvas.save();
+        canvas.translate(x - (bitmap.getWidth() / 2), y - (bitmap.getHeight() / 2));
+        canvas.drawBitmap(bitmap, 0, 0, null);
+        canvas.restore();
     }
 }

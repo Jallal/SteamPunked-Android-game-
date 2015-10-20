@@ -295,7 +295,8 @@ public class GameView extends View {
             // At least one touch
             // We are moving
             touch1.computeDeltas();
-            currentPipe.setLocation(touch1.dX, touch1.dY);
+
+            currentPipe.setLocation(currentPipe.getX() + touch1.dX, currentPipe.getY() + touch1.dY);
         }
     }
 
