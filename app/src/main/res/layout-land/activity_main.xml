@@ -1,0 +1,70 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"  tools:context=".MainActivity">
+
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/gameStart"
+        android:id="@+id/startButton"
+        android:onClick="onStartGame"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/player1"
+        android:id="@+id/player1_label"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/player2"
+        android:id="@+id/player2_label"
+        android:layout_marginBottom="37dp"
+        android:layout_above="@+id/startButton"
+        android:layout_alignLeft="@+id/player1_label"
+        android:layout_alignStart="@+id/player1_label" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/player1"
+        android:layout_alignBottom="@+id/player1_label"
+        android:layout_toRightOf="@+id/player1_label"
+        android:layout_toEndOf="@+id/player1_label" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/player2"
+        android:layout_alignBottom="@+id/player2_label"
+        android:layout_toRightOf="@+id/player2_label" />
+
+    <Spinner
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/spinnerFields"
+        android:layout_alignBottom="@+id/player2_label"
+        android:layout_alignLeft="@+id/player2_label"
+        android:layout_alignStart="@+id/player2_label" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageView"
+        android:src="@drawable/splash"
+        android:layout_alignLeft="@+id/player2_label"
+        android:layout_alignStart="@+id/player2_label"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_above="@+id/spinnerFields" />
+
+</RelativeLayout>
