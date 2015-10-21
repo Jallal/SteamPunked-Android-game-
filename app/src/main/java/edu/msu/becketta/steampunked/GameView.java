@@ -69,8 +69,6 @@ public class GameView extends View {
      */
     private Touch touch2 = new Touch();
 
-    Pipe currentPipe = null;
-
 
 
 
@@ -177,8 +175,8 @@ public class GameView extends View {
         bank.draw(canvas, bankWidth, bankHeight, params.blockSize);
         canvas.restore();
 
-        if(currentPipe!=null){
-            currentPipe.draw(canvas);
+        if(params.currentPipe!=null){
+            params.currentPipe.draw(canvas);
         }
     }
 
@@ -206,12 +204,12 @@ public class GameView extends View {
                 float banky = (event.getY() - params.bankYOffset);
 
                 if(bankx >= 0 && banky >= 0) {
-                    currentPipe = bank.hitPipe(bankx, banky);
-                    bank.setActivePipe(currentPipe);
+                    params.currentPipe = bank.hitPipe(bankx, banky);
+                    bank.setActivePipe(params.currentPipe);
                 }
 
-                if (currentPipe!=null) {
-                    currentPipe.setLocation(touch1.x,touch1.y);
+                if (params.currentPipe!=null) {
+                    params.currentPipe.setLocation(touch1.x,touch1.y);
                     invalidate();
                     return true;
                 }
@@ -249,7 +247,7 @@ public class GameView extends View {
 
             case MotionEvent.ACTION_MOVE:
                 getPositions(event);
-                if(currentPipe!=null) {
+                if(params.currentPipe!=null) {
                     moveCurrentPipe();
                 }
                 return false;
@@ -297,7 +295,7 @@ public class GameView extends View {
             // We are moving
             touch1.computeDeltas();
 
-            currentPipe.setLocation(currentPipe.getX() + touch1.dX, currentPipe.getY() + touch1.dY);
+            params.currentPipe.setLocation(params.currentPipe.getX() + touch1.dX, params.currentPipe.getY() + touch1.dY);
         }
     }
 
@@ -343,6 +341,12 @@ public class GameView extends View {
     /********************** NESTED CLASSES *******************************/
 
     private static class Parameters implements Serializable {
+
+        /**
+         * Roference to the currently selected pipe
+         */
+        public Pipe currentPipe = null;
+
         /**
          * Standard block size in the playing field, used to determine the scale to draw components
          */
@@ -360,8 +364,10 @@ public class GameView extends View {
         public int marginX = 0;
         public int marginY = 0;
 
+        /**
+         * X and Y offset of the pipe bank
+         */
         public float bankXOffset = 0;
-
         public float bankYOffset = 0;
 
         /**
