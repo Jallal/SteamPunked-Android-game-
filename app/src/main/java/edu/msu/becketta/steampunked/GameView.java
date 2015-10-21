@@ -117,6 +117,10 @@ public class GameView extends View {
         bank = (PipeBank)bundle.getSerializable(PIPE_BANK);
     }
 
+    /**
+     * Draw the Game View
+     * @param canvas Canvas to draw on
+     */
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
@@ -183,7 +187,6 @@ public class GameView extends View {
 
     /**
      * Handle a touch event
-     *
      * @param event The touch event
      */
     @Override
@@ -203,13 +206,22 @@ public class GameView extends View {
                 float bankx = (event.getX() - params.bankXOffset);
                 float banky = (event.getY() - params.bankYOffset);
 
+                // Handle the case where the first touch is over the Pipe Bank
                 if(bankx >= 0 && banky >= 0) {
                     params.currentPipe = bank.hitPipe(bankx, banky);
                     bank.setActivePipe(params.currentPipe);
+                    if(params.currentPipe != null) {
+                        params.currentPipe.setLocation(touch1.x,touch1.y);
+                    }
                 }
 
+                // If the current pipe is not null check if we're selecting it again or selecting
+                // the playing area
+                params.draggingPipe = false;
                 if (params.currentPipe!=null) {
-                    params.currentPipe.setLocation(touch1.x,touch1.y);
+                    if(params.currentPipe.hit(touch1.x, touch1.y)) {
+                        params.draggingPipe = true;
+                    }
                     invalidate();
                     return true;
                 }
@@ -247,8 +259,11 @@ public class GameView extends View {
 
             case MotionEvent.ACTION_MOVE:
                 getPositions(event);
-                if(params.currentPipe!=null) {
+                if(params.currentPipe!=null && params.draggingPipe) {
                     moveCurrentPipe();
+                } else {
+                    movePlayingArea();
+                    scalePlayingArea();
                 }
                 return false;
         }
@@ -256,8 +271,10 @@ public class GameView extends View {
         return super.onTouchEvent(event);
     }
 
-
-
+    /**
+     * Translate raw touch locations into locations on the un-scaled playing field for each touch id
+     * @param event The touch event to handle
+     */
     private void getPositions(MotionEvent event) {
         for(int i=0;  i<event.getPointerCount();  i++) {
             // Get the pointer id
@@ -281,7 +298,37 @@ public class GameView extends View {
         invalidate();
     }
 
+    /**
+     * Move the playing area based on the computed deltas in touch1
+     */
+    private void movePlayingArea() {
+        // If no touch1, we have nothing to do
+        // This should not happen, but it never hurts
+        // to check.
+        if(touch1.id < 0) {
+            return;
+        }
 
+        if(touch1.id >= 0) {
+            // At least one touch
+            // We are moving
+            touch1.computeDeltas();
+
+            params.marginX += touch1.dX;
+            params.marginY += touch1.dY;
+        }
+    }
+
+    /**
+     * Scale the playing area based on touch1 and touch2 distances
+     */
+    private void scalePlayingArea() {
+
+    }
+
+    /**
+     * Move the currentPipe based on the computed deltas in touch1
+     */
     private void moveCurrentPipe() {
         // If no touch1, we have nothing to do
         // This should not happen, but it never hurts
@@ -323,6 +370,17 @@ public class GameView extends View {
         params.gameFieldHeight = gameField.getHeight() * params.blockSize;
     }
 
+    /**
+     * Initialize the start and end pipes in the playing area
+     * @param x1 X coordinate for player1 start pipe
+     * @param y1 Y coordinate for player1 start pipe
+     * @param x2 X coordinate for player2 start pipe
+     * @param y2 Y coordinate for player2 start pipe
+     * @param x3 X coordinate for player1 end pipe
+     * @param y3 Y coordinate for player1 end pipe
+     * @param x4 X coordinate for player2 end pipe
+     * @param y4 Y coordinate for player2 end pipe
+     */
     private void setBoardStartsEnds(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4) {
         Pipe start1 = new Pipe(getContext(), Pipe.pipeType.START);
         Pipe start2 = new Pipe(getContext(), Pipe.pipeType.START);
@@ -340,12 +398,20 @@ public class GameView extends View {
 
     /********************** NESTED CLASSES *******************************/
 
+    /**
+     * Private nested class that acts as a serializable container for important parameters
+     */
     private static class Parameters implements Serializable {
 
         /**
-         * Roference to the currently selected pipe
+         * Reference to the currently selected pipe
          */
         public Pipe currentPipe = null;
+
+        /**
+         * Are we dragging a pipe?
+         */
+        public boolean draggingPipe = false;
 
         /**
          * Standard block size in the playing field, used to determine the scale to draw components

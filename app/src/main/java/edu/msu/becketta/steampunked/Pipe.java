@@ -316,4 +316,19 @@ public class Pipe implements Serializable {
         canvas.drawBitmap(bitmap, 0, 0, null);
         canvas.restore();
     }
+
+    /**
+     * Check if a location is on the bitmap
+     * @param x X location of touch
+     * @param y Y location of touch
+     * @return True if the x, y location is on the bitmap
+     */
+    public boolean hit(float x, float y) {
+        if(x >= this.x - (bitmap.getWidth() / 2) && x <= this.x + (bitmap.getWidth() / 2) &&
+           y >= this.y - (bitmap.getHeight() / 2) && y <= this.y + (bitmap.getHeight() / 2)) {
+            return true;
+        }
+
+        return false;
+    }
 }
