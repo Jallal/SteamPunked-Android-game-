@@ -12,4 +12,5 @@
     <string name="player1">Player 1:</string>
     <string name="player2">Player 2:</string>
     <string name="playerWin">Winner is: </string>
+    <string name="blabl">Nothing</string>
 </resources>
