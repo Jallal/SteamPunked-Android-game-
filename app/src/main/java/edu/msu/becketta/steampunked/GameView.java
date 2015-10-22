@@ -308,7 +308,6 @@ public class GameView extends View {
                     // We are moving the playing area, use raw touch locations
                     getPositions(event, false);
                     movePlayingArea();
-                    scalePlayingArea();
                 }
                 return true;
         }
@@ -376,13 +375,51 @@ public class GameView extends View {
             params.marginX += touch1.dX;
             params.marginY += touch1.dY;
         }
+
+        if(touch2.id >= 0) {
+            // Two touches
+            /*
+             * Scaling
+             */
+            float distance1 = distance(touch1.lastX, touch1.lastY, touch2.lastX, touch2.lastY);
+            float distance2 = distance(touch1.x, touch1.y, touch2.x, touch2.y);
+            float ra = distance2 / distance1;
+            scalePlayingArea(ra);
+        }
     }
 
     /**
      * Scale the playing area based on touch1 and touch2 distances
+     * @param ratio The ratio used to scale the current playing field scale
      */
-    private void scalePlayingArea() {
+    private void scalePlayingArea(float ratio) {
+        // Store starting dimensions
+        float width1 = params.gameFieldWidth * params.gameFieldScale;
+        float height1 = params.gameFieldHeight * params.gameFieldScale;
 
+        // Change hat scale
+        params.gameFieldScale *= ratio;
+
+        // Store final dimensions
+        float width2 = params.gameFieldWidth * params.gameFieldScale;
+        float height2 = params.gameFieldHeight * params.gameFieldScale;
+
+        // Adjust hat location to make hat stay more within your fingers
+        // while you scale it (not necessary but looks better to me)
+        params.marginX -= (width2 - width1) / 2;
+        params.marginY -= (height2 - height1) / 2;
+    }
+
+    /**
+     * Determine the distance between two points
+     * @param x1 Touch 1 x
+     * @param y1 Touch 1 y
+     * @param x2 Touch 2 x
+     * @param y2 Touch 2 y
+     * @return computed distance in pixels
+     */
+    private float distance(float x1, float y1, float x2, float y2) {
+        return (float)Math.hypot(x2 - x1, y2 - y1);
     }
 
     /**
