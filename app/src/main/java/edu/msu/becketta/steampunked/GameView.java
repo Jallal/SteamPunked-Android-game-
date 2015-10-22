@@ -20,10 +20,14 @@ import java.util.ArrayList;
  */
 public class GameView extends View {
 
-    // Intent identifiers
+    /*
+     * Intent identifiers
+     */
     public final static String BOARD_SIZE = "edu.msu.becketta.steampunked.BOARD_SIZE";
 
-    // Bundle identifiers
+    /*
+     * Bundle identifiers
+     */
     public final static String PLAYING_AREA = "playingArea";
     public final static String PIPE_BANK = "pipeBank";
     public final static String PARAMETERS = "parameters";
@@ -39,6 +43,9 @@ public class GameView extends View {
         MEDIUM,
         LARGE
     }
+
+
+    /************************** MEMBERS *****************************/
 
     /**
      * Normalized y location of the top of the pipe bank
@@ -70,8 +77,7 @@ public class GameView extends View {
     private Touch touch2 = new Touch();
 
 
-
-
+    /************************** CONSTRUCTION *****************************/
 
     public GameView(Context context) {
         super(context);
@@ -93,17 +99,32 @@ public class GameView extends View {
         params = new Parameters();
     }
 
+
+    /************************** METHODS *****************************/
+
+    /**
+     * Should only be called when the GameActivity is creating itself from an intent
+     * @param intent The Intent that has the board dimension
+     */
     public void initialize(Intent intent) {
         dimension size = (dimension)intent.getSerializableExtra(BOARD_SIZE);
         initializeGameArea(size);
     }
 
+    /**
+     * Save the view state
+     * @param bundle Bundle to save the state to
+     */
     public void saveState(Bundle bundle) {
         bundle.putSerializable(PLAYING_AREA, gameField);
         bundle.putSerializable(PIPE_BANK, bank);
         bundle.putSerializable(PARAMETERS, params);
     }
 
+    /**
+     * Load the view state from a bundle
+     * @param bundle Bundle containing GameView state information
+     */
     public void loadState(Bundle bundle) {
         params = (Parameters)bundle.getSerializable(PARAMETERS);
 
@@ -183,6 +204,9 @@ public class GameView extends View {
         bank.draw(canvas, bankWidth, bankHeight, params.blockSize);
         canvas.restore();
 
+        /*
+         * Draw the active pipe if there is one
+         */
         if(params.currentPipe != null){
             canvas.save();
             canvas.translate(params.marginX, params.marginY);
@@ -393,6 +417,39 @@ public class GameView extends View {
     }
 
     /**
+     * Rotate the image around the point x1, y1
+     * @param dAngle Angle to rotate in degrees
+     * @param x1 rotation point x
+     * @param y1 rotation point y
+     */
+    public void rotate(float dAngle, float x1, float y1) {
+        params.pipeAngle += dAngle;
+
+        // Compute the radians angle
+        double rAngle = Math.toRadians(dAngle);
+        float ca = (float) Math.cos(rAngle);
+        float sa = (float) Math.sin(rAngle);
+        float xp = (params.currentPipe.getX() - x1) * ca - (params.currentPipe.getX() - y1) * sa + x1;
+        float yp = (params.currentPipe.getY() - x1) * sa + (params.currentPipe.getY() - y1) * ca + y1;
+
+        params.currentPipe.setLocation(xp,yp);
+    }
+
+    /**
+     * Determine the angle for two touches
+     * @param x1 Touch 1 x
+     * @param y1 Touch 1 y
+     * @param x2 Touch 2 x
+     * @param y2 Touch 2 y
+     * @return computed angle in degrees
+     */
+    private float angle(float x1, float y1, float x2, float y2) {
+        float dx = x2 - x1;
+        float dy = y2 - y1;
+        return (float) Math.toDegrees(Math.atan2(dy, dx));
+    }
+
+    /**
      * Create the PlayingArea object with the given dimension
      * @param board Dimension of the playing field
      */
@@ -412,12 +469,15 @@ public class GameView extends View {
                 break;
         }
 
+        // We need to calculate and store the raw, unscaled playing field
+        // dimensions to use for drawing
         params.gameFieldWidth = gameField.getWidth() * params.blockSize;
         params.gameFieldHeight = gameField.getHeight() * params.blockSize;
     }
 
     /**
      * Initialize the start and end pipes in the playing area
+     *
      * @param x1 X coordinate for player1 start pipe
      * @param y1 Y coordinate for player1 start pipe
      * @param x2 X coordinate for player2 start pipe
@@ -428,57 +488,28 @@ public class GameView extends View {
      * @param y4 Y coordinate for player2 end pipe
      */
     private void setBoardStartsEnds(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4) {
+        // Create the start and end pipes
         Pipe start1 = new Pipe(getContext(), Pipe.pipeType.START);
         Pipe start2 = new Pipe(getContext(), Pipe.pipeType.START);
         Pipe end1 = new Pipe(getContext(), Pipe.pipeType.END);
         Pipe end2 = new Pipe(getContext(), Pipe.pipeType.END);
 
-        params.blockSize = start1.getBitmapHeight();
-
+        // Add the start and end pipes to the playing field at the given locations
         gameField.add(start1, x1, y1);
         gameField.add(start2, x2, y2);
         gameField.add(end1, x3, y3);
         gameField.add(end2, x4, y4);
+
+        // We must store the unscaled block size in the playing field
+        // to use later for some calculations
+        params.blockSize = start1.getBitmapHeight();
     }
     
     public void installPipe(){
-         float x = (params.currentPipe.getX() - params.marginX) / params.gameFieldScale;
+        // TODO: I don't think this works...
+        float x = (params.currentPipe.getX() - params.marginX) / params.gameFieldScale;
         float y = (params.currentPipe.getY() - params.marginY) / params.gameFieldScale;
         gameField.add(params.currentPipe,(int)x ,(int)y);
-
-    }
-
-
-    /**
-     * Rotate the image around the point x1, y1
-     * @param dAngle Angle to rotate in degrees
-     * @param x1 rotation point x
-     * @param y1 rotation point y
-     */
-    public void rotate(float dAngle, float x1, float y1) {
-        params.pipeAngle += dAngle;
-
-        // Compute the radians angle
-        double rAngle = Math.toRadians(dAngle);
-        float ca = (float) Math.cos(rAngle);
-        float sa = (float) Math.sin(rAngle);
-        float xp = (params.currentPipe.getX() - x1) * ca - (params.currentPipe.getX() - y1) * sa + x1;
-        float yp = (params.currentPipe.getY() - x1) * sa + (params.currentPipe.getY() - y1) * ca + y1;
-
-        params.currentPipe.setLocation(xp,yp);
-    }
-    /**
-     * Determine the angle for two touches
-     * @param x1 Touch 1 x
-     * @param y1 Touch 1 y
-     * @param x2 Touch 2 x
-     * @param y2 Touch 2 y
-     * @return computed angle in degrees
-     */
-    private float angle(float x1, float y1, float x2, float y2) {
-        float dx = x2 - x1;
-        float dy = y2 - y1;
-        return (float) Math.toDegrees(Math.atan2(dy, dx));
     }
 
 
@@ -589,7 +620,6 @@ public class GameView extends View {
             dX = x - lastX;
             dY = y - lastY;
         }
-
     }
 
 }
