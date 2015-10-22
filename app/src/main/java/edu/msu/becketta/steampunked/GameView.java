@@ -199,11 +199,16 @@ public class GameView extends View {
 
         switch(event.getActionMasked()) {
             case MotionEvent.ACTION_DOWN:
+                // Set touch ids
                 touch1.id = id;
                 touch2.id = -1;
+
+                // Set x and y locations in touch1 to locations in the playing field
                 getPositions(event);
                 touch1.copyToLast();
 
+                // Convert the raw touch data to location in the pipe bank
+                // to check if it's a valid location
                 float bankx = (event.getX() - params.bankXOffset);
                 float banky = (event.getY() - params.bankYOffset);
 
@@ -212,6 +217,7 @@ public class GameView extends View {
                     params.currentPipe = bank.hitPipe(bankx, banky);
                     bank.setActivePipe(params.currentPipe);
                     if(params.currentPipe != null) {
+                        // This location is relative to the playing area
                         params.currentPipe.setLocation(touch1.x,touch1.y);
                     }
                 }
@@ -223,6 +229,13 @@ public class GameView extends View {
                     if(params.currentPipe.hit(touch1.x, touch1.y)) {
                         params.draggingPipe = true;
                     }
+                }
+
+                // If we're not dragging the pipe, then touch1 should store
+                // raw locations (not relative to the playing area)
+                if (!params.draggingPipe) {
+                    getPositions(event, false);
+                    touch1.copyToLast();
                 }
 
                 invalidate();
@@ -248,7 +261,7 @@ public class GameView extends View {
                 if (id == touch2.id) {
                     touch2.id = -1;
                 } else if (id == touch1.id) {
-                    //Make what was touch2 now be touch1 by
+                    // Make what was touch2 now be touch1 by
                     // swapping the objects.
                     Touch t = touch1;
                     touch1 = touch2;
@@ -259,13 +272,15 @@ public class GameView extends View {
                 return true;
 
             case MotionEvent.ACTION_MOVE:
-                getPositions(event);
                 if(params.currentPipe != null && params.draggingPipe) {
+                    // We are moving the active pipe, use locations relative to the playing area
+                    getPositions(event);
                     moveCurrentPipe();
                 } else {
-                    // Need touch objects that are not relative to playing area in order to move playing area
-                    //movePlayingArea();
-                    //scalePlayingArea();
+                    // We are moving the playing area, use raw touch locations
+                    getPositions(event, false);
+                    movePlayingArea();
+                    scalePlayingArea();
                 }
                 return true;
         }
@@ -274,17 +289,31 @@ public class GameView extends View {
     }
 
     /**
-     * Translate raw touch locations into locations on the un-scaled playing field for each touch id
-     * @param event The touch event to handle
+     * Overload getPositions function to allow the default call to convert raw locations
+     * to playing area locations
+     * @param event The motion event with the touch information
      */
     private void getPositions(MotionEvent event) {
+        getPositions(event, true);
+    }
+
+    /**
+     * Store touch locations in touch objects, translate raw points to playing area points if desired
+     * @param event The touch event to handle
+     * @param makeRelativeToPlayArea Should the raw locations be converted to playing area locations?
+     */
+    private void getPositions(MotionEvent event, boolean makeRelativeToPlayArea) {
         for(int i=0;  i<event.getPointerCount();  i++) {
             // Get the pointer id
             int id = event.getPointerId(i);
 
-            // Convert to image coordinates
-            float x = (event.getX(i) - params.marginX) / params.gameFieldScale;
-            float y = (event.getY(i) - params.marginY) / params.gameFieldScale;
+            // Convert to image coordinates only if we don't want the raw positions
+            float x = event.getX(i);
+            float y = event.getY(i);
+            if(makeRelativeToPlayArea) {
+                x = (x - params.marginX) / params.gameFieldScale;
+                y = (y - params.marginY) / params.gameFieldScale;
+            }
 
             if(id == touch1.id) {
                 touch1.copyToLast();
