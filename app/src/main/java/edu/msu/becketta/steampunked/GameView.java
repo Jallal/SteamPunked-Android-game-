@@ -442,6 +442,8 @@ public class GameView extends View {
     }
     
     public void installPipe(){
+         float x = (params.currentPipe.getX() - params.marginX) / params.gameFieldScale;
+        float y = (params.currentPipe.getY() - params.marginY) / params.gameFieldScale;
         gameField.add(params.currentPipe,(int)x ,(int)y);
 
     }
@@ -526,6 +528,11 @@ public class GameView extends View {
          * Current scale to draw the playing field
          */
         public float gameFieldScale = -1f;
+        
+         /**
+         * Pipe rotation angle
+         */
+        public float pipeAngle = 0;
     }
 
 
