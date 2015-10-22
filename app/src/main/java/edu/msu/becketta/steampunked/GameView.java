@@ -150,16 +150,20 @@ public class GameView extends View {
             params.bankYOffset = 0f;
         }
 
-        // Determine the scale to draw things
-        if(fieldWidth <= fieldHeight) {
-            params.gameFieldScale = fieldWidth / params.gameFieldWidth;
-        } else {
-            params.gameFieldScale = fieldHeight / params.gameFieldHeight;
+        // Determine the scale to draw things if the gameFieldScale has not been initialized
+        if(params.gameFieldScale == -1f) {
+            if(fieldWidth <= fieldHeight) {
+                params.gameFieldScale = fieldWidth / params.gameFieldWidth;
+            } else {
+                params.gameFieldScale = fieldHeight / params.gameFieldHeight;
+            }
         }
 
-        // Determine the margins for the playing field
-        params.marginX = (int)((fieldWidth - params.gameFieldWidth * params.gameFieldScale) / 2);
-        params.marginY = (int)((fieldHeight - params.gameFieldHeight * params.gameFieldScale) / 2);
+        // Determine the margins for the playing field if they haven't been initialized yet
+        if(params.marginX == 10000000 || params.marginY == 10000000) {
+            params.marginX = (int)((fieldWidth - params.gameFieldWidth * params.gameFieldScale) / 2);
+            params.marginY = (int)((fieldHeight - params.gameFieldHeight * params.gameFieldScale) / 2);
+        }
 
         /*
          * Draw playing field
@@ -193,13 +197,10 @@ public class GameView extends View {
     public boolean onTouchEvent(MotionEvent event) {
         int id = event.getPointerId(event.getActionIndex());
 
-
         switch(event.getActionMasked()) {
             case MotionEvent.ACTION_DOWN:
                 touch1.id = id;
-                //Log.i("Touch Id", "ACTION_DOWN" + id+ "," +id);
                 touch2.id = -1;
-
                 getPositions(event);
                 touch1.copyToLast();
 
@@ -218,13 +219,13 @@ public class GameView extends View {
                 // If the current pipe is not null check if we're selecting it again or selecting
                 // the playing area
                 params.draggingPipe = false;
-                if (params.currentPipe!=null) {
+                if (params.currentPipe != null) {
                     if(params.currentPipe.hit(touch1.x, touch1.y)) {
                         params.draggingPipe = true;
                     }
-                    invalidate();
-                    return true;
                 }
+
+                invalidate();
                 return true;
 
             case MotionEvent.ACTION_POINTER_DOWN:
@@ -259,13 +260,14 @@ public class GameView extends View {
 
             case MotionEvent.ACTION_MOVE:
                 getPositions(event);
-                if(params.currentPipe!=null && params.draggingPipe) {
+                if(params.currentPipe != null && params.draggingPipe) {
                     moveCurrentPipe();
                 } else {
-                    movePlayingArea();
-                    scalePlayingArea();
+                    // Need touch objects that are not relative to playing area in order to move playing area
+                    //movePlayingArea();
+                    //scalePlayingArea();
                 }
-                return false;
+                return true;
         }
 
         return super.onTouchEvent(event);
@@ -427,8 +429,10 @@ public class GameView extends View {
         /**
          * Current X and Y margins of the playing field
          */
-        public int marginX = 0;
-        public int marginY = 0;
+        // Initialize to a ridiculously large value so we know to
+        // initialize it in onDraw the first time
+        public int marginX = 10000000;
+        public int marginY = 10000000;
 
         /**
          * X and Y offset of the pipe bank
@@ -439,7 +443,7 @@ public class GameView extends View {
         /**
          * Current scale to draw the playing field
          */
-        public float gameFieldScale = 1f;
+        public float gameFieldScale = -1f;
     }
 
 
