@@ -379,6 +379,17 @@ public class GameView extends View {
 
             params.currentPipe.setLocation(params.currentPipe.getX() + touch1.dX, params.currentPipe.getY() + touch1.dY);
         }
+        if(touch2.id >= 0) {
+            // Two touches
+
+            /*
+             * Rotation
+             */
+            float angle1 = angle(touch1.lastX, touch1.lastY, touch2.lastX, touch2.lastY);
+            float angle2 = angle(touch1.x, touch1.y, touch2.x, touch2.y);
+            float da = angle2 - angle1;
+            rotate(da, touch1.x, touch1.y);
+        }
     }
 
     /**
@@ -428,6 +439,44 @@ public class GameView extends View {
         gameField.add(start2, x2, y2);
         gameField.add(end1, x3, y3);
         gameField.add(end2, x4, y4);
+    }
+    
+    public void installPipe(){
+        gameField.add(params.currentPipe,(int)x ,(int)y);
+
+    }
+
+
+    /**
+     * Rotate the image around the point x1, y1
+     * @param dAngle Angle to rotate in degrees
+     * @param x1 rotation point x
+     * @param y1 rotation point y
+     */
+    public void rotate(float dAngle, float x1, float y1) {
+        params.pipeAngle += dAngle;
+
+        // Compute the radians angle
+        double rAngle = Math.toRadians(dAngle);
+        float ca = (float) Math.cos(rAngle);
+        float sa = (float) Math.sin(rAngle);
+        float xp = (params.currentPipe.getX() - x1) * ca - (params.currentPipe.getX() - y1) * sa + x1;
+        float yp = (params.currentPipe.getY() - x1) * sa + (params.currentPipe.getY() - y1) * ca + y1;
+
+        params.currentPipe.setLocation(xp,yp);
+    }
+    /**
+     * Determine the angle for two touches
+     * @param x1 Touch 1 x
+     * @param y1 Touch 1 y
+     * @param x2 Touch 2 x
+     * @param y2 Touch 2 y
+     * @return computed angle in degrees
+     */
+    private float angle(float x1, float y1, float x2, float y2) {
+        float dx = x2 - x1;
+        float dy = y2 - y1;
+        return (float) Math.toDegrees(Math.atan2(dy, dx));
     }
 
 
