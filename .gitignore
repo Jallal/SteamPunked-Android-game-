@@ -5,3 +5,15 @@
 .DS_Store
 /build
 /captures
+
+# Probably not good form to ignore these but they're getting changed all the
+# time for some reason and causing git issues... so let's just leave 'em out
+/.idea/modules.xml
+/.idea/misc.xml
+/.idea/vcs.xml
+/.idea/encodings.xml
+/.idea/inspectionProfiles/Project_Default.xml
+/.idea/inspectionProfiles/profiles_settings.xml
+/.idea/runConfigurations.xml
+Steampunked.iml
+/app/app.iml
