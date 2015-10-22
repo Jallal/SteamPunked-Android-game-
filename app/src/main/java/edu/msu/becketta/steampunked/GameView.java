@@ -183,8 +183,12 @@ public class GameView extends View {
         bank.draw(canvas, bankWidth, bankHeight, params.blockSize);
         canvas.restore();
 
-        if(params.currentPipe!=null){
+        if(params.currentPipe != null){
+            canvas.save();
+            canvas.translate(params.marginX, params.marginY);
+            canvas.scale(params.gameFieldScale, params.gameFieldScale);
             params.currentPipe.draw(canvas);
+            canvas.restore();
         }
     }
 
