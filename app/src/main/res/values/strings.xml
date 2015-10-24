@@ -13,4 +13,5 @@
     <string name="player2">Player 2:</string>
     <string name="playerWin">Winner is: </string>
     <string name="instructions">How To Play</string>
+    <string name="newGame">Start a New Game</string>
 </resources>

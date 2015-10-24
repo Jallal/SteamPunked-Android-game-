@@ -14,14 +14,14 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="@string/playerWin"
         android:id="@+id/winnerLabel"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
         android:layout_weight="0.78"
         android:textStyle="bold"
-        android:textColor="#0002ff"
+        android:textColor="#010101"
         android:autoText="false"
-        android:textSize="50dp" />
+        android:textSize="50dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -31,8 +31,26 @@
         android:id="@+id/winner"
         android:layout_gravity="center_vertical"
         android:layout_weight="4.84"
+        android:layout_below="@+id/winnerLabel"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="116dp" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageView2"
+        android:src="@drawable/splash"
         android:layout_centerVertical="true"
-        android:layout_alignRight="@+id/winnerLabel"
-        android:layout_alignEnd="@+id/winnerLabel" />
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/newGame"
+        android:id="@+id/button"
+        android:layout_below="@+id/imageView2"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="48dp"
+        android:onClick="onNewGame" />
 
 </RelativeLayout>
