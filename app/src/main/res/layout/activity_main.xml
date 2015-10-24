@@ -13,7 +13,8 @@
         android:id="@+id/startButton"
         android:onClick="onStartGame"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -41,23 +42,22 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/player1"
-        android:layout_alignParentRight="true"
+        android:layout_alignParentRight="false"
         android:layout_alignParentEnd="true"
         android:layout_marginRight="42dp"
         android:layout_marginEnd="42dp"
         android:layout_alignBottom="@+id/player1_label"
-        android:layout_alignLeft="@+id/startButton"
-        android:layout_alignStart="@+id/startButton" />
+        android:layout_toEndOf="@+id/player1_label"
+        android:layout_toRightOf="@+id/player1_label" />
 
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/player2"
-        android:layout_alignLeft="@+id/player1"
-        android:layout_alignStart="@+id/player1"
         android:layout_alignBottom="@+id/player2_label"
-        android:layout_alignRight="@+id/player1"
-        android:layout_alignEnd="@+id/player1" />
+        android:layout_alignEnd="@+id/player1"
+        android:layout_toEndOf="@+id/player2_label"
+        android:layout_toRightOf="@+id/player2_label" />
 
     <Spinner
         android:layout_width="wrap_content"
@@ -76,5 +76,16 @@
         android:layout_above="@+id/player1"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/instructions"
+        android:id="@+id/game_instructions"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:onClick="onHowToPlay" />
 
 </RelativeLayout>

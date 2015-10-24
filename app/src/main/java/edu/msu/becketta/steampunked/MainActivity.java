@@ -1,5 +1,7 @@
 package edu.msu.becketta.steampunked;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -21,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Create the activity
+     *
      * @param savedInstanceState Stored activity bundle
      */
     @Override
@@ -46,9 +49,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> arg0, View view,
                                        int pos, long id) {
-                switch(pos){
+                switch (pos) {
                     case 0:
-                        boardSize  = GameView.dimension.SMALL;
+                        boardSize = GameView.dimension.SMALL;
                         break;
                     case 1:
                         boardSize = GameView.dimension.MEDIUM;
@@ -80,6 +83,7 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Start the game activity
+     *
      * @param view The view calling this function
      */
     public void onStartGame(View view) {
@@ -92,9 +96,8 @@ public class MainActivity extends AppCompatActivity {
         playerOne = textview1.getText().toString();
         TextView textview2 = (TextView) findViewById(R.id.player2);
         playerTwo = textview2.getText().toString();
-        if (playerOne.trim().equals(""))  playerOne = "Player 1";
+        if (playerOne.trim().equals("")) playerOne = "Player 1";
         if (playerTwo.trim().equals("")) playerTwo = "Player 2";
-
 
 
         intent.putExtra(GameActivity.PLAYER_ONE_NAME, playerOne);
@@ -103,4 +106,20 @@ public class MainActivity extends AppCompatActivity {
 
         startActivity(intent);
     }
+
+    /**
+     * Display the game instructions
+     */
+    public void onHowToPlay(View view) {
+        new AlertDialog.Builder(this)
+                .setTitle("Game Instructions")
+                .setMessage(("Connect your pipes from start to finish before your friends do!  " +
+                        "But be careful, if there is a leak in your connection you lose!"))
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface arg0, int arg1) {
+                // Some stuff to do when ok got clicked
+            }
+        }).show();
+    }
+
 }
