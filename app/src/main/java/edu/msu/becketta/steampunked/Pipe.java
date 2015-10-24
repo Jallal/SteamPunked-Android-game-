@@ -132,6 +132,21 @@ public class Pipe implements Serializable {
         this.bitmapRotation = bitmapRotation;
     }
 
+    public void snapRotation() {
+        // Find what is the closest quarter rotation to the current rotation
+        int quarterRotations = Math.round(bitmapRotation / 90f);
+
+        // Change the connect array accordingly
+        boolean[] newConnect = new boolean[4];
+        for(int i = 0; i < connect.length; i++) {
+            newConnect[(i+quarterRotations) % 4] = connect[i];
+        }
+        connect = newConnect;
+
+        // Update the rotation to the nearest 90 degrees
+        bitmapRotation = quarterRotations * 90f;
+    }
+
     /**
      * Search to see if there are any downstream of this pipe
      *

@@ -539,9 +539,15 @@ public class GameView extends View {
     }
     
     public void installPipe(){
-        Log.i("Install Pipe", "install");
+        // Snap pipe to right coordinates and rotation
         int x = getPlayingAreaXCoord(params.currentPipe.getX());
         int y = getPlayingAreaYCoord(params.currentPipe.getY());
+        params.currentPipe.snapRotation();
+        params.currentPipe.setLocation(x, y);
+
+        // Check if this is a valid position for the pipe
+        
+
         gameField.add(params.currentPipe, x ,y);
         bank.setActivePipe(null);
         params.currentPipe = null;
