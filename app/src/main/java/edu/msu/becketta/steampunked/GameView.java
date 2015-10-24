@@ -272,6 +272,11 @@ public class GameView extends View {
             case MotionEvent.ACTION_POINTER_DOWN:
                 if (touch1.id >= 0 && touch2.id < 0) {
                     touch2.id = id;
+                    if(params.draggingPipe) {
+                        getPositions(event);
+                    } else {
+                        getPositions(event, false);
+                    }
                     touch2.copyToLast();
                     return true;
                 }
