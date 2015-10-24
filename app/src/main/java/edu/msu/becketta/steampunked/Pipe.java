@@ -345,34 +345,21 @@ public class Pipe implements Serializable {
     public void drawInPlayingArea(Canvas canvas) {
         if(playingArea != null) {
             // Calculate the x and y locations withing the playing area
-            float bitDim = bitmap.getHeight();
-            float xLoc = xCoord * bitDim + (bitDim / 2);
-            float yLoc = yCoord * bitDim + (bitDim / 2);
+            float bitDim = bitmap.getHeight() < bitmap.getWidth() ? bitmap.getHeight() : bitmap.getWidth();
+            this.x = xCoord * bitDim + (bitDim / 2);
+            this.y = yCoord * bitDim + (bitDim / 2);
 
 
-            canvas.save();
-
-            // Convert x,y locations to pixels and add the margin
-            canvas.translate(xLoc, yLoc);
-
-            canvas.save();
-
-            // Rotate the piece
-            canvas.rotate(bitmapRotation);
-            // Make the center of the piece draw at the origin
-            canvas.translate(-bitDim / 2, -bitDim / 2);
-            // Draw the bitmap
-            canvas.drawBitmap(bitmap, 0, 0, null);
-
-            canvas.restore();
+            draw(canvas);
 
             if (handleBit != null) {
+                canvas.save();
+                canvas.translate(x, y);
                 canvas.rotate(handleRotation);
                 canvas.translate(-bitDim / 2, -bitDim / 2);
                 canvas.drawBitmap(handleBit, 0, 0, null);
+                canvas.restore();
             }
-
-            canvas.restore();
         }
     }
 
@@ -381,10 +368,12 @@ public class Pipe implements Serializable {
      * @param canvas Canvas to draw on
      */
     public void draw(Canvas canvas) {
+        float bitDim = bitmap.getHeight() < bitmap.getWidth() ? bitmap.getHeight() : bitmap.getWidth();
+
         canvas.save();
         canvas.translate(x, y);
         canvas.rotate(bitmapRotation);
-        canvas.translate(-(bitmap.getWidth() / 2), -(bitmap.getHeight() / 2));
+        canvas.translate(-(bitDim / 2), -(bitDim / 2));
         canvas.drawBitmap(bitmap, 0, 0, null);
         canvas.restore();
     }
