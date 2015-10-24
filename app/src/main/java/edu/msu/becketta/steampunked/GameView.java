@@ -1,5 +1,6 @@
 package edu.msu.becketta.steampunked;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -523,6 +524,7 @@ public class GameView extends View {
     private void setBoardStartsEnds(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4) {
         // Create the start and end pipes
         Pipe start1 = new Pipe(getContext(), Pipe.pipeType.START);
+        params.temporaryPipe = start1;
         Pipe start2 = new Pipe(getContext(), Pipe.pipeType.START);
         Pipe end1 = new Pipe(getContext(), Pipe.pipeType.END);
         Pipe end2 = new Pipe(getContext(), Pipe.pipeType.END);
@@ -543,15 +545,32 @@ public class GameView extends View {
         int x = getPlayingAreaXCoord(params.currentPipe.getX());
         int y = getPlayingAreaYCoord(params.currentPipe.getY());
         params.currentPipe.snapRotation();
-        params.currentPipe.setLocation(x, y);
 
         // Check if this is a valid position for the pipe
-        
+        String errorMessage = null;
+        params.currentPipe.set(gameField, x, y);
+        int valid = params.currentPipe.validConnection(params.temporaryPipe);
+        if(valid == 0) {
+            gameField.add(params.currentPipe, x ,y);
+            bank.setActivePipe(null);
+            params.currentPipe = null;
+            invalidate();
+        } else if(valid == 1) {
+            errorMessage = "Your pipe must connect to at least one other pipe.";
+        } else if(valid == 2) {
+            errorMessage = "You can't connect to your opponent's pipes.";
+        } else {
+            errorMessage = "Something went horribly wrong...";
+        }
 
-        gameField.add(params.currentPipe, x ,y);
-        bank.setActivePipe(null);
-        params.currentPipe = null;
-        invalidate();
+        if(errorMessage != null) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            builder.setTitle("Invalid Connection");
+            builder.setMessage(errorMessage);
+            builder.setPositiveButton(android.R.string.ok, null);
+            AlertDialog alertDialog = builder.create();
+            alertDialog.show();
+        }
     }
 
     private int getPlayingAreaXCoord(float xLoc) {
@@ -577,6 +596,8 @@ public class GameView extends View {
      * Private nested class that acts as a serializable container for important parameters
      */
     private static class Parameters implements Serializable {
+
+        public Pipe temporaryPipe;
 
         /**
          * Reference to the currently selected pipe

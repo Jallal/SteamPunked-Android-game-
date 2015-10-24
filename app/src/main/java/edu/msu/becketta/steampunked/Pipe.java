@@ -134,7 +134,7 @@ public class Pipe implements Serializable {
 
     public void snapRotation() {
         // Find what is the closest quarter rotation to the current rotation
-        int quarterRotations = Math.round(bitmapRotation / 90f);
+        int quarterRotations = Math.round(bitmapRotation / 90f) % 4;
 
         // Change the connect array accordingly
         boolean[] newConnect = new boolean[4];
@@ -200,6 +200,53 @@ public class Pipe implements Serializable {
 
         // Yah, no leaks
         return true;
+    }
+
+    public int validConnection(Pipe opponentPipe) {
+        int returnValue = 0;
+        boolean atLeastOneConnection = false;
+        visited = true;
+        for(int d=0; d<4; d++) {
+            /*
+             * If no connection this direction, ignore
+             */
+            if(!connect[d]) {
+                continue;
+            }
+
+            Pipe n = neighbor(d);
+            if(n == null) {
+                // We have a connection with nothing on the other side
+                continue;
+            }
+
+            // What is the matching location on
+            // the other pipe. For example, if
+            // we are looking in direction 1 (east),
+            // the other pipe must have a connection
+            // in direction 3 (west)
+            int coorespondingDirection = (d + 2) % 4;
+            if(n.connect[coorespondingDirection]) {
+                atLeastOneConnection = true;
+                // We have a connection in this direction, continue the search in this direction
+                if(!n.visited ) {
+                    if(n != opponentPipe) {
+                        returnValue = n.validConnection(opponentPipe);
+                        if(returnValue != 0) {
+                            return returnValue;
+                        }
+                    } else {
+                        return 2;
+                    }
+                }
+            }
+        }
+
+        if(!atLeastOneConnection) {
+            returnValue = 1;
+        }
+
+        return returnValue;
     }
 
     /**
