@@ -1,8 +1,9 @@
 package edu.msu.becketta.steampunked;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 
 public class EndGameActivity extends AppCompatActivity {
 
@@ -24,5 +25,11 @@ public class EndGameActivity extends AppCompatActivity {
             Intent intent = getIntent();
             winner = intent.getStringExtra(WINNER);
         }
+    }
+
+    public void onNewGame(View view){
+        Intent intent = new Intent(this, MainActivity.class);
+
+        startActivity(intent);
     }
 }
