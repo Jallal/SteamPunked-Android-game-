@@ -29,7 +29,7 @@ public class EndGameActivity extends AppCompatActivity {
 
     public void onNewGame(View view){
         Intent intent = new Intent(this, MainActivity.class);
-
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }
 }
