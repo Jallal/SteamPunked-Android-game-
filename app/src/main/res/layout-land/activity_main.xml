@@ -9,8 +9,11 @@
         android:text="@string/gameStart"
         android:id="@+id/startButton"
         android:onClick="onStartGame"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_alignTop="@+id/player1"
+        android:layout_toLeftOf="@+id/game_instructions"
+        android:layout_toStartOf="@+id/game_instructions"
+        android:layout_marginRight="83dp"
+        android:layout_marginEnd="83dp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -28,10 +31,9 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="@string/player2"
         android:id="@+id/player2_label"
-        android:layout_marginBottom="37dp"
         android:layout_above="@+id/startButton"
-        android:layout_alignLeft="@+id/player1_label"
-        android:layout_alignStart="@+id/player1_label" />
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
     <EditText
         android:layout_width="wrap_content"
@@ -39,22 +41,23 @@
         android:id="@+id/player1"
         android:layout_alignBottom="@+id/player1_label"
         android:layout_toRightOf="@+id/player1_label"
-        android:layout_toEndOf="@+id/player1_label" />
+        android:layout_toEndOf="@+id/player1_label"
+        android:layout_toLeftOf="@+id/startButton" />
 
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/player2"
         android:layout_alignBottom="@+id/player2_label"
-        android:layout_toRightOf="@+id/player2_label" />
+        android:layout_toRightOf="@+id/player2_label"
+        android:layout_toLeftOf="@+id/startButton" />
 
     <Spinner
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/spinnerFields"
-        android:layout_alignBottom="@+id/player2_label"
-        android:layout_alignLeft="@+id/player2_label"
-        android:layout_alignStart="@+id/player2_label" />
+        android:layout_above="@+id/player2_label"
+        android:layout_toLeftOf="@+id/startButton" />
 
     <ImageView
         android:layout_width="wrap_content"
@@ -66,5 +69,16 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:layout_above="@+id/spinnerFields" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/instructions"
+        android:id="@+id/game_instructions"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:onClick="onHowToPlay" />
 
 </RelativeLayout>
