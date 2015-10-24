@@ -466,15 +466,6 @@ public class GameView extends View {
      */
     public void rotate(float dAngle, float x1, float y1) {
         params.currentPipe.setBitmapRotation(params.currentPipe.getBitmapRotation() + dAngle);
-
-        // Compute the radians angle
-        double rAngle = Math.toRadians(dAngle);
-        float ca = (float) Math.cos(rAngle);
-        float sa = (float) Math.sin(rAngle);
-        float xp = (params.currentPipe.getX() - x1) * ca - (params.currentPipe.getX() - y1) * sa + x1;
-        float yp = (params.currentPipe.getY() - x1) * sa + (params.currentPipe.getY() - y1) * ca + y1;
-
-        params.currentPipe.setLocation(xp,yp);
     }
 
     /**
