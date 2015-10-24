@@ -465,7 +465,7 @@ public class GameView extends View {
      * @param y1 rotation point y
      */
     public void rotate(float dAngle, float x1, float y1) {
-        params.pipeAngle += dAngle;
+        params.currentPipe.setBitmapRotation(params.currentPipe.getBitmapRotation() + dAngle);
 
         // Compute the radians angle
         double rAngle = Math.toRadians(dAngle);
@@ -548,10 +548,29 @@ public class GameView extends View {
     }
     
     public void installPipe(){
-        // TODO: I don't think this works...
-        float x = (params.currentPipe.getX() - params.marginX) / params.gameFieldScale;
-        float y = (params.currentPipe.getY() - params.marginY) / params.gameFieldScale;
-        gameField.add(params.currentPipe,(int)x ,(int)y);
+        Log.i("Install Pipe", "install");
+        int x = getPlayingAreaXCoord(params.currentPipe.getX());
+        int y = getPlayingAreaYCoord(params.currentPipe.getY());
+        gameField.add(params.currentPipe, x ,y);
+        bank.setActivePipe(null);
+        params.currentPipe = null;
+        invalidate();
+    }
+
+    private int getPlayingAreaXCoord(float xLoc) {
+        if(xLoc >= 0f && xLoc <= params.gameFieldWidth) {
+            return (int)(xLoc / params.blockSize);
+        }
+
+        return -1;
+    }
+
+    private int getPlayingAreaYCoord(float yLoc) {
+        if(yLoc >= 0f && yLoc <= params.gameFieldHeight) {
+            return (int)(yLoc / params.blockSize);
+        }
+
+        return -1;
     }
 
 
@@ -601,11 +620,6 @@ public class GameView extends View {
          * Current scale to draw the playing field
          */
         public float gameFieldScale = -1f;
-        
-         /**
-         * Pipe rotation angle
-         */
-        public float pipeAngle = 0;
     }
 
 

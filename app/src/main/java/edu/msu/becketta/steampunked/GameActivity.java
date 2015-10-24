@@ -44,7 +44,6 @@ public class GameActivity extends AppCompatActivity {
     }
     public void onInstall(View view) {
         getGameView().installPipe();
-
     }
     public void onDiscard(View view) {
 

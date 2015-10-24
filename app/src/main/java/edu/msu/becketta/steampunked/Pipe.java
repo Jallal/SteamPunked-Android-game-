@@ -124,6 +124,14 @@ public class Pipe implements Serializable {
         connect[3] = west;
     }
 
+    public float getBitmapRotation() {
+        return bitmapRotation;
+    }
+
+    public void setBitmapRotation(float bitmapRotation) {
+        this.bitmapRotation = bitmapRotation;
+    }
+
     /**
      * Search to see if there are any downstream of this pipe
      *
@@ -313,6 +321,7 @@ public class Pipe implements Serializable {
     public void draw(Canvas canvas) {
         canvas.save();
         canvas.translate(x - (bitmap.getWidth() / 2), y - (bitmap.getHeight() / 2));
+        canvas.rotate(bitmapRotation);
         canvas.drawBitmap(bitmap, 0, 0, null);
         canvas.restore();
     }
