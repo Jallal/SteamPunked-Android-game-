@@ -104,6 +104,13 @@ public class PipeBank implements Serializable {
     }
 
     public void setActivePipe(Pipe active) {
+        if(active == null) {
+            for(int i = 0; i < pipes.length; i++) {
+                if(pipes[i] == activePipe) {
+                    pipes[i] = null;
+                }
+            }
+        }
         activePipe = active;
     }
 
