@@ -136,15 +136,17 @@ public class Pipe implements Serializable {
         // Find what is the closest quarter rotation to the current rotation
         int quarterRotations = Math.round(bitmapRotation / 90f) % 4;
 
+        // Update the rotation to the nearest 90 degrees
+        bitmapRotation = quarterRotations * 90f;
+
         // Change the connect array accordingly
         boolean[] newConnect = new boolean[4];
         for(int i = 0; i < connect.length; i++) {
-            newConnect[(i+quarterRotations) % 4] = connect[i];
+            int newIndex = (i+quarterRotations) % 4;
+            if(newIndex < 0) newIndex += 4;
+            newConnect[newIndex] = connect[i];
         }
         connect = newConnect;
-
-        // Update the rotation to the nearest 90 degrees
-        bitmapRotation = quarterRotations * 90f;
     }
 
     /**
@@ -202,7 +204,7 @@ public class Pipe implements Serializable {
         return true;
     }
 
-    public int validConnection(Pipe opponentPipe) {
+    public int validConnection(Pipe opponentStartPipe, Pipe opponentEndPipe) {
         int returnValue = 0;
         boolean atLeastOneConnection = false;
         visited = true;
@@ -230,8 +232,8 @@ public class Pipe implements Serializable {
                 atLeastOneConnection = true;
                 // We have a connection in this direction, continue the search in this direction
                 if(!n.visited ) {
-                    if(n != opponentPipe) {
-                        returnValue = n.validConnection(opponentPipe);
+                    if(n != opponentStartPipe && n!= opponentEndPipe) {
+                        returnValue = n.validConnection(opponentStartPipe, opponentEndPipe);
                         if(returnValue != 0) {
                             return returnValue;
                         }

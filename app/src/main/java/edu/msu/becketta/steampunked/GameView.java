@@ -524,9 +524,10 @@ public class GameView extends View {
     private void setBoardStartsEnds(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4) {
         // Create the start and end pipes
         Pipe start1 = new Pipe(getContext(), Pipe.pipeType.START);
-        params.temporaryPipe = start1;
+        params.temporaryPipe1 = start1;
         Pipe start2 = new Pipe(getContext(), Pipe.pipeType.START);
         Pipe end1 = new Pipe(getContext(), Pipe.pipeType.END);
+        params.temporaryPipe2 = end1;
         Pipe end2 = new Pipe(getContext(), Pipe.pipeType.END);
 
         // Add the start and end pipes to the playing field at the given locations
@@ -549,7 +550,7 @@ public class GameView extends View {
         // Check if this is a valid position for the pipe
         String errorMessage = null;
         params.currentPipe.set(gameField, x, y);
-        int valid = params.currentPipe.validConnection(params.temporaryPipe);
+        int valid = params.currentPipe.validConnection(params.temporaryPipe1, params.temporaryPipe2);
         if(valid == 0) {
             gameField.add(params.currentPipe, x ,y);
             bank.setActivePipe(null);
@@ -597,7 +598,8 @@ public class GameView extends View {
      */
     private static class Parameters implements Serializable {
 
-        public Pipe temporaryPipe;
+        public Pipe temporaryPipe1;
+        public Pipe temporaryPipe2;
 
         /**
          * Reference to the currently selected pipe
