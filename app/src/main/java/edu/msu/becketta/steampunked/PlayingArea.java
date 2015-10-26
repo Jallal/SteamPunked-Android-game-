@@ -126,6 +126,15 @@ public class PlayingArea implements Serializable {
      * @return true if no leaks
      */
     public boolean search(Pipe start) {
+        clearVisitedFlags();
+
+        /*
+         * The pipe itself does the actual search
+         */
+        return start.search();
+    }
+
+    public void clearVisitedFlags() {
         /*
          * Set the visited flags to false
          */
@@ -136,11 +145,6 @@ public class PlayingArea implements Serializable {
                 }
             }
         }
-
-        /*
-         * The pipe itself does the actual search
-         */
-        return start.search();
     }
 
     /**

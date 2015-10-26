@@ -39,14 +39,19 @@ public class GameActivity extends AppCompatActivity {
     }
 
     public void onSurrender(View view) {
-        String winner = "Player One";
+        String winner;
+        if(getGameView().getPlayerOneTurn()) {
+            winner = playerTwoName;
+        } else {
+            winner = playerOneName;
+        }
         onGameOver(winner);
     }
     public void onInstall(View view) {
         getGameView().installPipe();
     }
     public void onDiscard(View view) {
-
+        getGameView().discard();
     }
     public void onOpenValve(View view) {
 

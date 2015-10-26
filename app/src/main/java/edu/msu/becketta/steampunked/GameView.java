@@ -523,39 +523,44 @@ public class GameView extends View {
      */
     private void setBoardStartsEnds(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4) {
         // Create the start and end pipes
-        Pipe start1 = new Pipe(getContext(), Pipe.pipeType.START);
-        params.temporaryPipe1 = start1;
-        Pipe start2 = new Pipe(getContext(), Pipe.pipeType.START);
-        Pipe end1 = new Pipe(getContext(), Pipe.pipeType.END);
-        params.temporaryPipe2 = end1;
-        Pipe end2 = new Pipe(getContext(), Pipe.pipeType.END);
+        params.player1Start = new Pipe(getContext(), Pipe.pipeType.START);
+        params.player2Start = new Pipe(getContext(), Pipe.pipeType.START);
+        params.player1End = new Pipe(getContext(), Pipe.pipeType.END);
+        params.player2End = new Pipe(getContext(), Pipe.pipeType.END);
 
         // Add the start and end pipes to the playing field at the given locations
-        gameField.add(start1, x1, y1);
-        gameField.add(start2, x2, y2);
-        gameField.add(end1, x3, y3);
-        gameField.add(end2, x4, y4);
+        gameField.add(params.player1Start, x1, y1);
+        gameField.add(params.player2Start, x2, y2);
+        gameField.add(params.player1End, x3, y3);
+        gameField.add(params.player2End, x4, y4);
 
         // We must store the unscaled block size in the playing field
         // to use later for some calculations
-        params.blockSize = start1.getBitmapHeight();
+        params.blockSize = params.player1Start.getBitmapHeight();
     }
     
     public void installPipe(){
         // Snap pipe to right coordinates and rotation
         int x = getPlayingAreaXCoord(params.currentPipe.getX());
         int y = getPlayingAreaYCoord(params.currentPipe.getY());
+        float XLOC = (params.blockSize / 2) + (params.blockSize * x);
+        float YLOC = (params.blockSize / 2) + (params.blockSize * y);
         params.currentPipe.snapRotation();
+        params.currentPipe.setLocation(XLOC, YLOC);
 
         // Check if this is a valid position for the pipe
         String errorMessage = null;
         params.currentPipe.set(gameField, x, y);
-        int valid = params.currentPipe.validConnection(params.temporaryPipe1, params.temporaryPipe2);
+        int valid;
+        gameField.clearVisitedFlags();
+        if(params.playerOneTurn) {
+            valid = params.currentPipe.validConnection(params.player2Start, params.player2End);
+        } else {
+            valid = params.currentPipe.validConnection(params.player1Start, params.player1End);
+        }
         if(valid == 0) {
             gameField.add(params.currentPipe, x ,y);
-            bank.setActivePipe(null);
-            params.currentPipe = null;
-            invalidate();
+            discard();
         } else if(valid == 1) {
             errorMessage = "Your pipe must connect to at least one other pipe.";
         } else if(valid == 2) {
@@ -572,6 +577,17 @@ public class GameView extends View {
             AlertDialog alertDialog = builder.create();
             alertDialog.show();
         }
+    }
+
+    public boolean getPlayerOneTurn() {
+        return params.playerOneTurn;
+    }
+
+    public void discard() {
+        bank.setActivePipe(null);
+        params.currentPipe = null;
+        params.playerOneTurn = !params.playerOneTurn;
+        invalidate();
     }
 
     private int getPlayingAreaXCoord(float xLoc) {
@@ -598,13 +614,23 @@ public class GameView extends View {
      */
     private static class Parameters implements Serializable {
 
-        public Pipe temporaryPipe1;
-        public Pipe temporaryPipe2;
+        /**
+         * Is it player one's turn?
+         */
+        public boolean playerOneTurn = true;
 
         /**
          * Reference to the currently selected pipe
          */
         public Pipe currentPipe = null;
+
+        /**
+         * Player One and Two Start and End pipes
+         */
+        public Pipe player1Start;
+        public Pipe player1End;
+        public Pipe player2Start;
+        public Pipe player2End;
 
         /**
          * Are we dragging a pipe?
