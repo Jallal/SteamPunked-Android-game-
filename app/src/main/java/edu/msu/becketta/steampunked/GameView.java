@@ -12,6 +12,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Toast;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -561,21 +562,16 @@ public class GameView extends View {
         if(valid == 0) {
             gameField.add(params.currentPipe, x ,y);
             discard();
-        } else if(valid == 1) {
-            errorMessage = "Your pipe must connect to at least one other pipe.";
-        } else if(valid == 2) {
-            errorMessage = "You can't connect to your opponent's pipes.";
         } else {
-            errorMessage = "Something went horribly wrong...";
+            errorMessage = "Invalid Connection";
         }
 
         if(errorMessage != null) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-            builder.setTitle("Invalid Connection");
-            builder.setMessage(errorMessage);
-            builder.setPositiveButton(android.R.string.ok, null);
-            AlertDialog alertDialog = builder.create();
-            alertDialog.show();
+            Toast.makeText(getContext(),
+                    errorMessage,
+                    Toast.LENGTH_SHORT).show();
+
+
         }
     }
 
