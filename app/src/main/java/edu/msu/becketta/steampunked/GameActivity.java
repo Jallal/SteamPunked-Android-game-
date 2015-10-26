@@ -38,6 +38,14 @@ public class GameActivity extends AppCompatActivity {
         getGameView().saveState(bundle);
     }
 
+    @Override
+    public void onBackPressed() {
+        // TODO: Make Toast that asks if the user is sure they want to quit the current game
+        // If they do then call super.onBackPressed()
+        // If they don't then do nothing.
+        super.onBackPressed();
+    }
+
     public void onSurrender(View view) {
         String winner;
         if(getGameView().getPlayerOneTurn()) {
