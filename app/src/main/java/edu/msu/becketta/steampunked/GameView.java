@@ -249,6 +249,8 @@ public class GameView extends View {
                     if(params.currentPipe != null) {
                         // This location is relative to the playing area
                         params.currentPipe.setLocation(touch1.x,touch1.y);
+                        Pipe.PipeGroup g = params.playerOneTurn ? Pipe.PipeGroup.PLAYER_ONE : Pipe.PipeGroup.PLAYER_TWO;
+                        params.currentPipe.setGroup(g);
                     }
                 }
 
@@ -524,20 +526,24 @@ public class GameView extends View {
      */
     private void setBoardStartsEnds(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4) {
         // Create the start and end pipes
-        params.player1Start = new Pipe(getContext(), Pipe.pipeType.START);
-        params.player2Start = new Pipe(getContext(), Pipe.pipeType.START);
-        params.player1End = new Pipe(getContext(), Pipe.pipeType.END);
-        params.player2End = new Pipe(getContext(), Pipe.pipeType.END);
+        Pipe start1 = new Pipe(getContext(), Pipe.pipeType.START);
+        start1.setGroup(Pipe.PipeGroup.PLAYER_ONE);
+        Pipe start2 = new Pipe(getContext(), Pipe.pipeType.START);
+        start2.setGroup(Pipe.PipeGroup.PLAYER_TWO);
+        Pipe end1 = new Pipe(getContext(), Pipe.pipeType.END);
+        end1.setGroup(Pipe.PipeGroup.PLAYER_ONE);
+        Pipe end2 = new Pipe(getContext(), Pipe.pipeType.END);
+        end2.setGroup(Pipe.PipeGroup.PLAYER_TWO);
 
         // Add the start and end pipes to the playing field at the given locations
-        gameField.add(params.player1Start, x1, y1);
-        gameField.add(params.player2Start, x2, y2);
-        gameField.add(params.player1End, x3, y3);
-        gameField.add(params.player2End, x4, y4);
+        gameField.add(start1, x1, y1);
+        gameField.add(start2, x2, y2);
+        gameField.add(end1, x3, y3);
+        gameField.add(end2, x4, y4);
 
         // We must store the unscaled block size in the playing field
         // to use later for some calculations
-        params.blockSize = params.player1Start.getBitmapHeight();
+        params.blockSize = start1.getBitmapHeight();
     }
     
     public void installPipe(){
@@ -550,28 +556,14 @@ public class GameView extends View {
         params.currentPipe.setLocation(XLOC, YLOC);
 
         // Check if this is a valid position for the pipe
-        String errorMessage = null;
         params.currentPipe.set(gameField, x, y);
-        int valid;
-        gameField.clearVisitedFlags();
-        if(params.playerOneTurn) {
-            valid = params.currentPipe.validConnection(params.player2Start, params.player2End);
-        } else {
-            valid = params.currentPipe.validConnection(params.player1Start, params.player1End);
-        }
-        if(valid == 0) {
+        if(params.currentPipe.validConnection()) {
             gameField.add(params.currentPipe, x ,y);
             discard();
         } else {
-            errorMessage = "Invalid Connection";
-        }
-
-        if(errorMessage != null) {
             Toast.makeText(getContext(),
-                    errorMessage,
+                    R.string.invalid_connection,
                     Toast.LENGTH_SHORT).show();
-
-
         }
     }
 
@@ -619,14 +611,6 @@ public class GameView extends View {
          * Reference to the currently selected pipe
          */
         public Pipe currentPipe = null;
-
-        /**
-         * Player One and Two Start and End pipes
-         */
-        public Pipe player1Start;
-        public Pipe player1End;
-        public Pipe player2Start;
-        public Pipe player2End;
 
         /**
          * Are we dragging a pipe?

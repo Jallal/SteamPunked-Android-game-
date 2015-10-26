@@ -26,9 +26,22 @@ public class Pipe implements Serializable {
     }
 
     /**
+     * Pipe groups for each player
+     */
+    public enum PipeGroup {
+        PLAYER_ONE,
+        PLAYER_TWO
+    }
+
+    /**
      * Save the type of the pipe
      */
     private pipeType type;
+
+    /**
+     * Group that this pipe is part of
+     */
+    private PipeGroup group;
 
     /**
      * Playing area this pipe is a member of
@@ -204,10 +217,8 @@ public class Pipe implements Serializable {
         return true;
     }
 
-    public int validConnection(Pipe opponentStartPipe, Pipe opponentEndPipe) {
-        int returnValue = 0;
+    public boolean validConnection() {
         boolean atLeastOneConnection = false;
-        visited = true;
         for(int d=0; d<4; d++) {
             /*
              * If no connection this direction, ignore
@@ -230,25 +241,17 @@ public class Pipe implements Serializable {
             int coorespondingDirection = (d + 2) % 4;
             if(n.connect[coorespondingDirection]) {
                 atLeastOneConnection = true;
-                // We have a connection in this direction, continue the search in this direction
-                if(!n.visited ) {
-                    if(n != opponentStartPipe && n!= opponentEndPipe) {
-                        returnValue = n.validConnection(opponentStartPipe, opponentEndPipe);
-                        if(returnValue != 0) {
-                            return returnValue;
-                        }
-                    } else {
-                        return 2;
-                    }
+                if(n.getGroup() != this.group) {
+                    return false;
                 }
             }
         }
 
         if(!atLeastOneConnection) {
-            returnValue = 1;
+            return false;
         }
 
-        return returnValue;
+        return true;
     }
 
     /**
@@ -393,5 +396,13 @@ public class Pipe implements Serializable {
         }
 
         return false;
+    }
+
+    public PipeGroup getGroup() {
+        return group;
+    }
+
+    public void setGroup(PipeGroup group) {
+        this.group = group;
     }
 }
