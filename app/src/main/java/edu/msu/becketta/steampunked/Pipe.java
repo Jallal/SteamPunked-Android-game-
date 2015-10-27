@@ -514,8 +514,8 @@ public class Pipe implements Serializable {
      * @return True if the x, y location is on the bitmap
      */
     public boolean hit(float x, float y) {
-        if(x >= this.x - (bitmap.getWidth() / 2) && x <= this.x + (bitmap.getWidth() / 2) &&
-           y >= this.y - (bitmap.getHeight() / 2) && y <= this.y + (bitmap.getHeight() / 2)) {
+        if(x >= this.x - bitmap.getWidth() && x <= this.x + bitmap.getWidth() &&
+           y >= this.y - bitmap.getHeight() && y <= this.y + bitmap.getHeight()) {
             return true;
         }
 
