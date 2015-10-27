@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.TextView;
 
 public class GameActivity extends AppCompatActivity {
 
@@ -31,6 +32,8 @@ public class GameActivity extends AppCompatActivity {
             playerTwoName = intent.getStringExtra(PLAYER_TWO_NAME);
 
             getGameView().initialize(intent);
+            setCurrent();
+
         }
     }
 
@@ -40,6 +43,11 @@ public class GameActivity extends AppCompatActivity {
 
         getGameView().saveState(bundle);
     }
+
+    //Display the current player
+    private TextView current;
+
+
 
     @Override
     public void onBackPressed() {
@@ -76,6 +84,7 @@ public class GameActivity extends AppCompatActivity {
     }
     public void onInstall(View view) {
         getGameView().installPipe();
+        setCurrent();
     }
     public void onDiscard(View view) {
         getGameView().discard();
@@ -101,5 +110,17 @@ public class GameActivity extends AppCompatActivity {
 
     GameView getGameView() {
         return (GameView)findViewById(R.id.gameView);
+    }
+
+    //set the current active player
+    public void setCurrent(){
+        current = (TextView) findViewById(R.id.currentPlayer);
+        if(getGameView().getPlayerOneTurn()) current.setText(playerOneName);
+        else current.setText(playerTwoName);
+    }
+
+    public String getCurrent(){
+        setCurrent();
+        return (String)current.getText();
     }
 }

@@ -13,11 +13,9 @@
         android:onClick="onInstall"
         android:adjustViewBounds="true"
         android:layout_width="wrap_content"
-        android:layout_above="@+id/gameView"
-        android:layout_toLeftOf="@+id/discardButton"
-        android:layout_toStartOf="@+id/discardButton"
-        android:layout_marginRight="111dp"
-        android:layout_marginEnd="111dp" />
+        android:layout_toLeftOf="@+id/openValveButton"
+        android:layout_toStartOf="@+id/openValveButton"
+        android:layout_alignBottom="@+id/openValveButton" />
 
     <Button
         android:layout_width="wrap_content"
@@ -38,7 +36,6 @@
         android:onClick="onOpenValve"
         android:adjustViewBounds="true"
         android:enabled="true"
-        android:layout_above="@+id/gameView"
         android:layout_alignParentTop="true"
         android:layout_toLeftOf="@+id/discardButton" />
 
@@ -59,18 +56,14 @@
         android:id="@+id/gameView"
         android:layout_alignRight="@+id/surrender"
         android:layout_alignEnd="@+id/surrender"
-        android:layout_below="@+id/discardButton" />
+        android:layout_below="@+id/currentPlayer" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Large Text"
         android:id="@+id/currentPlayer"
-        android:layout_above="@+id/gameView"
-        android:layout_toLeftOf="@+id/installButton"
-        android:layout_toStartOf="@+id/installButton"
-        android:layout_marginRight="52dp"
-        android:layout_marginEnd="52dp" />
+        android:layout_below="@+id/discardButton"
+        android:layout_centerHorizontal="true" />
 
 </RelativeLayout>

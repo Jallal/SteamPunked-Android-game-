@@ -10,7 +10,7 @@
 
     <TextView
         android:layout_width="wrap_content"
-        android:layout_height="122dp"
+        android:layout_height="60dp"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="@string/playerWin"
         android:id="@+id/winnerLabel"
@@ -21,7 +21,9 @@
         android:textSize="50dp"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:layout_alignRight="@+id/button"
+        android:layout_alignEnd="@+id/button" />
 
     <ImageView
         android:layout_width="wrap_content"
@@ -29,7 +31,8 @@
         android:id="@+id/imageView2"
         android:src="@drawable/splash"
         android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
     <Button
         android:layout_width="wrap_content"
@@ -46,8 +49,7 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:id="@+id/winnerTag"
-        android:layout_below="@+id/winnerLabel"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="35dp" />
+        android:layout_below="@+id/winnerLabel" />
 
 </RelativeLayout>
