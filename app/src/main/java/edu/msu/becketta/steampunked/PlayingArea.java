@@ -101,7 +101,6 @@ public class PlayingArea implements Serializable {
         if(x < 0 || x >= width || y < 0 || y >= height) {
             return null;
         }
-      Log.i("HIT PIPE IN THE", "*********PLAYING AREA");
         return pipes[x][y];
     }
 

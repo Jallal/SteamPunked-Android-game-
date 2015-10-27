@@ -4,6 +4,8 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 
 import java.io.Serializable;
 
@@ -26,9 +28,22 @@ public class Pipe implements Serializable {
     }
 
     /**
+     * Pipe groups for each player
+     */
+    public enum PipeGroup {
+        PLAYER_ONE,
+        PLAYER_TWO
+    }
+
+    /**
      * Save the type of the pipe
      */
     private pipeType type;
+
+    /**
+     * Group that this pipe is part of
+     */
+    private PipeGroup group;
 
     /**
      * Playing area this pipe is a member of
@@ -69,6 +84,16 @@ public class Pipe implements Serializable {
     private transient Bitmap handleBit = null;
 
     /**
+     * Steam bitmap
+     */
+    private transient Bitmap steamBit = null;
+
+    /**
+     * Is the gauge empty or full (only for END pipes
+     */
+    private boolean gaugeFull = false;
+
+    /**
      * Rotation of the bitmap and handle
      */
     private float bitmapRotation = 0f;
@@ -80,11 +105,18 @@ public class Pipe implements Serializable {
     private transient boolean visited = false;
 
     /**
+     * Paint object for the gauge line
+     */
+    private transient Paint gaugePaint = null;
+
+    /**
      * Constructor
      * @param context Context to get the pipe's bitmap from
      * @param type Type of the pipe
      */
     public Pipe(Context context, pipeType type) {
+        steamBit = BitmapFactory.decodeResource(context.getResources(), R.drawable.leak);
+
         this.type = type;
         switch(type) {
             case START:
@@ -114,6 +146,12 @@ public class Pipe implements Serializable {
                 setConnections(true, true, true, false);
                 bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.tee);
                 break;
+        }
+
+        if(type == pipeType.END) {
+            gaugePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            gaugePaint.setColor(Color.RED);
+            gaugePaint.setStrokeWidth(6f);
         }
     }
 
@@ -204,10 +242,8 @@ public class Pipe implements Serializable {
         return true;
     }
 
-    public int validConnection(Pipe opponentStartPipe, Pipe opponentEndPipe) {
-        int returnValue = 0;
+    public boolean validConnection() {
         boolean atLeastOneConnection = false;
-        visited = true;
         for(int d=0; d<4; d++) {
             /*
              * If no connection this direction, ignore
@@ -230,25 +266,17 @@ public class Pipe implements Serializable {
             int coorespondingDirection = (d + 2) % 4;
             if(n.connect[coorespondingDirection]) {
                 atLeastOneConnection = true;
-                // We have a connection in this direction, continue the search in this direction
-                if(!n.visited ) {
-                    if(n != opponentStartPipe && n!= opponentEndPipe) {
-                        returnValue = n.validConnection(opponentStartPipe, opponentEndPipe);
-                        if(returnValue != 0) {
-                            return returnValue;
-                        }
-                    } else {
-                        return 2;
-                    }
+                if(n.getGroup() != this.group) {
+                    return false;
                 }
             }
         }
 
         if(!atLeastOneConnection) {
-            returnValue = 1;
+            return false;
         }
 
-        return returnValue;
+        return true;
     }
 
     /**
@@ -348,19 +376,39 @@ public class Pipe implements Serializable {
         if(playingArea != null) {
             // Calculate the x and y locations withing the playing area
             float bitDim = bitmap.getHeight() < bitmap.getWidth() ? bitmap.getHeight() : bitmap.getWidth();
-            this.x = xCoord * bitDim + (bitDim / 2);
-            this.y = yCoord * bitDim + (bitDim / 2);
+            this.x = coordinateToLocation(xCoord, bitDim);
+            this.y = coordinateToLocation(yCoord, bitDim);
 
 
             draw(canvas);
 
-            if (handleBit != null) {
-                canvas.save();
-                canvas.translate(x, y);
-                canvas.rotate(handleRotation);
-                canvas.translate(-bitDim / 2, -bitDim / 2);
-                canvas.drawBitmap(handleBit, 0, 0, null);
-                canvas.restore();
+            if(type != pipeType.END) {
+                // Draw steam at each opening
+                for(int d=0; d<4; d++) {
+                /*
+                 * If no connection this direction, ignore
+                 */
+                    if(!connect[d]) {
+                        continue;
+                    }
+
+                    Pipe n = neighbor(d);
+                    if(n == null) {
+                        // We have a connection with nothing on the other side
+                        drawSteam(canvas, d, bitDim);
+                        continue;
+                    }
+
+                    // What is the matching location on
+                    // the other pipe. For example, if
+                    // we are looking in direction 1 (east),
+                    // the other pipe must have a connection
+                    // in direction 3 (west)
+                    int coorespondingDirection = (d + 2) % 4;
+                    if(!n.connect[coorespondingDirection]) {
+                        drawSteam(canvas, d, bitDim);
+                    }
+                }
             }
         }
     }
@@ -376,8 +424,87 @@ public class Pipe implements Serializable {
         canvas.translate(x, y);
         canvas.rotate(bitmapRotation);
         canvas.translate(-(bitDim / 2), -(bitDim / 2));
+
+        // Draw pipe bitmap
         canvas.drawBitmap(bitmap, 0, 0, null);
+
+        // Draw gauge line if this is an END pipe
+        drawGaugeLine(canvas);
+
         canvas.restore();
+
+        // Draw handle if there is one
+        if (handleBit != null) {
+            canvas.save();
+            canvas.translate(x, y);
+            canvas.rotate(handleRotation);
+            canvas.translate(-bitDim / 2, -bitDim / 2);
+            canvas.drawBitmap(handleBit, 0, 0, null);
+            canvas.restore();
+        }
+    }
+
+    private void drawSteam(Canvas canvas, int dir, float blockDim) {
+        int x = this.xCoord;
+        int y = this.yCoord;
+        float rotation = 0f;
+        switch(dir) {
+            case 0:
+                y--;
+                break;
+            case 1:
+                x++;
+                rotation = 90f;
+                break;
+            case 2:
+                y++;
+                rotation = 180f;
+                break;
+            case 3:
+                x--;
+                rotation = -90f;
+                break;
+        }
+
+        // Translate new x, y coordinates to location in the playing area
+
+        canvas.save();
+        canvas.translate(coordinateToLocation(x, blockDim), coordinateToLocation(y, blockDim));
+        canvas.rotate(rotation);
+        canvas.translate(-(blockDim / 2), -(blockDim / 2));
+
+        // Draw pipe bitmap
+        canvas.drawBitmap(steamBit, 0, 0, null);
+
+        canvas.restore();
+    }
+
+    private float coordinateToLocation(int coord, float blockDim) {
+        return (coord * blockDim) + (blockDim / 2);
+    }
+
+    private void drawGaugeLine(Canvas canvas) {
+        if (type == pipeType.END) {
+            float x1 = bitmap.getWidth() * 0.71f;
+            float y1 = bitmap.getHeight() / 2f - 2;
+            float xdiff = 50f;
+            float ydiff = 50f;
+            if(gaugeFull) {
+                // Draw the gauge line at full
+                canvas.drawLine(x1, y1, x1 - xdiff, y1 + ydiff, gaugePaint);
+            } else {
+                // Draw the gauge line at empty
+                canvas.drawLine(x1, y1, x1 - xdiff, y1 - ydiff, gaugePaint);
+            }
+        }
+    }
+
+    public void setGaugeFull() {
+        gaugeFull = true;
+    }
+
+    public void setHandleOpen() {
+        handleRotation = 90f;
     }
 
     /**
@@ -387,11 +514,19 @@ public class Pipe implements Serializable {
      * @return True if the x, y location is on the bitmap
      */
     public boolean hit(float x, float y) {
-        if(x >= this.x - (bitmap.getWidth() / 2) && x <= this.x + (bitmap.getWidth() / 2) &&
-           y >= this.y - (bitmap.getHeight() / 2) && y <= this.y + (bitmap.getHeight() / 2)) {
+        if(x >= this.x - bitmap.getWidth() && x <= this.x + bitmap.getWidth() &&
+           y >= this.y - bitmap.getHeight() && y <= this.y + bitmap.getHeight()) {
             return true;
         }
 
         return false;
+    }
+
+    public PipeGroup getGroup() {
+        return group;
+    }
+
+    public void setGroup(PipeGroup group) {
+        this.group = group;
     }
 }

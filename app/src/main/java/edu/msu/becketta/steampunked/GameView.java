@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Toast;
 
 import java.io.Serializable;
 
@@ -143,12 +144,17 @@ public class GameView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        // TODO: draw the playing field and bank of pipes to add
-        // Use normalized coordinates:
-        //      0 <= y < .8   draw the playing field
-        //     .8 <= y <= 1   draw the pipe bank
+        /*
+         * Draw the playing field and bank of pipes to add
+         *
+         * Use normalized coordinates:
+         *      0 <= y < .8   draw the playing field
+         *     .8 <= y <= 1   draw the pipe bank
+         */
 
-        // Determine which orientation to draw the view in
+        /*
+         *Determine which orientation to draw the view in
+         */
 
         // Portrait layout
         int fieldWidth = canvas.getWidth();
@@ -169,6 +175,10 @@ public class GameView extends View {
             params.bankYOffset = 0f;
         }
 
+        /*
+         * Set up default parameters if they have not been initialized
+         */
+
         // Determine the scale to draw things if the gameFieldScale has not been initialized
         if(params.gameFieldScale == -1f) {
             if(fieldWidth <= fieldHeight) {
@@ -182,6 +192,35 @@ public class GameView extends View {
         if(params.marginX == 10000000 || params.marginY == 10000000) {
             params.marginX = (int)((fieldWidth - params.gameFieldWidth * params.gameFieldScale) / 2);
             params.marginY = (int)((fieldHeight - params.gameFieldHeight * params.gameFieldScale) / 2);
+        }
+
+        /*
+         * Place limitations on the playing field scale and margins to ensure the playing field
+         * stays in the screen and does not scale too small or too large
+         */
+        // Place boundaries on scale
+        if(canvas.getWidth() < canvas.getHeight()) {
+            if(params.gameFieldWidth * params.gameFieldScale < fieldWidth) {
+                params.gameFieldScale = fieldWidth / params.gameFieldWidth;
+            }
+        } else {
+            if(params.gameFieldHeight * params.gameFieldScale < fieldHeight) {
+                params.gameFieldScale = fieldHeight / params.gameFieldHeight;
+            }
+        }
+
+        // Place boundaries on scrolling
+        if(params.marginX > 0) {
+            params.marginX = 0;
+        }
+        if(params.marginY > 0) {
+            params.marginY = 0;
+        }
+        if(fieldWidth - params.marginX > params.gameFieldWidth * params.gameFieldScale) {
+            params.marginX = fieldWidth - (int)(params.gameFieldWidth * params.gameFieldScale);
+        }
+        if(fieldHeight - params.marginY > params.gameFieldHeight * params.gameFieldScale) {
+            params.marginY = fieldHeight - (int)(params.gameFieldHeight * params.gameFieldScale);
         }
 
         /*
@@ -245,6 +284,8 @@ public class GameView extends View {
                     if(params.currentPipe != null) {
                         // This location is relative to the playing area
                         params.currentPipe.setLocation(touch1.x,touch1.y);
+                        Pipe.PipeGroup g = params.playerOneTurn ? Pipe.PipeGroup.PLAYER_ONE : Pipe.PipeGroup.PLAYER_TWO;
+                        params.currentPipe.setGroup(g);
                     }
                 }
 
@@ -520,20 +561,24 @@ public class GameView extends View {
      */
     private void setBoardStartsEnds(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4) {
         // Create the start and end pipes
-        params.player1Start = new Pipe(getContext(), Pipe.pipeType.START);
-        params.player2Start = new Pipe(getContext(), Pipe.pipeType.START);
-        params.player1End = new Pipe(getContext(), Pipe.pipeType.END);
-        params.player2End = new Pipe(getContext(), Pipe.pipeType.END);
+        params.playerOneStart = new Pipe(getContext(), Pipe.pipeType.START);
+        params.playerOneStart.setGroup(Pipe.PipeGroup.PLAYER_ONE);
+        params.playerTwoStart = new Pipe(getContext(), Pipe.pipeType.START);
+        params.playerTwoStart.setGroup(Pipe.PipeGroup.PLAYER_TWO);
+        params.playerOneEnd = new Pipe(getContext(), Pipe.pipeType.END);
+        params.playerOneEnd.setGroup(Pipe.PipeGroup.PLAYER_ONE);
+        params.playerTwoEnd = new Pipe(getContext(), Pipe.pipeType.END);
+        params.playerTwoEnd.setGroup(Pipe.PipeGroup.PLAYER_TWO);
 
         // Add the start and end pipes to the playing field at the given locations
-        gameField.add(params.player1Start, x1, y1);
-        gameField.add(params.player2Start, x2, y2);
-        gameField.add(params.player1End, x3, y3);
-        gameField.add(params.player2End, x4, y4);
+        gameField.add(params.playerOneStart, x1, y1);
+        gameField.add(params.playerTwoStart, x2, y2);
+        gameField.add(params.playerOneEnd, x3, y3);
+        gameField.add(params.playerTwoEnd, x4, y4);
 
         // We must store the unscaled block size in the playing field
         // to use later for some calculations
-        params.blockSize = params.player1Start.getBitmapHeight();
+        params.blockSize = params.playerOneStart.getBitmapHeight();
     }
     
     public void installPipe(){
@@ -546,33 +591,14 @@ public class GameView extends View {
         params.currentPipe.setLocation(XLOC, YLOC);
 
         // Check if this is a valid position for the pipe
-        String errorMessage = null;
         params.currentPipe.set(gameField, x, y);
-        int valid;
-        gameField.clearVisitedFlags();
-        if(params.playerOneTurn) {
-            valid = params.currentPipe.validConnection(params.player2Start, params.player2End);
-        } else {
-            valid = params.currentPipe.validConnection(params.player1Start, params.player1End);
-        }
-        if(valid == 0) {
+        if(params.currentPipe.validConnection()) {
             gameField.add(params.currentPipe, x ,y);
             discard();
-        } else if(valid == 1) {
-            errorMessage = "Your pipe must connect to at least one other pipe.";
-        } else if(valid == 2) {
-            errorMessage = "You can't connect to your opponent's pipes.";
         } else {
-            errorMessage = "Something went horribly wrong...";
-        }
-
-        if(errorMessage != null) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-            builder.setTitle("Invalid Connection");
-            builder.setMessage(errorMessage);
-            builder.setPositiveButton(android.R.string.ok, null);
-            AlertDialog alertDialog = builder.create();
-            alertDialog.show();
+            Toast.makeText(getContext(),
+                    R.string.invalid_connection,
+                    Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -585,6 +611,22 @@ public class GameView extends View {
         params.currentPipe = null;
         params.playerOneTurn = !params.playerOneTurn;
         invalidate();
+    }
+
+    public boolean openValve() {
+        Pipe searchBeginning = params.playerOneTurn ? params.playerOneStart : params.playerTwoStart;
+        searchBeginning.setHandleOpen();
+        if(!gameField.search(searchBeginning)) {
+            // There is a leak
+            invalidate();
+            return false;
+        }
+
+        // There is no leak
+        Pipe endPipe = params.playerOneTurn ? params.playerOneEnd : params.playerTwoEnd;
+        endPipe.setGaugeFull();
+        invalidate();
+        return true;
     }
 
     private int getPlayingAreaXCoord(float xLoc) {
@@ -617,17 +659,29 @@ public class GameView extends View {
         public boolean playerOneTurn = true;
 
         /**
+         * Player One start pipe
+         */
+        public Pipe playerOneStart;
+
+        /**
+         * Player Two start pipe
+         */
+        public Pipe playerTwoStart;
+
+        /**
+         * Player One end pipe
+         */
+        public Pipe playerOneEnd;
+
+        /**
+         * Player Two end pipe
+         */
+        public Pipe playerTwoEnd;
+
+        /**
          * Reference to the currently selected pipe
          */
         public Pipe currentPipe = null;
-
-        /**
-         * Player One and Two Start and End pipes
-         */
-        public Pipe player1Start;
-        public Pipe player1End;
-        public Pipe player2Start;
-        public Pipe player2End;
 
         /**
          * Are we dragging a pipe?

@@ -14,4 +14,9 @@
     <string name="playerWin">Winner is: </string>
     <string name="instructions">How To Play</string>
     <string name="newGame">Start a New Game</string>
+    <string name="invalid_connection">Invalid Connection</string>
+    <string name="quit_game">Quit Game</string>
+    <string name="quit_game_confirmation">Are you sure you want to quit the game?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 </resources>

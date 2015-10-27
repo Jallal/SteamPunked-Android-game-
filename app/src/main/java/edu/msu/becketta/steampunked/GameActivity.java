@@ -1,5 +1,7 @@
 package edu.msu.becketta.steampunked;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -41,20 +43,35 @@ public class GameActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        // TODO: Make Toast that asks if the user is sure they want to quit the current game
-        // If they do then call super.onBackPressed()
-        // If they don't then do nothing.
-        super.onBackPressed();
+        /*
+         * Ask if the user is sure they want to quit the current game.
+         *
+         * If they do then call super.onBackPressed().
+         * If they don't then do nothing.
+         */
+        AlertDialog.Builder builder = new AlertDialog.Builder(getGameView().getContext());
+        builder.setTitle(R.string.quit_game);
+        builder.setMessage(R.string.quit_game_confirmation);
+        builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                quitGame();
+            }
+        });
+        builder.setNegativeButton(R.string.no, null);
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+
+    private void quitGame() {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
     }
 
 
     public void onSurrender(View view) {
-        String winner;
-        if(getGameView().getPlayerOneTurn()) {
-            winner = playerTwoName;
-        } else {
-            winner = playerOneName;
-        }
+        String winner = getGameView().getPlayerOneTurn() ? playerTwoName : playerOneName;
         onGameOver(winner);
     }
     public void onInstall(View view) {
@@ -64,7 +81,11 @@ public class GameActivity extends AppCompatActivity {
         getGameView().discard();
     }
     public void onOpenValve(View view) {
-
+        if(getGameView().openValve()) {
+            onGameOver(getGameView().getPlayerOneTurn() ? playerOneName : playerTwoName);
+        } else {
+            onGameOver(getGameView().getPlayerOneTurn() ? playerTwoName : playerOneName);
+        }
     }
 
     /**
