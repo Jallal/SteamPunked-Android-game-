@@ -119,8 +119,5 @@ public class GameActivity extends AppCompatActivity {
         else current.setText(playerTwoName);
     }
 
-    public String getCurrent(){
-        setCurrent();
-        return (String)current.getText();
-    }
+
 }
