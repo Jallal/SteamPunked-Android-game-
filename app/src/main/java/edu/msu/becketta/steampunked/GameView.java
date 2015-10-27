@@ -526,24 +526,24 @@ public class GameView extends View {
      */
     private void setBoardStartsEnds(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4) {
         // Create the start and end pipes
-        Pipe start1 = new Pipe(getContext(), Pipe.pipeType.START);
-        start1.setGroup(Pipe.PipeGroup.PLAYER_ONE);
-        Pipe start2 = new Pipe(getContext(), Pipe.pipeType.START);
-        start2.setGroup(Pipe.PipeGroup.PLAYER_TWO);
-        Pipe end1 = new Pipe(getContext(), Pipe.pipeType.END);
-        end1.setGroup(Pipe.PipeGroup.PLAYER_ONE);
-        Pipe end2 = new Pipe(getContext(), Pipe.pipeType.END);
-        end2.setGroup(Pipe.PipeGroup.PLAYER_TWO);
+        params.playerOneStart = new Pipe(getContext(), Pipe.pipeType.START);
+        params.playerOneStart.setGroup(Pipe.PipeGroup.PLAYER_ONE);
+        params.playerTwoStart = new Pipe(getContext(), Pipe.pipeType.START);
+        params.playerTwoStart.setGroup(Pipe.PipeGroup.PLAYER_TWO);
+        params.playerOneEnd = new Pipe(getContext(), Pipe.pipeType.END);
+        params.playerOneEnd.setGroup(Pipe.PipeGroup.PLAYER_ONE);
+        params.playerTwoEnd = new Pipe(getContext(), Pipe.pipeType.END);
+        params.playerTwoEnd.setGroup(Pipe.PipeGroup.PLAYER_TWO);
 
         // Add the start and end pipes to the playing field at the given locations
-        gameField.add(start1, x1, y1);
-        gameField.add(start2, x2, y2);
-        gameField.add(end1, x3, y3);
-        gameField.add(end2, x4, y4);
+        gameField.add(params.playerOneStart, x1, y1);
+        gameField.add(params.playerTwoStart, x2, y2);
+        gameField.add(params.playerOneEnd, x3, y3);
+        gameField.add(params.playerTwoEnd, x4, y4);
 
         // We must store the unscaled block size in the playing field
         // to use later for some calculations
-        params.blockSize = start1.getBitmapHeight();
+        params.blockSize = params.playerOneStart.getBitmapHeight();
     }
     
     public void installPipe(){
@@ -578,6 +578,22 @@ public class GameView extends View {
         invalidate();
     }
 
+    public boolean openValve() {
+        Pipe searchBeginning = params.playerOneTurn ? params.playerOneStart : params.playerTwoStart;
+        searchBeginning.setHandleOpen();
+        if(!gameField.search(searchBeginning)) {
+            // There is a leak
+            invalidate();
+            return false;
+        }
+
+        // There is no leak
+        Pipe endPipe = params.playerOneTurn ? params.playerOneEnd : params.playerTwoEnd;
+        endPipe.setGaugeFull();
+        invalidate();
+        return true;
+    }
+
     private int getPlayingAreaXCoord(float xLoc) {
         if(xLoc >= 0f && xLoc <= params.gameFieldWidth) {
             return (int)(xLoc / params.blockSize);
@@ -606,6 +622,26 @@ public class GameView extends View {
          * Is it player one's turn?
          */
         public boolean playerOneTurn = true;
+
+        /**
+         * Player One start pipe
+         */
+        public Pipe playerOneStart;
+
+        /**
+         * Player Two start pipe
+         */
+        public Pipe playerTwoStart;
+
+        /**
+         * Player One end pipe
+         */
+        public Pipe playerOneEnd;
+
+        /**
+         * Player Two end pipe
+         */
+        public Pipe playerTwoEnd;
 
         /**
          * Reference to the currently selected pipe

@@ -47,12 +47,7 @@ public class GameActivity extends AppCompatActivity {
     }
 
     public void onSurrender(View view) {
-        String winner;
-        if(getGameView().getPlayerOneTurn()) {
-            winner = playerTwoName;
-        } else {
-            winner = playerOneName;
-        }
+        String winner = getGameView().getPlayerOneTurn() ? playerTwoName : playerOneName;
         onGameOver(winner);
     }
     public void onInstall(View view) {
@@ -62,7 +57,11 @@ public class GameActivity extends AppCompatActivity {
         getGameView().discard();
     }
     public void onOpenValve(View view) {
-
+        if(getGameView().openValve()) {
+            onGameOver(getGameView().getPlayerOneTurn() ? playerOneName : playerTwoName);
+        } else {
+            onGameOver(getGameView().getPlayerOneTurn() ? playerTwoName : playerOneName);
+        }
     }
 
     /**
