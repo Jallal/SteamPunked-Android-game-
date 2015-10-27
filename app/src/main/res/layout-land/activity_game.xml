@@ -26,11 +26,9 @@ android:layout_height="match_parent"
     android:text="@string/disard"
     android:id="@+id/discardButton"
     android:onClick="onDiscard"
-    android:layout_alignParentLeft="true"
-    android:layout_alignParentStart="false"
-    android:layout_toStartOf="@+id/gameView"
     android:layout_below="@+id/installButton"
-    android:layout_toLeftOf="@+id/gameView" />
+    android:layout_alignParentLeft="true"
+    android:layout_alignParentStart="true" />
 
 <Button
     android:layout_width = "wrap_content"
@@ -56,7 +54,6 @@ android:layout_height="match_parent"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:id="@+id/gameView"
-    android:layout_centerVertical="true"
     android:layout_toEndOf="@+id/surrender" />
 
 </RelativeLayout>

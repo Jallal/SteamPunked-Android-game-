@@ -3,18 +3,13 @@ package edu.msu.becketta.steampunked;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.os.Bundle;
-import android.text.method.Touch;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 
 /**
  * TODO: document your custom view class.
@@ -47,6 +42,7 @@ public class GameView extends View {
 
 
     /************************** MEMBERS *****************************/
+
 
     /**
      * Normalized y location of the top of the pipe bank
@@ -161,6 +157,7 @@ public class GameView extends View {
         int bankHeight = (int)(canvas.getHeight() * (1 - bankLocation));
         params.bankXOffset = 0f;
         params.bankYOffset = canvas.getHeight() * bankLocation;
+
 
         // Landscape layout
         if(canvas.getWidth() > canvas.getHeight()) {

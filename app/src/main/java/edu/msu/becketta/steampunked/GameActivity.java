@@ -1,8 +1,8 @@
 package edu.msu.becketta.steampunked;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 public class GameActivity extends AppCompatActivity {
@@ -12,6 +12,7 @@ public class GameActivity extends AppCompatActivity {
 
     private String playerOneName;
     private String playerTwoName;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +46,7 @@ public class GameActivity extends AppCompatActivity {
         // If they don't then do nothing.
         super.onBackPressed();
     }
+
 
     public void onSurrender(View view) {
         String winner;

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.TextView;
 
 public class EndGameActivity extends AppCompatActivity {
 
@@ -13,6 +14,7 @@ public class EndGameActivity extends AppCompatActivity {
      * String that saves the winner's name
      */
     private String winner;
+    private TextView winnerElement;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,6 +26,8 @@ public class EndGameActivity extends AppCompatActivity {
         } else {
             Intent intent = getIntent();
             winner = intent.getStringExtra(WINNER);
+            winnerElement = (TextView)findViewById(R.id.winnerTag);
+            winnerElement.setText(winner);
         }
     }
 
