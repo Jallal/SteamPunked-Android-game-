@@ -20,4 +20,6 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="your_turn">Your turn: </string>
+    <string name="steampunked_logo">Steampunked logo.</string>
+    <string name="winner_name">Winner Name</string>
 </resources>
