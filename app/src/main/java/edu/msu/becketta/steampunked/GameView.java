@@ -148,12 +148,17 @@ public class GameView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        // TODO: draw the playing field and bank of pipes to add
-        // Use normalized coordinates:
-        //      0 <= y < .8   draw the playing field
-        //     .8 <= y <= 1   draw the pipe bank
+        /*
+         * Draw the playing field and bank of pipes to add
+         *
+         * Use normalized coordinates:
+         *      0 <= y < .8   draw the playing field
+         *     .8 <= y <= 1   draw the pipe bank
+         */
 
-        // Determine which orientation to draw the view in
+        /*
+         *Determine which orientation to draw the view in
+         */
 
         // Portrait layout
         int fieldWidth = canvas.getWidth();
@@ -173,6 +178,10 @@ public class GameView extends View {
             params.bankYOffset = 0f;
         }
 
+        /*
+         * Set up default parameters if they have not been initialized
+         */
+
         // Determine the scale to draw things if the gameFieldScale has not been initialized
         if(params.gameFieldScale == -1f) {
             if(fieldWidth <= fieldHeight) {
@@ -186,6 +195,35 @@ public class GameView extends View {
         if(params.marginX == 10000000 || params.marginY == 10000000) {
             params.marginX = (int)((fieldWidth - params.gameFieldWidth * params.gameFieldScale) / 2);
             params.marginY = (int)((fieldHeight - params.gameFieldHeight * params.gameFieldScale) / 2);
+        }
+
+        /*
+         * Place limitations on the playing field scale and margins to ensure the playing field
+         * stays in the screen and does not scale too small or too large
+         */
+        // Place boundaries on scale
+        if(canvas.getWidth() < canvas.getHeight()) {
+            if(params.gameFieldWidth * params.gameFieldScale < fieldWidth) {
+                params.gameFieldScale = fieldWidth / params.gameFieldWidth;
+            }
+        } else {
+            if(params.gameFieldHeight * params.gameFieldScale < fieldHeight) {
+                params.gameFieldScale = fieldHeight / params.gameFieldHeight;
+            }
+        }
+
+        // Place boundaries on scrolling
+        if(params.marginX > 0) {
+            params.marginX = 0;
+        }
+        if(params.marginY > 0) {
+            params.marginY = 0;
+        }
+        if(fieldWidth - params.marginX > params.gameFieldWidth * params.gameFieldScale) {
+            params.marginX = fieldWidth - (int)(params.gameFieldWidth * params.gameFieldScale);
+        }
+        if(fieldHeight - params.marginY > params.gameFieldHeight * params.gameFieldScale) {
+            params.marginY = fieldHeight - (int)(params.gameFieldHeight * params.gameFieldScale);
         }
 
         /*
