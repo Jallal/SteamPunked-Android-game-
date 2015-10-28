@@ -5,10 +5,12 @@ Group Name:   Bowser
 
 When you have completed the project, complete the following form and include it with your project. Include this file as a text file in the folder with your project when you turn it in. 
 
+** See README information below group member resposibilities **
+
 
 Member 1: Joseph Michael Schmitz
 
-Responsiblity: The activities
+Responsiblity: The activities and layouts
 
 
 
@@ -27,5 +29,18 @@ Responsiblity: The pipes
 Member 4 (if applicable): not applicable
 
 Responsiblity:
+
+
+*** README ***
+
+-> Scrolling and scaling the playing area work, but we put limitations on
+   scrolling and scaling so that the user can't scroll the playing area off
+   the screen and can't scale the playing area smaller than the screen size.
+-> The valve always rotates when a player selects 'Open Valve' but the gauge line
+   will only increase to full if the player's pipeline has no leaks AND they have
+   pressed the "Open Valve" button.
+		* Also, since the End Game screen appears quickly after pressing
+		  "Open Valve", it can be hard to notice that the handle or gauge line
+		  has changed unless you're looking specifically for those changes.
 
 
