@@ -155,6 +155,37 @@ public class Pipe implements Serializable {
         }
     }
 
+    public void resetPipe() {
+        setLocation(0f, 0f);
+        resetConnections();
+    }
+
+    public void resetConnections() {
+        bitmapRotation = 0f;
+        switch(type) {
+            case START:
+                setConnections(false, true, false, false);
+                bitmapRotation = 90f;
+                break;
+            case END:
+                setConnections(false, false, false, true);
+                bitmapRotation = -90f;
+                break;
+            case STRAIGHT:
+                setConnections(true, false, true, false);
+                break;
+            case RIGHT_ANGLE:
+                setConnections(false, true, true, false);
+                break;
+            case CAP:
+                setConnections(false, false, true, false);
+                break;
+            case TEE:
+                setConnections(true, true, true, false);
+                break;
+        }
+    }
+
     private void setConnections(boolean north, boolean east, boolean south, boolean west) {
         connect[0] = north;
         connect[1] = east;

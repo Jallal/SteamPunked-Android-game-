@@ -581,20 +581,22 @@ public class GameView extends View {
     }
     
     public void installPipe(){
+        // Save current rotation in case we have to reset it
+        float originalRotation = params.currentPipe.getBitmapRotation();
+
         // Snap pipe to right coordinates and rotation
         int x = getPlayingAreaXCoord(params.currentPipe.getX());
         int y = getPlayingAreaYCoord(params.currentPipe.getY());
-        float XLOC = (params.blockSize / 2) + (params.blockSize * x);
-        float YLOC = (params.blockSize / 2) + (params.blockSize * y);
         params.currentPipe.snapRotation();
-        params.currentPipe.setLocation(XLOC, YLOC);
 
         // Check if this is a valid position for the pipe
         params.currentPipe.set(gameField, x, y);
-        if(params.currentPipe.validConnection()) {
+        if(gameField.getPipe(x, y) == null && params.currentPipe.validConnection()) {
             gameField.add(params.currentPipe, x ,y);
             discard();
         } else {
+            params.currentPipe.resetConnections();
+            params.currentPipe.setBitmapRotation(originalRotation);
             Toast.makeText(getContext(),
                     R.string.invalid_connection,
                     Toast.LENGTH_SHORT).show();

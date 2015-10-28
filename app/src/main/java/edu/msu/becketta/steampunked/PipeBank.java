@@ -185,7 +185,7 @@ public class PipeBank implements Serializable {
                 canvas.scale(scale, scale);
                 // Draw the pipe
                 if(pipes[i] != activePipe) {
-                    pipes[i].setLocation(0, 0);
+                    pipes[i].resetPipe();
                     pipes[i].draw(canvas);
                 }
 
