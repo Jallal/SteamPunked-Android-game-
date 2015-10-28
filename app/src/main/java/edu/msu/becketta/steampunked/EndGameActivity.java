@@ -22,7 +22,10 @@ public class EndGameActivity extends AppCompatActivity {
         setContentView(R.layout.activity_end_game);
 
         if(savedInstanceState != null) {
-            // TODO: load winner string saved in bundle
+            winnerElement = (TextView)findViewById(R.id.winnerTag);
+            winner = savedInstanceState.getString(WINNER);
+
+            winnerElement.setText(winner);
         } else {
             Intent intent = getIntent();
             winner = intent.getStringExtra(WINNER);
@@ -31,6 +34,13 @@ public class EndGameActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle bundle) {
+        super.onSaveInstanceState(bundle);
+
+        bundle.putString(WINNER, winner);
+
+    }
     public void onNewGame(View view){
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

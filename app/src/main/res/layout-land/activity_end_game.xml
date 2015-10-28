@@ -17,32 +17,32 @@
         android:textStyle="bold"
         android:textColor="#010101"
         android:textSize="30sp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentTop="false"
+        android:layout_alignParentLeft="false"
+        android:layout_alignParentStart="false"
+        android:layout_alignLeft="@+id/imageView2" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:id="@+id/winnerTag"
-        android:layout_centerHorizontal="true"
         android:gravity="center_vertical|center_horizontal"
         android:text="@string/winner_name"
         android:textSize="30sp"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
+        android:layout_alignTop="@+id/winnerLabel"
+        android:layout_alignEnd="@+id/button"
         android:layout_toRightOf="@+id/winnerLabel" />
 
     <ImageView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/imageView2"
         android:src="@drawable/splash"
         android:contentDescription="@string/steampunked_logo"
-        android:layout_centerInParent="true"
-        android:layout_below="@+id/winnerLabel"
-        android:layout_above="@+id/button" />
+        android:layout_alignParentStart="true"
+        android:layout_above="@+id/button"
+        android:layout_below="@+id/winnerLabel" />
 
     <Button
         android:layout_width="wrap_content"
