@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.text.TextPaint;
 
 import java.io.Serializable;
 
@@ -110,6 +111,16 @@ public class Pipe implements Serializable {
     private transient Paint gaugePaint = null;
 
     /**
+     * Paint object for the player name
+     */
+    private transient TextPaint namePaint = null;
+
+    /**
+     * Name of the player needed if this is a start pipe
+     */
+    private String playerName = null;
+
+    /**
      * Constructor
      * @param context Context to get the pipe's bitmap from
      * @param type Type of the pipe
@@ -146,6 +157,12 @@ public class Pipe implements Serializable {
                 setConnections(true, true, true, false);
                 bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.tee);
                 break;
+        }
+
+        if(type == pipeType.START) {
+            namePaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
+            namePaint.setColor(Color.BLACK);
+            namePaint.setTextSize(50f);
         }
 
         if(type == pipeType.END) {
@@ -473,6 +490,11 @@ public class Pipe implements Serializable {
             canvas.drawBitmap(handleBit, 0, 0, null);
             canvas.restore();
         }
+
+        // Draw player name if this is a START pipe
+        if(type == pipeType.START && playerName != null) {
+            drawPlayerName(canvas);
+        }
     }
 
     private void drawSteam(Canvas canvas, int dir, float blockDim) {
@@ -512,6 +534,14 @@ public class Pipe implements Serializable {
 
     private float coordinateToLocation(int coord, float blockDim) {
         return (coord * blockDim) + (blockDim / 2);
+    }
+
+    private void drawPlayerName(Canvas canvas) {
+        int theMagicNumber = 7;
+        canvas.save();
+        canvas.translate(x-(bitmap.getWidth()/2)+theMagicNumber, y+(bitmap.getHeight()/2)+theMagicNumber);
+        canvas.drawText(playerName, 0, 0, namePaint);
+        canvas.restore();
     }
 
     private void drawGaugeLine(Canvas canvas) {
@@ -559,5 +589,9 @@ public class Pipe implements Serializable {
 
     public void setGroup(PipeGroup group) {
         this.group = group;
+    }
+
+    public void setPlayerName(String playerName) {
+        this.playerName = playerName;
     }
 }

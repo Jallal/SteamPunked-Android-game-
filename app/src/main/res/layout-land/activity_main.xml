@@ -40,7 +40,8 @@
         android:layout_alignBottom="@+id/player1_label"
         android:layout_toRightOf="@+id/player1_label"
         android:layout_toEndOf="@+id/player1_label"
-        android:layout_toLeftOf="@+id/startButton" />
+        android:layout_toLeftOf="@+id/startButton"
+        android:inputType="text" />
 
     <EditText
         android:layout_width="wrap_content"
@@ -48,7 +49,8 @@
         android:id="@+id/player2"
         android:layout_alignBottom="@+id/player2_label"
         android:layout_toRightOf="@+id/player2_label"
-        android:layout_toLeftOf="@+id/startButton" />
+        android:layout_toLeftOf="@+id/startButton"
+        android:inputType="text" />
 
     <Spinner
         android:layout_width="wrap_content"
@@ -65,7 +67,8 @@
         android:src="@drawable/splash"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_above="@+id/spinnerFields" />
+        android:layout_above="@+id/spinnerFields"
+        android:contentDescription="@string/steampunked_logo" />
 
     <Button
         style="?android:attr/buttonStyleSmall"

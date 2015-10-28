@@ -36,6 +36,8 @@ public class GameActivity extends AppCompatActivity {
             playerTwoName = intent.getStringExtra(PLAYER_TWO_NAME);
 
             getGameView().initialize(intent);
+            getGameView().setPlayerName(playerOneName, Pipe.PipeGroup.PLAYER_ONE);
+            getGameView().setPlayerName(playerTwoName, Pipe.PipeGroup.PLAYER_TWO);
         }
 
         updateUI();

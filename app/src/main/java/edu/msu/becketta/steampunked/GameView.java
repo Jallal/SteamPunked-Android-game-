@@ -646,6 +646,17 @@ public class GameView extends View {
         return -1;
     }
 
+    public void setPlayerName(String name, Pipe.PipeGroup group) {
+        switch(group) {
+            case PLAYER_ONE:
+                params.playerOneStart.setPlayerName(name);
+                break;
+            case PLAYER_TWO:
+                params.playerTwoStart.setPlayerName(name);
+                break;
+        }
+    }
+
 
     /********************** NESTED CLASSES *******************************/
 

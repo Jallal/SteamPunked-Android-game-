@@ -3,7 +3,6 @@ package edu.msu.becketta.steampunked;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.util.Log;
 
 import java.io.Serializable;
 
@@ -53,7 +52,6 @@ public class PlayingArea implements Serializable {
 
     /**
      * Get the playing area height
-     * @return Height
      */
     public void SetHeight(int value) {
         height = value;
@@ -61,7 +59,6 @@ public class PlayingArea implements Serializable {
 
     /**
      * Get the playing area width
-     * @return Width
      */
     public void SetWidth(int value) {
 
