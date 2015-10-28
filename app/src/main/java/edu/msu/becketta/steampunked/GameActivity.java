@@ -13,6 +13,9 @@ public class GameActivity extends AppCompatActivity {
     public final static String PLAYER_ONE_NAME = "edu.msu.becketta.steampunked.PLAYER_ONE_NAME";
     public final static String PLAYER_TWO_NAME = "edu.msu.becketta.steampunked.PLAYER_TWO_NAME";
 
+    private final static String P_ONE = "player1";
+    private final static String P_TWO = "player2";
+
     private String playerOneName;
     private String playerTwoName;
 
@@ -23,7 +26,8 @@ public class GameActivity extends AppCompatActivity {
         setContentView(R.layout.activity_game);
 
         if(savedInstanceState != null) {
-            // TODO: load playerOneName and playerTwoName from bundle
+            playerOneName = savedInstanceState.getString(P_ONE);
+            playerTwoName = savedInstanceState.getString(P_TWO);
 
             getGameView().loadState(savedInstanceState);
         } else { // There is no saved state, use the intent for initialization
@@ -32,22 +36,20 @@ public class GameActivity extends AppCompatActivity {
             playerTwoName = intent.getStringExtra(PLAYER_TWO_NAME);
 
             getGameView().initialize(intent);
-            setCurrent();
-
         }
+
+        updateUI();
     }
 
     @Override
     protected void onSaveInstanceState(Bundle bundle) {
         super.onSaveInstanceState(bundle);
 
+        bundle.putString(P_ONE, playerOneName);
+        bundle.putString(P_TWO, playerTwoName);
+
         getGameView().saveState(bundle);
     }
-
-    //Display the current player
-    private TextView current;
-
-
 
     @Override
     public void onBackPressed() {
@@ -77,17 +79,17 @@ public class GameActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-
     public void onSurrender(View view) {
         String winner = getGameView().getPlayerOneTurn() ? playerTwoName : playerOneName;
         onGameOver(winner);
     }
     public void onInstall(View view) {
         getGameView().installPipe();
-        setCurrent();
+        updateUI();
     }
     public void onDiscard(View view) {
         getGameView().discard();
+        updateUI();
     }
     public void onOpenValve(View view) {
         if(getGameView().openValve()) {
@@ -113,10 +115,11 @@ public class GameActivity extends AppCompatActivity {
     }
 
     //set the current active player
-    public void setCurrent(){
-        current = (TextView) findViewById(R.id.currentPlayer);
-        if(getGameView().getPlayerOneTurn()) current.setText(playerOneName);
-        else current.setText(playerTwoName);
+    private void updateUI(){
+        TextView currentPlayer = (TextView)findViewById(R.id.currentPlayer);
+        String baseText = getString(R.string.your_turn) + '\n';
+        if(getGameView().getPlayerOneTurn()) currentPlayer.setText(baseText + playerOneName);
+        else currentPlayer.setText(baseText + playerTwoName);
     }
 
 
