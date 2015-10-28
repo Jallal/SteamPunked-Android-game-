@@ -28,7 +28,8 @@ android:layout_height="match_parent"
     android:onClick="onDiscard"
     android:layout_below="@+id/installButton"
     android:layout_alignParentLeft="true"
-    android:layout_alignParentStart="true" />
+    android:layout_alignParentStart="true"
+    android:layout_alignRight="@+id/installButton" />
 
 <Button
     android:layout_width = "wrap_content"
@@ -55,5 +56,16 @@ android:layout_height="match_parent"
     android:layout_height="wrap_content"
     android:id="@+id/gameView"
     android:layout_toEndOf="@+id/surrender" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:id="@+id/currentPlayer"
+        android:layout_below="@+id/surrender"
+        android:layout_alignEnd="@+id/openValveButton"
+        android:layout_toLeftOf="@+id/gameView"
+        android:layout_alignLeft="@+id/surrender"
+        android:textAlignment="center" />
 
 </RelativeLayout>

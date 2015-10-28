@@ -13,9 +13,10 @@
         android:onClick="onInstall"
         android:adjustViewBounds="true"
         android:layout_width="wrap_content"
-        android:layout_toLeftOf="@+id/openValveButton"
-        android:layout_toStartOf="@+id/openValveButton"
-        android:layout_alignBottom="@+id/openValveButton" />
+        android:layout_alignTop="@+id/currentPlayer"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignRight="@+id/openValveButton" />
 
     <Button
         android:layout_width="wrap_content"
@@ -25,8 +26,11 @@
         android:onClick="onDiscard"
         android:adjustViewBounds="true"
         android:enabled="true"
-        android:layout_alignParentTop="true"
-        android:layout_toLeftOf="@+id/surrender" />
+        android:layout_alignBaseline="@+id/openValveButton"
+        android:layout_alignBottom="@+id/openValveButton"
+        android:layout_alignLeft="@+id/surrender"
+        android:layout_alignStart="@+id/surrender"
+        android:layout_alignRight="@+id/surrender" />
 
     <Button
         android:layout_width="wrap_content"
@@ -37,7 +41,8 @@
         android:adjustViewBounds="true"
         android:enabled="true"
         android:layout_alignParentTop="true"
-        android:layout_toLeftOf="@+id/discardButton" />
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
     <Button
         android:layout_width="wrap_content"
@@ -45,10 +50,10 @@
         android:text="@string/surrender"
         android:id="@+id/surrender"
         android:onClick="onSurrender"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="false"
         android:enabled="true"
-        android:layout_alignParentTop="true" />
+        android:layout_below="@+id/openValveButton"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
     <edu.msu.becketta.steampunked.GameView
         android:layout_width="wrap_content"
@@ -56,7 +61,7 @@
         android:id="@+id/gameView"
         android:layout_alignRight="@+id/surrender"
         android:layout_alignEnd="@+id/surrender"
-        android:layout_below="@+id/currentPlayer" />
+        android:layout_below="@+id/installButton" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -64,6 +69,8 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:id="@+id/currentPlayer"
         android:layout_below="@+id/discardButton"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentLeft="false"
+        android:layout_alignParentTop="false" />
 
 </RelativeLayout>
