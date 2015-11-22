@@ -75,8 +75,6 @@ public class PipeBank implements Serializable {
         bankPaint.setColor(Color.argb(90, 0, 100, 0));  // A semi-transparent green
     }
 
-    // TODO: may need to add setter for the context if we need to re-set the context after PipeBank is serialized
-
     /**
      * Generate a random pipe
      * @return A random pipe

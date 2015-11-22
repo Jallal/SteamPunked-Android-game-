@@ -3,6 +3,7 @@ package edu.msu.becketta.steampunked;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -13,12 +14,29 @@ import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
+    private final static String PREFERENCES = "preferences";
+    private final static String USERNAME = "username";
+    private final static String PASSWORD = "password";
 
-    //member variable for the boardsize
+    /**
+     * Is the player logged in to the system
+     */
+    private boolean isLoggedIn = false;
+
+    /**
+     * The user's saved or entered username
+     */
+    private String username;
+
+    /**
+     * The user's saved or entered password
+     */
+    private String password;
+
+    /**
+     * Store the selected board size
+      */
     GameView.dimension boardSize;
-
-
-    //set the playerOne and playerTwo names
 
 
     /**
@@ -70,6 +88,27 @@ public class MainActivity extends AppCompatActivity {
 
         });
 
+        readPreferences();
+
+    }
+
+    private void readPreferences() {
+        SharedPreferences settings = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
+
+        username = settings.getString(USERNAME, "");
+        password = settings.getString(PASSWORD, "");
+
+        setLoginStatus();
+    }
+
+    private void writePreferneces() {
+        SharedPreferences settings = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
+        SharedPreferences.Editor editor = settings.edit();
+
+        editor.putString(USERNAME, username);
+        editor.putString(PASSWORD, password);
+
+        editor.commit();
     }
 
 
@@ -86,25 +125,22 @@ public class MainActivity extends AppCompatActivity {
      *
      * @param view The view calling this function
      */
-    public void onStartGame(View view) {
-        Intent intent = new Intent(this, GameActivity.class);
+    public void onLoginStartGame(View view) {
+        if (isLoggedIn) {
+            // TODO: If we're logged in then we need to start a new game. Hold off on this until after the checkpoint
+        } else {
+            //set member variables for playerone and playertwo
+            TextView user = (TextView) findViewById(R.id.username);
+            username = user.getText().toString();
+            TextView pass = (TextView) findViewById(R.id.password);
+            password = pass.getText().toString();
 
-        //set member variables for playerone and playertwo
-        String playerOne;
-        String playerTwo;
-        TextView textview1 = (TextView) findViewById(R.id.player1);
-        playerOne = textview1.getText().toString();
-        TextView textview2 = (TextView) findViewById(R.id.player2);
-        playerTwo = textview2.getText().toString();
-        if (playerOne.trim().equals("")) playerOne = "Player 1";
-        if (playerTwo.trim().equals("")) playerTwo = "Player 2";
-
-
-        intent.putExtra(GameActivity.PLAYER_ONE_NAME, playerOne);
-        intent.putExtra(GameActivity.PLAYER_TWO_NAME, playerTwo);
-        intent.putExtra(GameView.BOARD_SIZE, boardSize);
-
-        startActivity(intent);
+            if (setLoginStatus()) {
+                // TODO: Enable/disable certain views and change text of "Login" button
+            } else {
+                // TODO: popup Toast that says we were unable to login
+            }
+        }
     }
 
     /**
@@ -122,4 +158,13 @@ public class MainActivity extends AppCompatActivity {
         }).show();
     }
 
+    private boolean setLoginStatus() {
+        if (username != "" && password != "" && Server.checkUser(username, password)) {
+            isLoggedIn = true;
+        } else {
+            isLoggedIn = false;
+        }
+
+        return isLoggedIn;
+    }
 }

@@ -12,7 +12,7 @@ import android.widget.Toast;
 import java.io.Serializable;
 
 /**
- * TODO: document your custom view class.
+ * Documented yeah.
  */
 public class GameView extends View {
 

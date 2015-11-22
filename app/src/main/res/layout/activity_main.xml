@@ -7,9 +7,9 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/gameStart"
+        android:text="@string/login"
         android:id="@+id/startButton"
-        android:onClick="onStartGame"
+        android:onClick="onLoginStartGame"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
@@ -20,9 +20,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="@string/player1"
-        android:id="@+id/player1_label"
-        android:layout_above="@+id/player2"
+        android:text="@string/username"
+        android:id="@+id/username_label"
+        android:layout_above="@+id/password"
         android:layout_alignLeft="@+id/imageView"
         android:layout_alignStart="@+id/imageView" />
 
@@ -30,35 +30,42 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="@string/player2"
-        android:id="@+id/player2_label"
+        android:text="@string/password"
+        android:id="@+id/password_label"
         android:layout_marginBottom="42dp"
         android:layout_above="@+id/spinnerFields"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/remember_me"
+        android:id="@+id/remember" />
+
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/player1"
+        android:id="@+id/username"
         android:layout_alignParentRight="false"
         android:layout_alignParentEnd="true"
         android:layout_marginRight="42dp"
         android:layout_marginEnd="42dp"
-        android:layout_alignBottom="@+id/player1_label"
-        android:layout_toEndOf="@+id/player1_label"
-        android:layout_toRightOf="@+id/player1_label"
+        android:layout_alignBottom="@+id/username_label"
+        android:layout_toEndOf="@+id/username_label"
+        android:layout_toRightOf="@+id/username_label"
         android:inputType="text" />
 
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/player2"
-        android:layout_alignBottom="@+id/player2_label"
-        android:layout_alignEnd="@+id/player1"
-        android:layout_toEndOf="@+id/player2_label"
-        android:layout_toRightOf="@+id/player2_label"
-        android:inputType="text" />
+        android:inputType="textPassword"
+        android:ems="10"
+        android:id="@+id/password"
+        android:layout_alignBottom="@+id/password_label"
+        android:layout_alignEnd="@+id/username"
+        android:layout_toEndOf="@+id/password_label"
+        android:layout_toRightOf="@+id/password_label" />
 
     <Spinner
         android:layout_width="wrap_content"
@@ -66,7 +73,8 @@
         android:id="@+id/spinnerFields"
         android:layout_above="@+id/startButton"
         android:layout_alignRight="@+id/imageView"
-        android:layout_alignEnd="@+id/imageView" />
+        android:layout_alignEnd="@+id/imageView"
+        android:visibility="gone" />
 
     <ImageView
         android:layout_width="wrap_content"
