@@ -2,7 +2,6 @@ package edu.msu.becketta.steampunked;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -11,6 +10,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -129,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
         if (isLoggedIn) {
             // TODO: If we're logged in then we need to start a new game. Hold off on this until after the checkpoint
         } else {
-            //set member variables for playerone and playertwo
+
             TextView user = (TextView) findViewById(R.id.username);
             username = user.getText().toString();
             TextView pass = (TextView) findViewById(R.id.password);
@@ -137,8 +137,13 @@ public class MainActivity extends AppCompatActivity {
 
             if (setLoginStatus()) {
                 // TODO: Enable/disable certain views and change text of "Login" button
+                TextView startButton = (TextView) findViewById(R.id.startButton);
+                startButton.setText(R.string.gameNew);
             } else {
                 // TODO: popup Toast that says we were unable to login
+                //display in short period of time
+                Toast.makeText(getApplicationContext(), "Unable to login",
+                        Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -153,7 +158,7 @@ public class MainActivity extends AppCompatActivity {
                         "But be careful, if there is a leak in your connection you lose!"))
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface arg0, int arg1) {
-                // Some stuff to do when ok got clicked
+               
             }
         }).show();
     }
