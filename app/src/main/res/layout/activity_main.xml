@@ -98,4 +98,14 @@
         android:layout_alignParentEnd="true"
         android:onClick="onHowToPlay" />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/new_user"
+        android:id="@+id/create_user"
+        android:layout_below="@+id/password"
+        android:layout_toRightOf="@+id/spinnerFields"
+        android:layout_toEndOf="@+id/spinnerFields"
+        android:onClick="onCreateUser" />
+
 </RelativeLayout>

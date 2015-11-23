@@ -149,6 +149,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
+     * Create a new user via dialog box
+     */
+    public CreateUserDialog onCreateUser(View view){
+        CreateUserDialog userDialog = new CreateUserDialog();
+        userDialog.show(getFragmentManager(), "create");
+
+        return userDialog;
+    }
+
+    /**
      * Display the game instructions
      */
     public void onHowToPlay(View view) {

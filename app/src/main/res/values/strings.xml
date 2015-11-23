@@ -10,6 +10,8 @@
     <string name="login">Login</string>
     <string name="new_user">Create New User</string>
     <string name="gameNew">New Game</string>
+    <string name="create">Create</string>
+    <string name="cancel">Cancel</string>
     <string name="remember_me">Remember me</string>
     <string name="playerWin">Winner is: </string>
     <string name="instructions">How To Play</string>
