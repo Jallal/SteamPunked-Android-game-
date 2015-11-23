@@ -13,9 +13,14 @@ import java.util.Scanner;
  */
 public class Server {
 
-    private static final String LOGIN_URL = "https://webdev.cse.msu.edu/~elhazzat/cse476/proj2/login.php";
+    private static final String LOGIN_URL = "http://webdev.cse.msu.edu/~elhazzat/cse476/proj2/login.php";
     private static final String CREATE_USER_URL = "";
     private static final String UTF8 = "UTF-8";
+
+    /**
+     * Have we been told to cancel?
+     */
+    private boolean cancel = false;
 
 
     /**
@@ -24,14 +29,15 @@ public class Server {
      * @param password The user's password
      * @return true if the login was successful
      */
-    public static boolean checkUser(String usr, String password) {
-        // Create the query
+    public boolean login(String usr, String password) {
+        // Create the get query
         String query = LOGIN_URL + "?user=" + usr + "&password=" + password;
 
         InputStream stream = null;
         try {
             URL url = new URL(query);
 
+            if (cancel) { return false; }
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             int responseCode = conn.getResponseCode();
             if (responseCode != HttpURLConnection.HTTP_OK) {
@@ -67,11 +73,11 @@ public class Server {
      * @param password The new user's password
      * @return true if the new user was successfully created
      */
-    public static boolean createNewUser(String usr, String password) {
+    public boolean createNewUser(String usr, String password) {
         return false;
     }
 
-    private static boolean serverFailed(InputStream stream) {
+    private boolean serverFailed(InputStream stream) {
         boolean fail = false;
 
         try {
@@ -90,5 +96,9 @@ public class Server {
         }
 
         return fail;
+    }
+
+    public void cancel() {
+        this.cancel = true;
     }
 }

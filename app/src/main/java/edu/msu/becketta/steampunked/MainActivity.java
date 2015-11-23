@@ -1,8 +1,11 @@
 package edu.msu.becketta.steampunked;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -135,16 +138,7 @@ public class MainActivity extends AppCompatActivity {
             TextView pass = (TextView) findViewById(R.id.password);
             password = pass.getText().toString();
 
-            if (setLoginStatus()) {
-                // TODO: Enable/disable certain views and change text of "Login" button
-                TextView startButton = (TextView) findViewById(R.id.startButton);
-                startButton.setText(R.string.gameNew);
-            } else {
-                // TODO: popup Toast that says we were unable to login
-                //display in short period of time
-                Toast.makeText(getApplicationContext(), "Unable to login",
-                        Toast.LENGTH_SHORT).show();
-            }
+            setLoginStatus();
         }
     }
 
@@ -173,13 +167,65 @@ public class MainActivity extends AppCompatActivity {
         }).show();
     }
 
-    private boolean setLoginStatus() {
-        if (username != "" && password != "" && Server.checkUser(username, password)) {
-            isLoggedIn = true;
-        } else {
-            isLoggedIn = false;
-        }
+    private void setLoginStatus() {
 
-        return isLoggedIn;
+        if (username == "" && password == "") {
+            isLoggedIn = false;
+        } else {
+
+            new AsyncTask<String, Void, Boolean>() {
+
+                private ProgressDialog progressDialog;
+                private Server server = new Server();
+
+                @Override
+                protected void onPreExecute() {
+                    super.onPreExecute();
+                    progressDialog = ProgressDialog.show(MainActivity.this,
+                            getString(R.string.please_wait),
+                            getString(R.string.logging_in),
+                            true, true, new DialogInterface.OnCancelListener() {
+                                @Override
+                                public void onCancel(DialogInterface dialog) {
+                                    server.cancel();
+                                }
+                            });
+                }
+
+                @Override
+                protected Boolean doInBackground(String... params) {
+                    boolean success = server.login(params[0], params[1]);
+                    return success;
+                }
+
+                @Override
+                protected void onPostExecute(Boolean success) {
+                    progressDialog.dismiss();
+                    if (success) {
+                        isLoggedIn = true;
+                        updateUI();
+                        Toast.makeText(MainActivity.this,
+                                R.string.login_success,
+                                Toast.LENGTH_SHORT).show();
+                    } else {
+                        isLoggedIn = false;
+                        Toast.makeText(MainActivity.this,
+                                R.string.login_fail,
+                                Toast.LENGTH_LONG).show();
+                    }
+                }
+            }.execute(username, password);
+
+        }
+    }
+
+    private void updateUI() {
+        // TODO: Enable/disable certain views and change text of "Login" button
+        TextView startButton = (TextView) findViewById(R.id.startButton);
+        if (isLoggedIn) {
+            startButton.setText(R.string.gameNew);
+        } else {
+            startButton.setText(R.string.login);
+        }
     }
 }

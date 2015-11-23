@@ -3,14 +3,23 @@ package edu.msu.becketta.steampunked;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * Created by Joe on 11/22/2015.
  */
 public class CreateUserDialog extends DialogFragment{
+
+    /**
+     * The alert dialog box
+     */
+    private AlertDialog dlg;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -25,14 +34,64 @@ public class CreateUserDialog extends DialogFragment{
                 .setPositiveButton(R.string.create, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
-                        //TODO: create user ...
+                        TextView u = (TextView)dlg.findViewById(R.id.username);
+                        TextView p = (TextView)dlg.findViewById(R.id.password);
+                        createUser(u.getText().toString(), p.getText().toString());
                     }
                 })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        CreateUserDialog.this.getDialog().cancel();
+                        // Cancel just closes the dialog
                     }
                 });
-        return builder.create();
+        dlg = builder.create();
+        return dlg;
+    }
+
+    private void createUser(String usr, String password) {
+
+        new AsyncTask<String, Void, Boolean>() {
+
+            private ProgressDialog progressDialog;
+            private Server server = new Server();
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                progressDialog = ProgressDialog.show(CreateUserDialog.this.getActivity(),
+                        getString(R.string.please_wait),
+                        getString(R.string.creating_user),
+                        true, true, new DialogInterface.OnCancelListener() {
+                            @Override
+                            public void onCancel(DialogInterface dialog) {
+                                server.cancel();
+                            }
+                        });
+            }
+
+            @Override
+            protected Boolean doInBackground(String... params) {
+                Server server = new Server();
+                boolean success = server.createNewUser(params[0], params[1]);
+                return success;
+            }
+
+            @Override
+            protected void onPostExecute(Boolean success) {
+                if (progressDialog.isShowing()) {
+                    progressDialog.dismiss();
+                }
+                if (success) {
+                    Toast.makeText(dlg.getContext(),
+                            R.string.create_user_success,
+                            Toast.LENGTH_SHORT).show();
+                    dlg.dismiss();
+                } else {
+                    Toast.makeText(dlg.getContext(),
+                            R.string.create_user_fail,
+                            Toast.LENGTH_LONG).show();
+                }
+            }
+        }.execute(usr, password);
     }
 }
