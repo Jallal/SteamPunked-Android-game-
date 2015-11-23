@@ -34,9 +34,17 @@ public class CreateUserDialog extends DialogFragment{
                 .setPositiveButton(R.string.create, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
-                        TextView u = (TextView)dlg.findViewById(R.id.username);
-                        TextView p = (TextView)dlg.findViewById(R.id.password);
-                        createUser(u.getText().toString(), p.getText().toString());
+                        TextView u = (TextView) dlg.findViewById(R.id.username);
+                        TextView p = (TextView) dlg.findViewById(R.id.password);
+                        TextView v = (TextView) dlg.findViewById(R.id.verify);
+
+                        if (p.getText().toString().equals(v.getText().toString())) {
+                            createUser(u.getText().toString(), p.getText().toString());
+                        } else {
+                            Toast.makeText(dlg.getContext(),
+                                    R.string.verify_error,
+                                    Toast.LENGTH_SHORT).show();
+                                                   }
                     }
                 })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
