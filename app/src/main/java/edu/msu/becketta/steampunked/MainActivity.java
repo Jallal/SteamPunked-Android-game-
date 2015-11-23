@@ -2,7 +2,6 @@ package edu.msu.becketta.steampunked;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -11,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -222,10 +222,18 @@ public class MainActivity extends AppCompatActivity {
     private void updateUI() {
         // TODO: Enable/disable certain views and change text of "Login" button
         TextView startButton = (TextView) findViewById(R.id.startButton);
+        EditText usernameEdit = (EditText) findViewById(R.id.username);
+        EditText passwordEdit = (EditText) findViewById(R.id.password);
+
         if (isLoggedIn) {
             startButton.setText(R.string.gameNew);
+            usernameEdit.setVisibility(View.INVISIBLE);
+            passwordEdit.setVisibility(View.INVISIBLE);
+
         } else {
             startButton.setText(R.string.login);
+            usernameEdit.setVisibility(View.VISIBLE);
+            passwordEdit.setVisibility(View.VISIBLE);
         }
     }
 }

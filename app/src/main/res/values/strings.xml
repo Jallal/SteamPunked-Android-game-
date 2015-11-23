@@ -9,7 +9,7 @@
     <string name="title_activity_end_game">EndGameActivity</string>
     <string name="login">Login</string>
     <string name="verify">Verify</string>
-    <string name="new_user">Create New User</string>
+    <string name="new_user">New User</string>
     <string name="gameNew">New Game</string>
     <string name="create">Create</string>
     <string name="cancel">Cancel</string>
