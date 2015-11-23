@@ -25,7 +25,7 @@ public class CreateUserDialog extends DialogFragment{
                 .setPositiveButton(R.string.create, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
-                        // create user ...
+                        //TODO: create user ...
                     }
                 })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
