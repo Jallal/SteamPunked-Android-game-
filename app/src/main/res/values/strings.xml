@@ -33,6 +33,7 @@
     <string name="login_fail">Failed to log in</string>
     <string name="login_success">Successfully logged in</string>
     <string name="create_user_fail">Failed to create new user</string>
-    <string name="verify_error">Failed to create new user, password does not match.</string>
+    <string name="verify_error">Passwords do not match</string>
+    <string name="password_length_error">Password must be at least 8 characters</string>
     <string name="create_user_success">Created new user!</string>
 </resources>

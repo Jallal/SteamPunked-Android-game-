@@ -14,7 +14,7 @@ import java.util.Scanner;
 public class Server {
 
     private static final String LOGIN_URL = "http://webdev.cse.msu.edu/~elhazzat/cse476/proj2/login.php";
-    private static final String CREATE_USER_URL = "";
+    private static final String CREATE_USER_URL = "http://webdev.cse.msu.edu/~elhazzat/cse476/proj2/newuser.php";
     private static final String UTF8 = "UTF-8";
 
     /**
@@ -31,7 +31,7 @@ public class Server {
      */
     public boolean login(String usr, String password) {
         // Create the get query
-        String query = LOGIN_URL + "?user=" + usr + "&password=" + password;
+        String query = LOGIN_URL + "?username=" + usr + "&password=" + password;
 
         InputStream stream = null;
         try {
@@ -74,7 +74,41 @@ public class Server {
      * @return true if the new user was successfully created
      */
     public boolean createNewUser(String usr, String password) {
-        return false;
+        // Create the get query
+        String query = CREATE_USER_URL + "?username=" + usr + "&password=" + password;
+
+        InputStream stream = null;
+        try {
+            URL url = new URL(query);
+
+            if (cancel) { return false; }
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            int responseCode = conn.getResponseCode();
+            if (responseCode != HttpURLConnection.HTTP_OK) {
+                return false;
+            }
+
+            stream = conn.getInputStream();
+            if(serverFailed(stream)) {
+                return false;
+            }
+
+        } catch (MalformedURLException e) {
+            // Should never happen
+            return false;
+        } catch (IOException ex) {
+            return false;
+        } finally {
+            if(stream != null) {
+                try {
+                    stream.close();
+                } catch (IOException ex) {
+                    // Fail silently
+                }
+            }
+        }
+
+        return true;
     }
 
     private boolean serverFailed(InputStream stream) {
@@ -85,7 +119,7 @@ public class Server {
 
             String code = scanner.next();
 
-            if (code != "success") {
+            if (code.equals("success")) {
                 fail = true;
             }
 

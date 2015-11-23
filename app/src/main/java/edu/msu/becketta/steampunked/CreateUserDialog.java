@@ -38,13 +38,17 @@ public class CreateUserDialog extends DialogFragment{
                         TextView p = (TextView) dlg.findViewById(R.id.password);
                         TextView v = (TextView) dlg.findViewById(R.id.verify);
 
-                        if (p.getText().toString().equals(v.getText().toString())) {
-                            createUser(u.getText().toString(), p.getText().toString());
-                        } else {
+                        if (!p.getText().toString().equals(v.getText().toString())) {
                             Toast.makeText(dlg.getContext(),
                                     R.string.verify_error,
                                     Toast.LENGTH_SHORT).show();
-                                                   }
+                        } else if (p.getText().length() < 8) {
+                            Toast.makeText(dlg.getContext(),
+                                    R.string.password_length_error,
+                                    Toast.LENGTH_SHORT).show();
+                        } else {
+                            createUser(u.getText().toString(), p.getText().toString());
+                        }
                     }
                 })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
