@@ -158,7 +158,7 @@ public class MainActivity extends AppCompatActivity {
                         "But be careful, if there is a leak in your connection you lose!"))
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface arg0, int arg1) {
-               
+
             }
         }).show();
     }
