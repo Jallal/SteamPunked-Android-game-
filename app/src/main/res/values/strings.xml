@@ -26,4 +26,8 @@
     <string name="winner_name">Winner Name</string>
     <string name="username">Username</string>
     <string name="password">Password</string>
+    <string name="login_fail">Failed to log in</string>
+    <string name="login_success">Successfully logged in</string>
+    <string name="create_user_fail">Failed to create new user</string>
+    <string name="create_user_success">Created new user!</string>
 </resources>
