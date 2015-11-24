@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -220,24 +221,44 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * handle the rememberme chceckbox
+     * * @param view
+     */
+    public void onCheckboxClicked(View view) {
+        // Is the view now checked?
+        boolean checked = ((CheckBox) view).isChecked();
+
+        if(checked){
+            //TODO:fill in the username and pwd fields automatically
+        }
+
+        updateUI();
+
+
+    }
+
     private void updateUI() {
         // TODO: Enable/disable certain views and change text of "Login" button
-        TextView startButton = (TextView) findViewById(R.id.startButton);
+        TextView startButtonText = (TextView) findViewById(R.id.startButton);
         EditText usernameEdit = (EditText) findViewById(R.id.username);
         EditText passwordEdit = (EditText) findViewById(R.id.password);
         CheckBox rememberCheckbox = (CheckBox) findViewById(R.id.remember);
+        Button createUserButton = (Button) findViewById(R.id.create_user);
 
         if (isLoggedIn) {
-            startButton.setText(R.string.gameNew);
+            startButtonText.setText(R.string.gameNew);
             usernameEdit.setVisibility(View.INVISIBLE);
             passwordEdit.setVisibility(View.INVISIBLE);
             rememberCheckbox.setVisibility(View.INVISIBLE);
+            createUserButton.setVisibility(View.INVISIBLE);
 
         } else {
-            startButton.setText(R.string.login);
+            startButtonText.setText(R.string.login);
             usernameEdit.setVisibility(View.VISIBLE);
             passwordEdit.setVisibility(View.VISIBLE);
             rememberCheckbox.setVisibility(View.VISIBLE);
+            createUserButton.setVisibility(View.VISIBLE);
         }
     }
 }

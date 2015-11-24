@@ -21,7 +21,8 @@
         android:text="@string/remember_me"
         android:id="@+id/remember"
         android:layout_below="@+id/password"
-        android:layout_alignLeft="@+id/password" />
+        android:layout_alignLeft="@+id/password"
+        android:onClick="onCheckboxClicked" />
 
     <Spinner
         android:layout_width="wrap_content"
