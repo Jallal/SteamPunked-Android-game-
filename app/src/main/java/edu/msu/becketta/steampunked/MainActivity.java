@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -224,16 +225,19 @@ public class MainActivity extends AppCompatActivity {
         TextView startButton = (TextView) findViewById(R.id.startButton);
         EditText usernameEdit = (EditText) findViewById(R.id.username);
         EditText passwordEdit = (EditText) findViewById(R.id.password);
+        CheckBox rememberCheckbox = (CheckBox) findViewById(R.id.remember);
 
         if (isLoggedIn) {
             startButton.setText(R.string.gameNew);
             usernameEdit.setVisibility(View.INVISIBLE);
             passwordEdit.setVisibility(View.INVISIBLE);
+            rememberCheckbox.setVisibility(View.INVISIBLE);
 
         } else {
             startButton.setText(R.string.login);
             usernameEdit.setVisibility(View.VISIBLE);
             passwordEdit.setVisibility(View.VISIBLE);
+            rememberCheckbox.setVisibility(View.VISIBLE);
         }
     }
 }
