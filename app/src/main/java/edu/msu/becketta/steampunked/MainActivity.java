@@ -233,13 +233,17 @@ public class MainActivity extends AppCompatActivity {
         EditText passwordEdit = (EditText) findViewById(R.id.password);
         CheckBox rememberCheckbox = (CheckBox) findViewById(R.id.remember);
         Button createUserButton = (Button) findViewById(R.id.create_user);
+        Button logoutButton = (Button) findViewById(R.id.logoutButton);
+        Spinner boardSize = (Spinner) findViewById(R.id.spinnerFields);
 
         if (isLoggedIn) {
             startButtonText.setText(R.string.gameNew);
-            usernameEdit.setVisibility(View.INVISIBLE);
-            passwordEdit.setVisibility(View.INVISIBLE);
-            rememberCheckbox.setVisibility(View.INVISIBLE);
-            createUserButton.setVisibility(View.INVISIBLE);
+            usernameEdit.setVisibility(View.GONE);
+            passwordEdit.setVisibility(View.GONE);
+            rememberCheckbox.setVisibility(View.GONE);
+            createUserButton.setVisibility(View.GONE);
+            boardSize.setVisibility(View.VISIBLE);
+            logoutButton.setVisibility(View.VISIBLE);
 
         } else {
             startButtonText.setText(R.string.login);
@@ -247,6 +251,8 @@ public class MainActivity extends AppCompatActivity {
             passwordEdit.setVisibility(View.VISIBLE);
             rememberCheckbox.setVisibility(View.VISIBLE);
             createUserButton.setVisibility(View.VISIBLE);
+            boardSize.setVisibility(View.GONE);
+            logoutButton.setVisibility(View.GONE);
         }
     }
 }

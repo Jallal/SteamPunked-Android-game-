@@ -36,4 +36,5 @@
     <string name="verify_error">Passwords do not match</string>
     <string name="password_length_error">Password must be at least 8 characters</string>
     <string name="create_user_success">Created new user!</string>
+    <string name="logout">Logout</string>
 </resources>

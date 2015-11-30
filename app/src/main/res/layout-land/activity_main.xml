@@ -87,6 +87,6 @@
         android:layout_height="wrap_content"
         android:id="@+id/spinnerFields"
         android:layout_above="@+id/startButton"
- />
+        android:visibility="gone" />
 
 </RelativeLayout>
