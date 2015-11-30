@@ -12,6 +12,7 @@
         android:contentDescription="@string/steampunked_logo"
         android:layout_alignParentTop="true"
         android:layout_toStartOf="@+id/create_user"
+        android:layout_above="@+id/spinnerFields"
         android:layout_alignRight="@+id/create_user"
         android:layout_alignEnd="@+id/create_user" />
 
@@ -80,5 +81,12 @@
         android:onClick="onCreateUser"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" />
+
+    <Spinner
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/spinnerFields"
+        android:layout_above="@+id/startButton"
+ />
 
 </RelativeLayout>
