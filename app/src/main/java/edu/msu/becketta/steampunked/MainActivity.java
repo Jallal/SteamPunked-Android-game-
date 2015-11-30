@@ -140,6 +140,11 @@ public class MainActivity extends AppCompatActivity {
             TextView pass = (TextView) findViewById(R.id.password);
             password = pass.getText().toString();
 
+            CheckBox remember = (CheckBox)findViewById(R.id.remember);
+            if (remember.isChecked()) {
+                writePreferneces();
+            }
+
             setLoginStatus();
         }
     }
@@ -219,23 +224,6 @@ public class MainActivity extends AppCompatActivity {
             }.execute(username, password);
 
         }
-    }
-
-    /**
-     * handle the rememberme chceckbox
-     * * @param view
-     */
-    public void onCheckboxClicked(View view) {
-        // Is the view now checked?
-        boolean checked = ((CheckBox) view).isChecked();
-
-        if(checked){
-            //TODO:fill in the username and pwd fields automatically
-        }
-
-        updateUI();
-
-
     }
 
     private void updateUI() {

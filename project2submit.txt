@@ -1,0 +1,57 @@
+
+Project 2 Submission
+
+Group Name:   Bowser
+
+When you have completed the project, complete the following form and include it with your project. Include this file as a text file in the folder with your project when you turn it in. 
+
+For the Checkpoint, Describe a sequence of operations to create a new account and log onto the server:
+
+A functionality checklist will not be provided for the project. Treat this as you would a request from a client and identify what the client requires. 
+
+Member 1: Joseph Michael Schmitz
+
+Responsiblity: The openning activity and new user dialog box.
+
+
+
+Member 2: Aaron Thomas Beckett
+
+Responsiblity: The client side ability to log in to the server.
+
+
+
+Member 3: Jallal Elhazzat
+
+Responsiblity: The server side login functionality.
+
+
+
+Member 4 (if applicable): not applicable
+
+Responsiblity:
+
+
+Provide instructions on how to reach the first editing activity if the login button is not yet functional.
+	-> The login button is functional as is the create new user button. Error
+	messages will tell you if creation/login have succeeded and, additionally, if
+	the app knows you have logged in it will hide the login EditText views and the
+	remember me check box. Also know that the remember me functionality doesn't work
+	yet and the New Game button does not work yet.
+	-> Passwords must be longer than 8 characters
+
+User account the server-side communications is running under:
+	-> elhazzat
+
+Paths to all server-side scripts:
+	http://webdev.cse.msu.edu/~elhazzat/cse476/proj2/login.php
+	http://webdev.cse.msu.edu/~elhazzat/cse476/proj2/newuser.php
+
+Calls in the code to the server (provide a class name and function, or URL used for debugging):
+	-> All communication with the server is in the 'Server' class.
+	-> The Server class' login function is called from the MainActivity in setLoginStatus
+	-> The Server class' create new user function is called from the CreateUserDialog in
+	   createUser.
+
+
+
