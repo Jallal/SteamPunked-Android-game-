@@ -1,10 +1,18 @@
 package edu.msu.becketta.steampunked;
 
+import android.util.Xml;
+
+import org.xmlpull.v1.XmlSerializer;
+
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
@@ -15,13 +23,181 @@ public class Server {
 
     private static final String LOGIN_URL = "http://webdev.cse.msu.edu/~elhazzat/cse476/proj2/login.php";
     private static final String CREATE_USER_URL = "http://webdev.cse.msu.edu/~elhazzat/cse476/proj2/newuser.php";
+    private static final String CREATE_NEW_GAME = "http://webdev.cse.msu.edu/~elhazzat/cse476/proj2/newgame.php";
+    private static final String JOIN_GAME = "http://webdev.cse.msu.edu/~elhazzat/cse476/proj2/joingame.php";
+    private static final String UPDATE_GAME = "http://webdev.cse.msu.edu/~elhazzat/cse476/proj2/updategame.php";
+    private static final String GET_GAME_STATUS = "http://webdev.cse.msu.edu/~elhazzat/cse476/proj2/getgamestatus.php";
     private static final String UTF8 = "UTF-8";
+
+    public enum GamePostMode {
+        CREATE,
+        UPDATE
+    }
 
     /**
      * Have we been told to cancel?
      */
     private boolean cancel = false;
 
+
+    public InputStream getGameState(String usr, GameView view) {
+        // Create a get query
+        String query = GET_GAME_STATUS + "?username=" + usr;
+
+        try {
+            URL url = new URL(query);
+
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            int responseCode = conn.getResponseCode();
+            if(responseCode != HttpURLConnection.HTTP_OK) {
+                return null;
+            }
+
+            InputStream stream = conn.getInputStream();
+            return stream;
+
+        } catch (MalformedURLException e) {
+            // Should never happen
+            return null;
+        } catch (IOException ex) {
+            return null;
+        }
+    }
+
+    public boolean sendGameState(String usr, GameView view, GamePostMode mode) {
+        // Create an XML packet with the information about the current image
+        XmlSerializer xml = Xml.newSerializer();
+        StringWriter writer = new StringWriter();
+
+        try {
+            xml.setOutput(writer);
+
+            xml.startDocument(UTF8, true);
+
+            xml.startTag(null, "game");
+
+            //view.saveXml(xml);
+
+            xml.endTag(null, "game");
+
+            xml.endDocument();
+
+        } catch (IOException e) {
+            // This won't occur when writing to a string
+            return false;
+        }
+
+        final String xmlStr = writer.toString();
+
+        /*
+         * Convert the XML into HTTP POST data
+         */
+        String postDataStr;
+        try {
+            postDataStr = "game=" + URLEncoder.encode(xmlStr, UTF8);
+        } catch (UnsupportedEncodingException e) {
+            return false;
+        }
+
+        /*
+         * Send the data to the server
+         */
+        byte[] postData = postDataStr.getBytes();
+        InputStream stream = null;
+        try {
+            String query;
+            switch(mode) {
+                case CREATE:
+                    query = CREATE_NEW_GAME + "?username=" + usr;
+                    break;
+                case UPDATE:
+                    query = UPDATE_GAME + "?username=" + usr;
+                    break;
+                default:
+                    query = UPDATE_GAME + "?username=" + usr;
+                    break;
+            }
+            URL url = new URL(query);
+
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+            conn.setDoOutput(true);
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Content-Length", Integer.toString(postData.length));
+            conn.setUseCaches(false);
+
+            OutputStream out = conn.getOutputStream();
+            out.write(postData);
+            out.close();
+
+            int responseCode = conn.getResponseCode();
+            if(responseCode != HttpURLConnection.HTTP_OK) {
+                return false;
+            }
+
+            stream = conn.getInputStream();
+
+            /**
+             * Create an XML parser for the result
+             */
+            if(serverFailed(stream)) {
+                return false;
+            }
+
+        } catch (MalformedURLException e) {
+            return false;
+        } catch (IOException ex) {
+            return false;
+        } finally {
+            if(stream != null) {
+                try {
+                    stream.close();
+                } catch (IOException ex) {
+                    // Fail silently
+                }
+            }
+        }
+
+        return true;
+    }
+
+    public boolean joinGame(String usr) {
+        // Create the get query
+        String query = JOIN_GAME + "?username=" + usr;
+
+        InputStream stream = null;
+        try {
+            URL url = new URL(query);
+
+            if (cancel) { return false; }
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            int responseCode = conn.getResponseCode();
+            if (responseCode != HttpURLConnection.HTTP_OK) {
+                return false;
+            }
+
+            stream = conn.getInputStream();
+            if(serverFailed(stream)) {
+                return false;
+            }
+
+        } catch (MalformedURLException e) {
+            // Should never happen
+            return false;
+        } catch (IOException ex) {
+            return false;
+        } finally {
+            if(stream != null) {
+                try {
+                    stream.close();
+                } catch (IOException ex) {
+                    // Fail silently
+                }
+            }
+        }
+
+        return true;
+    }
 
     /**
      * Send the server a username and password to login
