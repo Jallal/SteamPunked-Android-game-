@@ -130,16 +130,28 @@ public class MainActivity extends AppCompatActivity {
      *
      * @param view The view calling this function
      */
-    public void onLoginStartGame(View view) {
+    public void onLogin(View view) {
         if (isLoggedIn) {
-            // TODO: If we're logged in then we need to start a new game. Hold off on this until after the checkpoint
-        } else {
+            // Logout
+            SharedPreferences settings = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
+            SharedPreferences.Editor editor = settings.edit();
 
+            editor.putString(USERNAME, "");
+            editor.putString(PASSWORD, "");
+
+            editor.commit();
+
+            isLoggedIn = false;
+
+            updateUI();
+        } else {
+            // Login
             TextView user = (TextView) findViewById(R.id.username);
             username = user.getText().toString();
             TextView pass = (TextView) findViewById(R.id.password);
             password = pass.getText().toString();
 
+            // Remember the login info if they want
             CheckBox remember = (CheckBox)findViewById(R.id.remember);
             if (remember.isChecked()) {
                 writePreferneces();
@@ -152,11 +164,21 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Create a new user via dialog box
      */
-    public CreateUserDialog onCreateUser(View view){
+    public CreateUserDialog onCreateUser(View view) {
         CreateUserDialog userDialog = new CreateUserDialog();
         userDialog.show(getFragmentManager(), "create");
 
         return userDialog;
+    }
+
+    /**
+     * Try to join a game or, if none are available, create a new game
+     */
+    public void newGame(View view) {
+        // TODO: If we're logged in then we need to start a new game.
+        if (isLoggedIn) {
+
+        }
     }
 
     /**
@@ -228,31 +250,31 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateUI() {
         // TODO: Enable/disable certain views and change text of "Login" button
-        TextView startButtonText = (TextView) findViewById(R.id.startButton);
+        TextView loginButtonText = (TextView) findViewById(R.id.loginButton);
         EditText usernameEdit = (EditText) findViewById(R.id.username);
         EditText passwordEdit = (EditText) findViewById(R.id.password);
         CheckBox rememberCheckbox = (CheckBox) findViewById(R.id.remember);
         Button createUserButton = (Button) findViewById(R.id.create_user);
-        Button logoutButton = (Button) findViewById(R.id.logoutButton);
+        Button newGameButton = (Button) findViewById(R.id.new_game);
         Spinner boardSize = (Spinner) findViewById(R.id.spinnerFields);
 
         if (isLoggedIn) {
-            startButtonText.setText(R.string.gameNew);
+            loginButtonText.setText(R.string.logout);
             usernameEdit.setVisibility(View.GONE);
             passwordEdit.setVisibility(View.GONE);
             rememberCheckbox.setVisibility(View.GONE);
             createUserButton.setVisibility(View.GONE);
             boardSize.setVisibility(View.VISIBLE);
-            logoutButton.setVisibility(View.VISIBLE);
+            newGameButton.setVisibility(View.VISIBLE);
 
         } else {
-            startButtonText.setText(R.string.login);
+            loginButtonText.setText(R.string.login);
             usernameEdit.setVisibility(View.VISIBLE);
             passwordEdit.setVisibility(View.VISIBLE);
             rememberCheckbox.setVisibility(View.VISIBLE);
             createUserButton.setVisibility(View.VISIBLE);
             boardSize.setVisibility(View.GONE);
-            logoutButton.setVisibility(View.GONE);
+            newGameButton.setVisibility(View.GONE);
         }
     }
 }
