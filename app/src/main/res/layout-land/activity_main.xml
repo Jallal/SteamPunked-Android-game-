@@ -12,9 +12,9 @@
         android:contentDescription="@string/steampunked_logo"
         android:layout_alignParentTop="true"
         android:layout_toStartOf="@+id/create_user"
-        android:layout_above="@+id/spinnerFields"
         android:layout_alignRight="@+id/create_user"
-        android:layout_alignEnd="@+id/create_user" />
+        android:layout_alignEnd="@+id/create_user"
+        android:layout_above="@+id/spinnerFields" />
 
     <EditText
         android:layout_width="wrap_content"
@@ -85,7 +85,22 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/spinnerFields"
-        android:layout_above="@+id/loginButton"
-        android:visibility="gone" />
+        android:visibility="gone"
+        android:layout_alignParentEnd="false"
+        android:layout_alignParentStart="false"
+        android:layout_alignParentLeft="true"
+        android:layout_above="@+id/loginButton" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/gameNew"
+        android:id="@+id/new_game"
+        android:layout_alignParentBottom="true"
+        android:layout_alignStart="@+id/create_user"
+        android:visibility="invisible"
+        android:layout_alignParentEnd="false"
+        android:layout_centerHorizontal="true"
+        android:onClick="onNewGame" />
 
 </RelativeLayout>
