@@ -1,23 +1,31 @@
 package edu.msu.becketta.steampunked;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.io.InputStream;
 
 public class GameActivity extends AppCompatActivity {
 
-    public final static String PLAYER_ONE_NAME = "edu.msu.becketta.steampunked.PLAYER_ONE_NAME";
-    public final static String PLAYER_TWO_NAME = "edu.msu.becketta.steampunked.PLAYER_TWO_NAME";
+    public final static String MY_NAME = "edu.msu.becketta.steampunked.MY_NAME";
+    public final static String AM_PLAYER_ONE = "edu.msu.becketta.steampunked.AM_PLAYER_ONE";
 
-    private final static String P_ONE = "player1";
-    private final static String P_TWO = "player2";
+    private final static String P_NAME = "my_name";
+    private final static String O_NAME = "opponent_name";
+    private final static String AM_P1 = "am_player_one";
 
-    private String playerOneName;
-    private String playerTwoName;
+    private String myName = "";
+    private String opponentName = "";
+    private boolean amPlayerOne;
 
 
     @Override
@@ -26,18 +34,28 @@ public class GameActivity extends AppCompatActivity {
         setContentView(R.layout.activity_game);
 
         if(savedInstanceState != null) {
-            playerOneName = savedInstanceState.getString(P_ONE);
-            playerTwoName = savedInstanceState.getString(P_TWO);
+            myName = savedInstanceState.getString(P_NAME);
+            opponentName = savedInstanceState.getString(O_NAME);
+            amPlayerOne = savedInstanceState.getBoolean(AM_P1);
 
             getGameView().loadState(savedInstanceState);
         } else { // There is no saved state, use the intent for initialization
             Intent intent = getIntent();
-            playerOneName = intent.getStringExtra(PLAYER_ONE_NAME);
-            playerTwoName = intent.getStringExtra(PLAYER_TWO_NAME);
+            myName = intent.getStringExtra(MY_NAME);
+            amPlayerOne = intent.getBooleanExtra(AM_PLAYER_ONE, false);
 
-            getGameView().initialize(intent);
-            getGameView().setPlayerName(playerOneName, Pipe.PipeGroup.PLAYER_ONE);
-            getGameView().setPlayerName(playerTwoName, Pipe.PipeGroup.PLAYER_TWO);
+            Pipe.PipeGroup myPipeGroup;
+            if (amPlayerOne) {
+                myPipeGroup = Pipe.PipeGroup.PLAYER_ONE;
+                getGameView().initialize(intent);
+                uploadGameState(Server.GamePostMode.CREATE);
+                waitForPlayerTwo();
+            } else {
+                myPipeGroup = Pipe.PipeGroup.PLAYER_TWO;
+                loadGameState();
+            }
+
+            getGameView().setPlayerNames(myName, opponentName, myPipeGroup);
         }
 
         updateUI();
@@ -47,10 +65,31 @@ public class GameActivity extends AppCompatActivity {
     protected void onSaveInstanceState(Bundle bundle) {
         super.onSaveInstanceState(bundle);
 
-        bundle.putString(P_ONE, playerOneName);
-        bundle.putString(P_TWO, playerTwoName);
+        bundle.putString(P_NAME, myName);
+        bundle.putString(O_NAME, opponentName);
+        bundle.putSerializable(AM_P1, amPlayerOne);
 
         getGameView().saveState(bundle);
+    }
+
+    private void waitForPlayerTwo() {
+
+    }
+
+    private void loadGameState() {
+        // TODO: get the game state from the server
+        if (!getGameView().isInitialized()) {
+            GameView.dimension size = GameView.dimension.SMALL;
+            getGameView().initialize(size);
+        }
+    }
+
+    private void uploadGameState(Server.GamePostMode mode) {
+        // TODO: push the game state to the server
+        UploadTask update = new UploadTask();
+        update.setGameView(getGameView());
+        update.setUploadMode(mode);
+        update.execute(myName);
     }
 
     @Override
@@ -76,28 +115,33 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void quitGame() {
+        // TODO: alert the server that I've quit the game
+
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }
 
     public void onSurrender(View view) {
-        String winner = getGameView().getPlayerOneTurn() ? playerTwoName : playerOneName;
-        onGameOver(winner);
+        onGameOver(opponentName);
     }
     public void onInstall(View view) {
         getGameView().installPipe();
         updateUI();
+
+        // TODO: alert the server that my turn is over by updating the game state
     }
     public void onDiscard(View view) {
         getGameView().discard();
         updateUI();
+
+        // TODO: alert the server that my turn is over by updating the game state
     }
     public void onOpenValve(View view) {
         if(getGameView().openValve()) {
-            onGameOver(getGameView().getPlayerOneTurn() ? playerOneName : playerTwoName);
+            onGameOver(myName);
         } else {
-            onGameOver(getGameView().getPlayerOneTurn() ? playerTwoName : playerOneName);
+            onGameOver(opponentName);
         }
     }
 
@@ -105,6 +149,8 @@ public class GameActivity extends AppCompatActivity {
      * Once someone wins or there is a forfeit
      */
     public void onGameOver(String winner) {
+        // TODO: Send the final game state to the server
+
         Intent intent = new Intent(this, EndGameActivity.class);
 
         intent.putExtra(EndGameActivity.WINNER, winner);
@@ -120,9 +166,75 @@ public class GameActivity extends AppCompatActivity {
     private void updateUI(){
         TextView currentPlayer = (TextView)findViewById(R.id.currentPlayer);
         String baseText = getString(R.string.your_turn) + '\n';
-        if(getGameView().getPlayerOneTurn()) currentPlayer.setText(baseText + playerOneName);
-        else currentPlayer.setText(baseText + playerTwoName);
+        Button discard = (Button) findViewById(R.id.discardButton);
+        Button install = (Button) findViewById(R.id.installButton);
+        Button surrender = (Button) findViewById(R.id.surrender);
+        Button openValve = (Button) findViewById(R.id.openValveButton);
+
+        if (getGameView().isMyTurn()) {
+            currentPlayer.setText(baseText + myName);
+            discard.setEnabled(true);
+            install.setEnabled(true);
+            surrender.setEnabled(true);
+            openValve.setEnabled(true);
+        } else {
+            currentPlayer.setText(baseText + opponentName);
+            discard.setEnabled(false);
+            install.setEnabled(false);
+            surrender.setEnabled(false);
+            openValve.setEnabled(false);
+        }
     }
 
 
+    private class UploadTask extends AsyncTask<String, Void, Boolean> {
+
+        private ProgressDialog progressDialog;
+        private Server server = new Server();
+        private GameView view;
+        private Server.GamePostMode uploadMode;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            // TODO: change strings
+            progressDialog = ProgressDialog.show(GameActivity.this,
+                    getString(R.string.please_wait),
+                    getString(R.string.logging_in),
+                    true, true, new DialogInterface.OnCancelListener() {
+                        @Override
+                        public void onCancel(DialogInterface dialog) {
+                            server.cancel();
+                        }
+                    });
+        }
+
+        public void setGameView(GameView view) {
+            this.view = view;
+        }
+        public void setUploadMode(Server.GamePostMode mode) {
+            uploadMode = mode;
+        }
+
+        @Override
+        protected Boolean doInBackground(String... params) {
+            boolean success = server.sendGameState(params[0], view, uploadMode);
+            return success;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean success) {
+            progressDialog.dismiss();
+            // TODO: change strings
+            if (success) {
+                Toast.makeText(GameActivity.this,
+                        R.string.login_success,
+                        Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(GameActivity.this,
+                        R.string.login_fail,
+                        Toast.LENGTH_LONG).show();
+            }
+        }
+    }
 }

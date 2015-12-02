@@ -40,7 +40,7 @@ public class Server {
     private boolean cancel = false;
 
 
-    public InputStream getGameState(String usr, GameView view) {
+    public InputStream getGameState(String usr) {
         // Create a get query
         String query = GET_GAME_STATUS + "?username=" + usr;
 
@@ -76,7 +76,7 @@ public class Server {
 
             xml.startTag(null, "game");
 
-            //view.saveXml(xml);
+            view.saveToXML(xml);
 
             xml.endTag(null, "game");
 
