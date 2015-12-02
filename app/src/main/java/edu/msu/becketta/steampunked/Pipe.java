@@ -8,6 +8,11 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.text.TextPaint;
 
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlSerializer;
+
+import java.io.IOException;
 import java.io.Serializable;
 
 /**
@@ -170,6 +175,14 @@ public class Pipe implements Serializable {
             gaugePaint.setColor(Color.RED);
             gaugePaint.setStrokeWidth(6f);
         }
+    }
+
+    public void loadFromSavedState(XmlPullParser xml) throws IOException, XmlPullParserException {
+        // TODO: load the pipe from the xml pull parser/input stream... whatever
+    }
+
+    public void saveToXML(XmlSerializer xml) throws IOException {
+        // TODO: save the pipe to xml
     }
 
     public void resetPipe() {
