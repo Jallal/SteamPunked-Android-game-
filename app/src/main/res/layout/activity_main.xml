@@ -96,6 +96,6 @@
         android:visibility="invisible"
         android:layout_alignParentEnd="false"
         android:layout_centerHorizontal="true"
-        android:onClick="onNewGame" />
+        android:onClick="newGame" />
 
 </RelativeLayout>

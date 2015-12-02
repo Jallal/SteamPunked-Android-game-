@@ -3,6 +3,7 @@ package edu.msu.becketta.steampunked;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -106,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
         setLoginStatus();
     }
 
-    private void writePreferneces() {
+    private void writePreferences() {
         SharedPreferences settings = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
         SharedPreferences.Editor editor = settings.edit();
 
@@ -154,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
             // Remember the login info if they want
             CheckBox remember = (CheckBox)findViewById(R.id.remember);
             if (remember.isChecked()) {
-                writePreferneces();
+                writePreferences();
             }
 
             setLoginStatus();
@@ -175,9 +176,20 @@ public class MainActivity extends AppCompatActivity {
      * Try to join a game or, if none are available, create a new game
      */
     public void newGame(View view) {
-        // TODO: If we're logged in then we need to start a new game.
+        // If we're logged in then we need to start a new game.
         if (isLoggedIn) {
-
+            Intent intent = new Intent(this, GameActivity.class);
+            Server server = new Server();
+            if (server.joinGame(username)) {
+                // Start the game as player 2
+                intent.putExtra(GameActivity.AM_PLAYER_ONE, false);
+            } else {
+                // Start the game as player 1
+                intent.putExtra(GameActivity.AM_PLAYER_ONE, true);
+                intent.putExtra(GameView.BOARD_SIZE, boardSize);
+            }
+            intent.putExtra(GameActivity.MY_NAME, username);
+            startActivity(intent);
         }
     }
 
