@@ -107,12 +107,7 @@ public class GameActivity extends AppCompatActivity {
 
     private void waitForPlayerTwo() {
         if (!startGame) {
-            progressDialog = ProgressDialog.show(this, "Hold your horses!", "Waiting for second player...", true, true, new DialogInterface.OnCancelListener() {
-                @Override
-                public void onCancel(DialogInterface dialog) {
-                    onBackPressed();
-                }
-            });
+            progressDialog = ProgressDialog.show(this, "Hold your horses!", "Waiting for second player...", true, false);
         }
     }
 
