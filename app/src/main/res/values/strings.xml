@@ -2,14 +2,18 @@
     <string name="app_name">Steampunked</string>
 
     <string name="install">Install</string>
-    <string name="disard">Discard</string>
+    <string name="discard">Discard</string>
     <string name="openValve">OpenValve</string>
     <string name="surrender">Surrender</string>
     <string name="title_activity_game">GameActivity</string>
     <string name="title_activity_end_game">EndGameActivity</string>
-    <string name="gameStart">Start Game</string>
-    <string name="player1">Player 1:</string>
-    <string name="player2">Player 2:</string>
+    <string name="login">Login</string>
+    <string name="verify">Verify</string>
+    <string name="new_user">New User</string>
+    <string name="gameNew">New Game</string>
+    <string name="create">Create</string>
+    <string name="cancel">Cancel</string>
+    <string name="remember_me">Remember me</string>
     <string name="playerWin">Winner is: </string>
     <string name="instructions">How To Play</string>
     <string name="newGame">Start a New Game</string>
@@ -21,4 +25,16 @@
     <string name="your_turn">Your turn: </string>
     <string name="steampunked_logo">Steampunked logo.</string>
     <string name="winner_name">Winner Name</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="please_wait">Please wait...</string>
+    <string name="logging_in">Logging in...</string>
+    <string name="creating_user">Creating new user...</string>
+    <string name="login_fail">Failed to log in</string>
+    <string name="login_success">Successfully logged in</string>
+    <string name="create_user_fail">Failed to create new user</string>
+    <string name="verify_error">Passwords do not match</string>
+    <string name="password_length_error">Password must be at least 8 characters</string>
+    <string name="create_user_success">Created new user!</string>
+    <string name="logout">Logout</string>
 </resources>

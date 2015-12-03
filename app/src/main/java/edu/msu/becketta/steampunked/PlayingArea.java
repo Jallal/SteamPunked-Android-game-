@@ -4,6 +4,11 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlSerializer;
+
+import java.io.IOException;
 import java.io.Serializable;
 
 /**
@@ -48,7 +53,13 @@ public class PlayingArea implements Serializable {
         debugPaint.setColor(Color.argb(25, 0, 100, 82));  // A transparent blue
     }
 
+    public void loadFromSavedState(XmlPullParser xml) throws IOException, XmlPullParserException {
+        // TODO: load the playing area from the xml pull parser/input stream... whatever
+    }
 
+    public void saveToXML(XmlSerializer xml) throws IOException {
+        // TODO: save the playing area to xml
+    }
 
     /**
      * Get the playing area height

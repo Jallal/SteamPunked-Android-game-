@@ -6,6 +6,11 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.Log;
 
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlSerializer;
+
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Random;
 
@@ -75,7 +80,13 @@ public class PipeBank implements Serializable {
         bankPaint.setColor(Color.argb(90, 0, 100, 0));  // A semi-transparent green
     }
 
-    // TODO: may need to add setter for the context if we need to re-set the context after PipeBank is serialized
+    public void loadFromSavedState(XmlPullParser xml) throws IOException, XmlPullParserException {
+        // TODO: load the pipe bank from the xml pull parser/input stream... whatever
+    }
+
+    public void saveToXML(XmlSerializer xml) throws IOException {
+        // TODO: save the pipe bank to xml
+    }
 
     /**
      * Generate a random pipe

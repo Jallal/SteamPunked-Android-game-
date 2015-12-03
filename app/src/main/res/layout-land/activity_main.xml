@@ -1,74 +1,46 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent"  tools:context=".MainActivity">
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
 
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/gameStart"
-        android:id="@+id/startButton"
-        android:onClick="onStartGame"
-        android:layout_above="@+id/game_instructions"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="@string/player1"
-        android:id="@+id/player1_label"
-        android:layout_above="@+id/player2"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="@string/player2"
-        android:id="@+id/player2_label"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
-
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/player1"
-        android:layout_alignBottom="@+id/player1_label"
-        android:layout_toRightOf="@+id/player1_label"
-        android:layout_toEndOf="@+id/player1_label"
-        android:layout_toLeftOf="@+id/startButton"
-        android:inputType="text" />
-
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/player2"
-        android:layout_alignBottom="@+id/player2_label"
-        android:layout_toRightOf="@+id/player2_label"
-        android:layout_toLeftOf="@+id/startButton"
-        android:inputType="text" />
-
-    <Spinner
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/spinnerFields"
-        android:layout_above="@+id/player1_label"
-        android:layout_toLeftOf="@+id/startButton"
-        android:layout_toStartOf="@+id/startButton" />
 
     <ImageView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/imageView"
         android:src="@drawable/splash"
+        android:contentDescription="@string/steampunked_logo"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_above="@+id/spinnerFields"
-        android:contentDescription="@string/steampunked_logo" />
+        android:layout_toStartOf="@+id/create_user"
+        android:layout_alignRight="@+id/create_user"
+        android:layout_alignEnd="@+id/create_user"
+        android:layout_above="@+id/spinnerFields" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/username"
+        android:inputType="text"
+        android:fontFamily="sans-serif"
+        android:hint="@string/username"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="45dp"
+        android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@+id/game_instructions"
+        android:layout_toStartOf="@+id/game_instructions" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPassword"
+        android:ems="10"
+        android:id="@+id/password"
+        android:layout_alignEnd="@+id/username"
+        android:fontFamily="sans-serif"
+        android:hint="@string/password"
+        android:layout_below="@+id/username"
+        android:layout_alignLeft="@+id/username"
+        android:layout_gravity="center_vertical" />
 
     <Button
         style="?android:attr/buttonStyleSmall"
@@ -76,10 +48,59 @@
         android:layout_height="wrap_content"
         android:text="@string/instructions"
         android:id="@+id/game_instructions"
-        android:onClick="onHowToPlay"
-        android:layout_alignBaseline="@+id/player2"
-        android:layout_alignBottom="@+id/player2"
-        android:layout_toRightOf="@+id/player1"
-        android:layout_toEndOf="@+id/player1" />
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:onClick="onHowToPlay" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/login"
+        android:id="@+id/loginButton"
+        android:onClick="onLogin"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="false"
+        android:windowSoftInputMode="stateVisible|adjustResize" />
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/remember_me"
+        android:id="@+id/remember"
+        android:layout_below="@+id/password"
+        android:layout_alignLeft="@+id/password" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/new_user"
+        android:id="@+id/create_user"
+        android:onClick="onCreateUser"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
+
+    <Spinner
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/spinnerFields"
+        android:visibility="gone"
+        android:layout_alignParentEnd="false"
+        android:layout_alignParentStart="false"
+        android:layout_alignParentLeft="true"
+        android:layout_above="@+id/loginButton" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/gameNew"
+        android:id="@+id/new_game"
+        android:layout_alignParentBottom="true"
+        android:layout_alignStart="@+id/create_user"
+        android:visibility="invisible"
+        android:layout_alignParentEnd="false"
+        android:layout_centerHorizontal="true"
+        android:onClick="newGame" />
 
 </RelativeLayout>

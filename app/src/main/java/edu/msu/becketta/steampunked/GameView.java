@@ -9,10 +9,15 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
 
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlSerializer;
+
+import java.io.IOException;
 import java.io.Serializable;
 
 /**
- * TODO: document your custom view class.
+ * Documented yeah.
  */
 public class GameView extends View {
 
@@ -98,14 +103,34 @@ public class GameView extends View {
 
 
     /************************** METHODS *****************************/
+    public boolean isInitialized() {
+        return gameField != null;
+    }
 
     /**
      * Should only be called when the GameActivity is creating itself from an intent
      * @param intent The Intent that has the board dimension
      */
     public void initialize(Intent intent) {
-        dimension size = (dimension)intent.getSerializableExtra(BOARD_SIZE);
-        initializeGameArea(size);
+        params.boardSize = (dimension)intent.getSerializableExtra(BOARD_SIZE);
+        initializeGameArea(params.boardSize);
+    }
+
+    /**
+     * Should only be called when the GameView is creating itself from a saved state
+     * @param size The size of the playing field
+     */
+    public void initialize(dimension size) {
+        params.boardSize = size;
+        initializeGameArea(params.boardSize);
+    }
+
+    public void loadFromSavedState(XmlPullParser xml) throws IOException, XmlPullParserException {
+        // TODO: load the game from the xml pull parser/input stream... whatever
+    }
+
+    public void saveToXML(XmlSerializer xml) throws IOException {
+        // TODO: save the game to xml
     }
 
     /**
@@ -259,6 +284,10 @@ public class GameView extends View {
      */
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        if (!params.myTurn) {
+            return false;
+        }
+
         int id = event.getPointerId(event.getActionIndex());
 
         switch(event.getActionMasked()) {
@@ -283,8 +312,7 @@ public class GameView extends View {
                     if(params.currentPipe != null) {
                         // This location is relative to the playing area
                         params.currentPipe.setLocation(touch1.x,touch1.y);
-                        Pipe.PipeGroup g = params.playerOneTurn ? Pipe.PipeGroup.PLAYER_ONE : Pipe.PipeGroup.PLAYER_TWO;
-                        params.currentPipe.setGroup(g);
+                        params.currentPipe.setGroup(params.myGroup);
                     }
                 }
 
@@ -603,29 +631,35 @@ public class GameView extends View {
         }
     }
 
-    public boolean getPlayerOneTurn() {
-        return params.playerOneTurn;
+    public boolean isMyTurn() {
+        return params.myTurn;
+    }
+
+    public void startTurn() {
+        params.myTurn = true;
+    }
+
+    private void endTurn() {
+        params.myTurn = false;
     }
 
     public void discard() {
         bank.setActivePipe(null);
         params.currentPipe = null;
-        params.playerOneTurn = !params.playerOneTurn;
+        endTurn();
         invalidate();
     }
 
     public boolean openValve() {
-        Pipe searchBeginning = params.playerOneTurn ? params.playerOneStart : params.playerTwoStart;
-        searchBeginning.setHandleOpen();
-        if(!gameField.search(searchBeginning)) {
+        params.myStart.setHandleOpen();
+        if(!gameField.search(params.myStart)) {
             // There is a leak
             invalidate();
             return false;
         }
 
         // There is no leak
-        Pipe endPipe = params.playerOneTurn ? params.playerOneEnd : params.playerTwoEnd;
-        endPipe.setGaugeFull();
+        params.myEnd.setGaugeFull();
         invalidate();
         return true;
     }
@@ -646,15 +680,26 @@ public class GameView extends View {
         return -1;
     }
 
-    public void setPlayerName(String name, Pipe.PipeGroup group) {
-        switch(group) {
+    public void setPlayerNames(String me, String them, Pipe.PipeGroup myGroup) {
+        params.myGroup = myGroup;
+        switch(myGroup) {
             case PLAYER_ONE:
-                params.playerOneStart.setPlayerName(name);
+                params.playerOneStart.setPlayerName(me);
+                params.playerTwoStart.setPlayerName(them);
+                params.myStart = params.playerOneStart;
+                params.myEnd = params.playerOneEnd;
                 break;
             case PLAYER_TWO:
-                params.playerTwoStart.setPlayerName(name);
+                params.playerOneStart.setPlayerName(them);
+                params.playerTwoStart.setPlayerName(me);
+                params.myStart = params.playerTwoStart;
+                params.myEnd = params.playerTwoEnd;
                 break;
         }
+    }
+
+    public dimension getBoardSize() {
+        return params.boardSize;
     }
 
 
@@ -665,10 +710,15 @@ public class GameView extends View {
      */
     private static class Parameters implements Serializable {
 
+        public dimension boardSize;
+
         /**
          * Is it player one's turn?
          */
-        public boolean playerOneTurn = true;
+        public boolean myTurn = false;
+        public Pipe.PipeGroup myGroup;
+        public Pipe myStart;
+        public Pipe myEnd;
 
         /**
          * Player One start pipe

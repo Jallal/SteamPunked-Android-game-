@@ -1,24 +1,48 @@
 package edu.msu.becketta.steampunked;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
+    private final static String PREFERENCES = "preferences";
+    private final static String USERNAME = "username";
+    private final static String PASSWORD = "password";
 
-    //member variable for the boardsize
+    /**
+     * Is the player logged in to the system
+     */
+    private boolean isLoggedIn = false;
+
+    /**
+     * The user's saved or entered username
+     */
+    private String username;
+
+    /**
+     * The user's saved or entered password
+     */
+    private String password;
+
+    /**
+     * Store the selected board size
+      */
     GameView.dimension boardSize;
-
-
-    //set the playerOne and playerTwo names
 
 
     /**
@@ -70,6 +94,27 @@ public class MainActivity extends AppCompatActivity {
 
         });
 
+        readPreferences();
+
+    }
+
+    private void readPreferences() {
+        SharedPreferences settings = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
+
+        username = settings.getString(USERNAME, "");
+        password = settings.getString(PASSWORD, "");
+
+        setLoginStatus();
+    }
+
+    private void writePreferences() {
+        SharedPreferences settings = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
+        SharedPreferences.Editor editor = settings.edit();
+
+        editor.putString(USERNAME, username);
+        editor.putString(PASSWORD, password);
+
+        editor.commit();
     }
 
 
@@ -86,25 +131,66 @@ public class MainActivity extends AppCompatActivity {
      *
      * @param view The view calling this function
      */
-    public void onStartGame(View view) {
-        Intent intent = new Intent(this, GameActivity.class);
+    public void onLogin(View view) {
+        if (isLoggedIn) {
+            // Logout
+            SharedPreferences settings = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
+            SharedPreferences.Editor editor = settings.edit();
 
-        //set member variables for playerone and playertwo
-        String playerOne;
-        String playerTwo;
-        TextView textview1 = (TextView) findViewById(R.id.player1);
-        playerOne = textview1.getText().toString();
-        TextView textview2 = (TextView) findViewById(R.id.player2);
-        playerTwo = textview2.getText().toString();
-        if (playerOne.trim().equals("")) playerOne = "Player 1";
-        if (playerTwo.trim().equals("")) playerTwo = "Player 2";
+            editor.putString(USERNAME, "");
+            editor.putString(PASSWORD, "");
 
+            editor.commit();
 
-        intent.putExtra(GameActivity.PLAYER_ONE_NAME, playerOne);
-        intent.putExtra(GameActivity.PLAYER_TWO_NAME, playerTwo);
-        intent.putExtra(GameView.BOARD_SIZE, boardSize);
+            isLoggedIn = false;
 
-        startActivity(intent);
+            updateUI();
+        } else {
+            // Login
+            TextView user = (TextView) findViewById(R.id.username);
+            username = user.getText().toString();
+            TextView pass = (TextView) findViewById(R.id.password);
+            password = pass.getText().toString();
+
+            // Remember the login info if they want
+            CheckBox remember = (CheckBox)findViewById(R.id.remember);
+            if (remember.isChecked()) {
+                writePreferences();
+            }
+
+            setLoginStatus();
+        }
+    }
+
+    /**
+     * Create a new user via dialog box
+     */
+    public CreateUserDialog onCreateUser(View view) {
+        CreateUserDialog userDialog = new CreateUserDialog();
+        userDialog.show(getFragmentManager(), "create");
+
+        return userDialog;
+    }
+
+    /**
+     * Try to join a game or, if none are available, create a new game
+     */
+    public void newGame(View view) {
+        // If we're logged in then we need to start a new game.
+        if (isLoggedIn) {
+            Intent intent = new Intent(this, GameActivity.class);
+            Server server = new Server();
+            if (server.joinGame(username)) {
+                // Start the game as player 2
+                intent.putExtra(GameActivity.AM_PLAYER_ONE, false);
+            } else {
+                // Start the game as player 1
+                intent.putExtra(GameActivity.AM_PLAYER_ONE, true);
+                intent.putExtra(GameView.BOARD_SIZE, boardSize);
+            }
+            intent.putExtra(GameActivity.MY_NAME, username);
+            startActivity(intent);
+        }
     }
 
     /**
@@ -117,9 +203,90 @@ public class MainActivity extends AppCompatActivity {
                         "But be careful, if there is a leak in your connection you lose!"))
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface arg0, int arg1) {
-                // Some stuff to do when ok got clicked
+
             }
         }).show();
     }
 
+    private void setLoginStatus() {
+
+        if (username == "" && password == "") {
+            isLoggedIn = false;
+        } else {
+
+            new AsyncTask<String, Void, Boolean>() {
+
+                private ProgressDialog progressDialog;
+                private Server server = new Server();
+
+                @Override
+                protected void onPreExecute() {
+                    super.onPreExecute();
+                    progressDialog = ProgressDialog.show(MainActivity.this,
+                            getString(R.string.please_wait),
+                            getString(R.string.logging_in),
+                            true, true, new DialogInterface.OnCancelListener() {
+                                @Override
+                                public void onCancel(DialogInterface dialog) {
+                                    server.cancel();
+                                }
+                            });
+                }
+
+                @Override
+                protected Boolean doInBackground(String... params) {
+                    boolean success = server.login(params[0], params[1]);
+                    return success;
+                }
+
+                @Override
+                protected void onPostExecute(Boolean success) {
+                    progressDialog.dismiss();
+                    if (success) {
+                        isLoggedIn = true;
+                        updateUI();
+                        Toast.makeText(MainActivity.this,
+                                R.string.login_success,
+                                Toast.LENGTH_SHORT).show();
+                    } else {
+                        isLoggedIn = false;
+                        Toast.makeText(MainActivity.this,
+                                R.string.login_fail,
+                                Toast.LENGTH_LONG).show();
+                    }
+                }
+            }.execute(username, password);
+
+        }
+    }
+
+    private void updateUI() {
+        // TODO: Enable/disable certain views and change text of "Login" button
+        TextView loginButtonText = (TextView) findViewById(R.id.loginButton);
+        EditText usernameEdit = (EditText) findViewById(R.id.username);
+        EditText passwordEdit = (EditText) findViewById(R.id.password);
+        CheckBox rememberCheckbox = (CheckBox) findViewById(R.id.remember);
+        Button createUserButton = (Button) findViewById(R.id.create_user);
+        Button newGameButton = (Button) findViewById(R.id.new_game);
+        Spinner boardSize = (Spinner) findViewById(R.id.spinnerFields);
+
+        if (isLoggedIn) {
+            loginButtonText.setText(R.string.logout);
+            usernameEdit.setVisibility(View.GONE);
+            passwordEdit.setVisibility(View.GONE);
+            rememberCheckbox.setVisibility(View.GONE);
+            createUserButton.setVisibility(View.GONE);
+            boardSize.setVisibility(View.VISIBLE);
+            newGameButton.setVisibility(View.VISIBLE);
+
+        } else {
+            loginButtonText.setText(R.string.login);
+            usernameEdit.setVisibility(View.VISIBLE);
+            passwordEdit.setVisibility(View.VISIBLE);
+            rememberCheckbox.setVisibility(View.VISIBLE);
+            createUserButton.setVisibility(View.VISIBLE);
+            boardSize.setVisibility(View.GONE);
+            newGameButton.setVisibility(View.GONE);
+        }
+    }
 }

@@ -6,7 +6,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/disard"
+        android:text="@string/discard"
         android:id="@+id/discardButton"
         android:onClick="onDiscard"
         android:adjustViewBounds="true"
