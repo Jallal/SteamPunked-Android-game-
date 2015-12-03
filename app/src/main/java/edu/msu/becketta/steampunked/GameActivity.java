@@ -210,6 +210,12 @@ public class GameActivity extends AppCompatActivity {
         if (!getGameView().isInitialized()) {
             getGameView().initialize(size);
         }
+        if (!amPlayerOne) {
+            opponentName = p1;
+            getGameView().setPlayerNames(myName, opponentName, Pipe.PipeGroup.PLAYER_TWO);
+        } else {
+            opponentName = p2;
+        }
         loadGameState();
     }
 
