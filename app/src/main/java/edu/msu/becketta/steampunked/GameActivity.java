@@ -42,6 +42,8 @@ public class GameActivity extends AppCompatActivity {
     private ProgressDialog progressDialog;
     private boolean startGame = false;
 
+    private BroadcastReceiver gcmReciever;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,14 +74,21 @@ public class GameActivity extends AppCompatActivity {
 
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(MyGcmListenerService.MESSAGE);
-        registerReceiver(new BroadcastReceiver() {
+        gcmReciever = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 handleServerMessage(intent);
             }
-        }, intentFilter);
+        };
+        registerReceiver(gcmReciever, intentFilter);
 
         updateUI();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(gcmReciever);
     }
 
     private void handleServerMessage(Intent intent) {
@@ -98,12 +107,7 @@ public class GameActivity extends AppCompatActivity {
 
     private void waitForPlayerTwo() {
         if (!startGame) {
-            progressDialog = ProgressDialog.show(this, "Hold your horses!", "Waiting for second player...", true, true, new DialogInterface.OnCancelListener() {
-                @Override
-                public void onCancel(DialogInterface dialog) {
-                    onBackPressed();
-                }
-            });
+            progressDialog = ProgressDialog.show(this, "Hold your horses!", "Waiting for second player...", true, false);
         }
     }
 
@@ -262,6 +266,7 @@ public class GameActivity extends AppCompatActivity {
                         String gameOver = xml.getAttributeValue(null, "gameover");
                         if(gameOver.equals("false")) {
                             // TODO:
+                            Log.i("Load Game", "my turn");
                         } else {
                             gOver = true;
                         }
