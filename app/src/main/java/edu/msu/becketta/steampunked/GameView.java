@@ -131,6 +131,8 @@ public class GameView extends View {
 
     public void saveToXML(XmlSerializer xml) throws IOException {
         // TODO: save the game to xml
+        gameField.saveToXML(xml);
+        bank.saveToXML(xml);
     }
 
     /**
@@ -253,7 +255,9 @@ public class GameView extends View {
         canvas.save();
         canvas.translate(params.marginX, params.marginY);
         canvas.scale(params.gameFieldScale, params.gameFieldScale);
-        gameField.draw(canvas, params.blockSize);
+        if (gameField != null) {
+            gameField.draw(canvas, params.blockSize);
+        }
         canvas.restore();
 
 
@@ -701,11 +705,15 @@ public class GameView extends View {
     public dimension getBoardSize() {
         return params.boardSize;
     }
-    public void setGameOver() {
+    public void setGameOver(String winner) {
+        params.winner = winner;
         params.gameOver = true;
     }
     public boolean gameOver() {
         return params.gameOver;
+    }
+    public String getWinner() {
+        return params.winner;
     }
 
 
@@ -718,6 +726,7 @@ public class GameView extends View {
 
         public dimension boardSize;
         public boolean gameOver = false;
+        public String winner = "";
 
         /**
          * Is it player one's turn?

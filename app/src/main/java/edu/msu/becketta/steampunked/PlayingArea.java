@@ -59,6 +59,9 @@ public class PlayingArea implements Serializable {
 
     public void saveToXML(XmlSerializer xml) throws IOException {
         // TODO: save the playing area to xml
+        xml.startTag(null, "field");
+
+        xml.endTag(null, "field");
     }
 
     /**
