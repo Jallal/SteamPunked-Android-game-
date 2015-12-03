@@ -701,6 +701,12 @@ public class GameView extends View {
     public dimension getBoardSize() {
         return params.boardSize;
     }
+    public void setGameOver() {
+        params.gameOver = true;
+    }
+    public boolean gameOver() {
+        return params.gameOver;
+    }
 
 
     /********************** NESTED CLASSES *******************************/
@@ -711,6 +717,7 @@ public class GameView extends View {
     private static class Parameters implements Serializable {
 
         public dimension boardSize;
+        public boolean gameOver = false;
 
         /**
          * Is it player one's turn?

@@ -5,6 +5,8 @@ import android.util.Xml;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
 
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlSerializer;
 
 import java.io.IOException;
@@ -327,5 +329,26 @@ public class Server {
 
     public void cancel() {
         this.cancel = true;
+    }
+
+    /**
+     * Skip the XML parser to the end tag for whatever
+     * tag we are currently within.
+     * @param xml the parser
+     * @throws IOException
+     * @throws XmlPullParserException
+     */
+    public static void skipToEndTag(XmlPullParser xml)
+            throws IOException, XmlPullParserException {
+        int tag;
+        do
+        {
+            tag = xml.next();
+            if(tag == XmlPullParser.START_TAG) {
+                // Recurse over any start tag
+                skipToEndTag(xml);
+            }
+        } while(tag != XmlPullParser.END_TAG &&
+                tag != XmlPullParser.END_DOCUMENT);
     }
 }
