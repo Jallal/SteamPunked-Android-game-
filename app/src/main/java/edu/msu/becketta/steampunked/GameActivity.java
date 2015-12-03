@@ -2,11 +2,15 @@ package edu.msu.becketta.steampunked;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -17,15 +21,21 @@ import java.io.InputStream;
 public class GameActivity extends AppCompatActivity {
 
     public final static String MY_NAME = "edu.msu.becketta.steampunked.MY_NAME";
+    public final static String GCM_TOKEN = "edu.msu.becketta.steampunked.GCM_TOKEN";
     public final static String AM_PLAYER_ONE = "edu.msu.becketta.steampunked.AM_PLAYER_ONE";
 
     private final static String P_NAME = "my_name";
+    private final static String TOKEN = "token";
     private final static String O_NAME = "opponent_name";
     private final static String AM_P1 = "am_player_one";
 
     private String myName = "";
+    private String token;
     private String opponentName = "";
     private boolean amPlayerOne;
+
+    private ProgressDialog progressDialog;
+    private boolean startGame = false;
 
 
     @Override
@@ -35,6 +45,7 @@ public class GameActivity extends AppCompatActivity {
 
         if(savedInstanceState != null) {
             myName = savedInstanceState.getString(P_NAME);
+            token = savedInstanceState.getString(TOKEN);
             opponentName = savedInstanceState.getString(O_NAME);
             amPlayerOne = savedInstanceState.getBoolean(AM_P1);
 
@@ -42,23 +53,63 @@ public class GameActivity extends AppCompatActivity {
         } else { // There is no saved state, use the intent for initialization
             Intent intent = getIntent();
             myName = intent.getStringExtra(MY_NAME);
+            token = intent.getStringExtra(GCM_TOKEN);
             amPlayerOne = intent.getBooleanExtra(AM_PLAYER_ONE, false);
 
-            Pipe.PipeGroup myPipeGroup;
             if (amPlayerOne) {
-                myPipeGroup = Pipe.PipeGroup.PLAYER_ONE;
                 getGameView().initialize(intent);
                 uploadGameState(Server.GamePostMode.CREATE);
                 waitForPlayerTwo();
             } else {
-                myPipeGroup = Pipe.PipeGroup.PLAYER_TWO;
-                loadGameState();
+                getInitialGame();
             }
-
-            getGameView().setPlayerNames(myName, opponentName, myPipeGroup);
         }
 
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(MyGcmListenerService.MESSAGE);
+        registerReceiver(new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                handleServerMessage(intent);
+            }
+        }, intentFilter);
+
         updateUI();
+    }
+
+    private void handleServerMessage(Intent intent) {
+        String message = intent.getStringExtra(MyGcmListenerService.DATA);
+        Log.i("Push Message", message);
+        if (message.equals("turn")) {
+            getGameView().startTurn();
+        } else if (!message.equals("") && amPlayerOne) {
+            opponentName = message;
+            getGameView().setPlayerNames(myName, opponentName, Pipe.PipeGroup.PLAYER_ONE);
+            startGame();
+        }
+        updateUI();
+    }
+
+    private void waitForPlayerTwo() {
+        if (!startGame) {
+            progressDialog = ProgressDialog.show(this, "Hold your horses!", "Waiting for second player...", true, true, new DialogInterface.OnCancelListener() {
+                @Override
+                public void onCancel(DialogInterface dialog) {
+                    onBackPressed();
+                }
+            });
+        }
+    }
+
+    private void startGame() {
+        progressDialog.dismiss();
+        startGame = true;
+        getGameView().startTurn();
+        getGameView().invalidate();
+    }
+
+    private void getInitialGame() {
+
     }
 
     @Override
@@ -66,14 +117,11 @@ public class GameActivity extends AppCompatActivity {
         super.onSaveInstanceState(bundle);
 
         bundle.putString(P_NAME, myName);
+        bundle.putString(TOKEN, token);
         bundle.putString(O_NAME, opponentName);
         bundle.putSerializable(AM_P1, amPlayerOne);
 
         getGameView().saveState(bundle);
-    }
-
-    private void waitForPlayerTwo() {
-
     }
 
     private void loadGameState() {
@@ -82,6 +130,47 @@ public class GameActivity extends AppCompatActivity {
             GameView.dimension size = GameView.dimension.SMALL;
             getGameView().initialize(size);
         }
+
+        new AsyncTask<String, Void, Boolean>() {
+
+            private ProgressDialog progressDialog;
+            private Server server = new Server();
+            private volatile boolean cancel = false;
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                // TODO: change strings
+                progressDialog = ProgressDialog.show(GameActivity.this,
+                        getString(R.string.please_wait),
+                        getString(R.string.logging_in),
+                        true, true, new DialogInterface.OnCancelListener() {
+                            @Override
+                            public void onCancel(DialogInterface dialog) {
+                                cancel = true;
+                            }
+                        });
+            }
+
+            @Override
+            protected Boolean doInBackground(String... params) {
+                InputStream stream = server.getGameState(params[0]);
+                boolean success = stream != null;
+                if(success) {/*
+                    try {
+                        if (cancel) {
+                            return false;
+                        }
+                    }*/
+                }
+                return success;
+            }
+
+            @Override
+            protected void onPostExecute(Boolean success) {
+                progressDialog.dismiss();
+            }
+        }.execute(myName);
     }
 
     private void uploadGameState(Server.GamePostMode mode) {
@@ -89,7 +178,14 @@ public class GameActivity extends AppCompatActivity {
         UploadTask update = new UploadTask();
         update.setGameView(getGameView());
         update.setUploadMode(mode);
-        update.execute(myName);
+        switch (mode) {
+            case UPDATE:
+                update.execute(myName, null);
+                break;
+            case CREATE:
+                update.execute(myName, token);
+                break;
+        }
     }
 
     @Override
@@ -218,7 +314,7 @@ public class GameActivity extends AppCompatActivity {
 
         @Override
         protected Boolean doInBackground(String... params) {
-            boolean success = server.sendGameState(params[0], view, uploadMode);
+            boolean success = server.sendGameState(params[0], view, uploadMode, params[1]);
             return success;
         }
 
