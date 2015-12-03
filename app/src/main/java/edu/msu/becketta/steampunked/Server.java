@@ -2,6 +2,9 @@ package edu.msu.becketta.steampunked;
 
 import android.util.Xml;
 
+import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.google.android.gms.iid.InstanceID;
+
 import org.xmlpull.v1.XmlSerializer;
 
 import java.io.IOException;
@@ -21,12 +24,12 @@ import java.util.Scanner;
  */
 public class Server {
 
-    private static final String LOGIN_URL = "http://webdev.cse.msu.edu/~elhazzat/cse476/proj2/login.php";
-    private static final String CREATE_USER_URL = "http://webdev.cse.msu.edu/~elhazzat/cse476/proj2/newuser.php";
-    private static final String CREATE_NEW_GAME = "http://webdev.cse.msu.edu/~elhazzat/cse476/proj2/newgame.php";
-    private static final String JOIN_GAME = "http://webdev.cse.msu.edu/~elhazzat/cse476/proj2/joingame.php";
-    private static final String UPDATE_GAME = "http://webdev.cse.msu.edu/~elhazzat/cse476/proj2/updategame.php";
-    private static final String GET_GAME_STATUS = "http://webdev.cse.msu.edu/~elhazzat/cse476/proj2/getgamestatus.php";
+    private static final String LOGIN_URL = "http://cse.msu.edu/~elhazzat/cse476/proj2/login.php";
+    private static final String CREATE_USER_URL = "http://cse.msu.edu/~elhazzat/cse476/proj2/newuser.php";
+    private static final String CREATE_NEW_GAME = "http://cse.msu.edu/~elhazzat/cse476/proj2/newgame.php";
+    private static final String JOIN_GAME = "http://cse.msu.edu/~elhazzat/cse476/proj2/joingame.php";
+    private static final String UPDATE_GAME = "http://cse.msu.edu/~elhazzat/cse476/proj2/updategame.php";
+    private static final String GET_GAME_STATUS = "http://cse.msu.edu/~elhazzat/cse476/proj2/getgamestatus.php";
     private static final String UTF8 = "UTF-8";
 
     public enum GamePostMode {
@@ -64,7 +67,7 @@ public class Server {
         }
     }
 
-    public boolean sendGameState(String usr, GameView view, GamePostMode mode) {
+    public boolean sendGameState(String usr, GameView view, GamePostMode mode, String token) {
         // Create an XML packet with the information about the current image
         XmlSerializer xml = Xml.newSerializer();
         StringWriter writer = new StringWriter();
@@ -108,7 +111,7 @@ public class Server {
             String query;
             switch(mode) {
                 case CREATE:
-                    query = CREATE_NEW_GAME + "?username=" + usr;
+                    query = CREATE_NEW_GAME + "?username=" + usr + "&token=" + token;
                     break;
                 case UPDATE:
                     query = UPDATE_GAME + "?username=" + usr;
@@ -161,9 +164,10 @@ public class Server {
         return true;
     }
 
-    public boolean joinGame(String usr) {
+    public boolean joinGame(String usr, String token) {
+
         // Create the get query
-        String query = JOIN_GAME + "?username=" + usr;
+        String query = JOIN_GAME + "?username=" + usr + "&token=" + token;
 
         InputStream stream = null;
         try {
@@ -171,6 +175,19 @@ public class Server {
 
             if (cancel) { return false; }
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+            String postDataStr = "bullshit";
+            byte[] postData = postDataStr.getBytes();
+
+            conn.setDoOutput(true);
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Content-Length", Integer.toString(postData.length));
+            conn.setUseCaches(false);
+
+            OutputStream out = conn.getOutputStream();
+            out.write(postData);
+            out.close();
+
             int responseCode = conn.getResponseCode();
             if (responseCode != HttpURLConnection.HTTP_OK) {
                 return false;
@@ -288,7 +305,7 @@ public class Server {
     }
 
     private boolean serverFailed(InputStream stream) {
-        boolean fail = false;
+        boolean fail = true;
 
         try {
             Scanner scanner = new Scanner(stream);
@@ -296,7 +313,7 @@ public class Server {
             String code = scanner.next();
 
             if (code.equals("success")) {
-                fail = true;
+                fail = false;
             }
 
             scanner.close();

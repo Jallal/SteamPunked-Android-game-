@@ -2,6 +2,7 @@ package edu.msu.becketta.steampunked;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -18,11 +19,18 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.google.android.gms.iid.InstanceID;
+
+import java.io.IOException;
+
 public class MainActivity extends AppCompatActivity {
 
     private final static String PREFERENCES = "preferences";
     private final static String USERNAME = "username";
     private final static String PASSWORD = "password";
+
+    private String token;
 
     /**
      * Is the player logged in to the system
@@ -94,8 +102,46 @@ public class MainActivity extends AppCompatActivity {
 
         });
 
+        registerGcm();
+
         readPreferences();
 
+    }
+
+    private void registerGcm() {
+        new AsyncTask<Context, Void, String>() {
+            private ProgressDialog progressDialog;
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                // TODO: change strings
+                progressDialog = ProgressDialog.show(MainActivity.this,
+                        getString(R.string.please_wait),
+                        getString(R.string.logging_in),
+                        true, true, null);
+            }
+
+            @Override
+            protected String doInBackground(Context... params) {
+                String token = "";
+                try {
+                    InstanceID instanceID = InstanceID.getInstance(params[0]);
+                    token = instanceID.getToken(params[0].getString(R.string.gcm_defaultSenderId),
+                            GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
+                } catch (IOException ex) {
+
+                }
+
+                return token;
+            }
+
+            @Override
+            protected void onPostExecute(String gcmToken) {
+                progressDialog.dismiss();
+                token = gcmToken;
+            }
+        }.execute(this);
     }
 
     private void readPreferences() {
@@ -178,18 +224,48 @@ public class MainActivity extends AppCompatActivity {
     public void newGame(View view) {
         // If we're logged in then we need to start a new game.
         if (isLoggedIn) {
-            Intent intent = new Intent(this, GameActivity.class);
-            Server server = new Server();
-            if (server.joinGame(username)) {
-                // Start the game as player 2
-                intent.putExtra(GameActivity.AM_PLAYER_ONE, false);
-            } else {
-                // Start the game as player 1
-                intent.putExtra(GameActivity.AM_PLAYER_ONE, true);
-                intent.putExtra(GameView.BOARD_SIZE, boardSize);
-            }
-            intent.putExtra(GameActivity.MY_NAME, username);
-            startActivity(intent);
+            new AsyncTask<String, Void, Boolean>() {
+                private ProgressDialog progressDialog;
+                private Server server = new Server();
+                Intent intent = new Intent(MainActivity.this, GameActivity.class);
+
+                @Override
+                protected void onPreExecute() {
+                    super.onPreExecute();
+                    // TODO: change strings
+                    progressDialog = ProgressDialog.show(MainActivity.this,
+                            getString(R.string.please_wait),
+                            getString(R.string.logging_in),
+                            true, true, new DialogInterface.OnCancelListener() {
+                                @Override
+                                public void onCancel(DialogInterface dialog) {
+                                    server.cancel();
+                                }
+                            });
+                }
+
+                @Override
+                protected Boolean doInBackground(String... params) {
+                    boolean success = server.joinGame(params[0], params[1]);
+                    return success;
+                }
+
+                @Override
+                protected void onPostExecute(Boolean success) {
+                    progressDialog.dismiss();
+                    if (success) {
+                        // Start the game as player 2
+                        intent.putExtra(GameActivity.AM_PLAYER_ONE, false);
+                    } else {
+                        // Start the game as player 1
+                        intent.putExtra(GameActivity.AM_PLAYER_ONE, true);
+                        intent.putExtra(GameView.BOARD_SIZE, boardSize);
+                    }
+                    intent.putExtra(GameActivity.MY_NAME, username);
+                    intent.putExtra(GameActivity.GCM_TOKEN, token);
+                    startActivity(intent);
+                }
+            }.execute(username, token);
         }
     }
 
