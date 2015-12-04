@@ -32,6 +32,7 @@ public class Server {
     private static final String JOIN_GAME = "http://cse.msu.edu/~elhazzat/cse476/proj2/joingame.php";
     private static final String UPDATE_GAME = "http://cse.msu.edu/~elhazzat/cse476/proj2/updategame.php";
     private static final String GET_GAME_STATUS = "http://cse.msu.edu/~elhazzat/cse476/proj2/getgamestatus.php";
+    private static final String QUIT_GAME = "http://cse.msu.edu/~elhazzat/cse476/proj2/quit.php";
     private static final String UTF8 = "UTF-8";
 
     public enum GamePostMode {
@@ -44,6 +45,24 @@ public class Server {
      */
     private boolean cancel = false;
 
+    public void quitGame(String usr) {
+        String query = QUIT_GAME + "?username=" + usr;
+
+        try {
+            URL url = new URL(query);
+
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            int responseCode = conn.getResponseCode();
+            if(responseCode != HttpURLConnection.HTTP_OK) {
+                return;
+            }
+        }  catch (MalformedURLException e) {
+            // Should never happen
+            return;
+        } catch (IOException ex) {
+            return;
+        }
+    }
 
     public InputStream getGameState(String usr) {
         // Create a get query

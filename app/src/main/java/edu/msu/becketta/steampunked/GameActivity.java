@@ -328,7 +328,16 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void quitGame() {
-        // TODO: alert the server that I've quit the game
+
+        new AsyncTask<String, Void, Void>() {
+
+            @Override
+            protected Void doInBackground(String... params) {
+                Server server = new Server();
+                server.quitGame(params[0]);
+                return null;
+            }
+        }.execute(myName);
 
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
