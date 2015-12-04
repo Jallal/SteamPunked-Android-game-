@@ -238,7 +238,6 @@ public class Server {
             if (responseCode != HttpURLConnection.HTTP_OK) {
                 return false;
             }
-
             stream = conn.getInputStream();
             if(serverFailed(stream)) {
                 return false;
