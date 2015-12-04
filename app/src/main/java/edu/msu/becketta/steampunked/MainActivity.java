@@ -242,6 +242,7 @@ public class MainActivity extends AppCompatActivity {
                                     server.cancel();
                                 }
                             });
+
                 }
 
                 @Override
