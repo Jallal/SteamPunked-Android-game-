@@ -60,7 +60,6 @@ public class Server {
             // Should never happen
             return;
         } catch (IOException ex) {
-            return;
         }
     }
 

@@ -57,6 +57,13 @@ public class PlayingArea implements Serializable {
 
         final Pipe[][] newPipes = new Pipe[width][height];
 
+        while (xml.nextTag() == XmlPullParser.START_TAG) {
+            if (xml.getName().equals("pipe")) {
+                Pipe.bankPipeFromXml(xml, view.getContext());
+            }
+            Server.skipToEndTag(xml);
+        }
+
         view.post(new Runnable() {
 
             @Override
@@ -67,8 +74,16 @@ public class PlayingArea implements Serializable {
     }
 
     public void saveToXML(XmlSerializer xml) throws IOException {
-        // TODO: save the playing area to xml
+
         xml.startTag(null, "field");
+
+        for (Pipe[] row : pipes) {
+            for (Pipe p : row) {
+                if (p != null) {
+                    p.fieldPipeToXml(xml);
+                }
+            }
+        }
 
         xml.endTag(null, "field");
     }

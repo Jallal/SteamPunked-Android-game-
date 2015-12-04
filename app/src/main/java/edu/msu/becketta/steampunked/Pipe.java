@@ -186,6 +186,10 @@ public class Pipe implements Serializable {
         // TODO: save the pipe to xml
         xml.startTag(null, "pipe");
 
+        xml.attribute(null, "type", type.toString());
+        xml.attribute(null, "group", group.toString());
+        //xml.attribute(null, "rotation", bitmapRotation);
+
         xml.endTag(null, "pipe");
     }
 
