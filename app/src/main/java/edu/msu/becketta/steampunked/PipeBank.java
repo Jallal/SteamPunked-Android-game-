@@ -85,8 +85,11 @@ public class PipeBank implements Serializable {
     }
 
     public void saveToXML(XmlSerializer xml) throws IOException {
-        // TODO: save the pipe bank to xml
         xml.startTag(null, "bank");
+
+        for (Pipe p : pipes) {
+            p.bankPipeToXml(xml);
+        }
 
         xml.endTag(null, "bank");
     }

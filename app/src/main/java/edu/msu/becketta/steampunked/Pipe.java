@@ -177,12 +177,30 @@ public class Pipe implements Serializable {
         }
     }
 
-    public void loadFromSavedState(XmlPullParser xml) throws IOException, XmlPullParserException {
+    public static Pipe fieldPipeFromXml(XmlPullParser xml, Context context) throws IOException, XmlPullParserException {
         // TODO: load the pipe from the xml pull parser/input stream... whatever
+        return new Pipe(context, pipeType.STRAIGHT);
     }
 
-    public void saveToXML(XmlSerializer xml) throws IOException {
+    public void fieldPipeToXml(XmlSerializer xml) throws IOException {
         // TODO: save the pipe to xml
+        xml.startTag(null, "pipe");
+
+        xml.endTag(null, "pipe");
+    }
+
+    public static Pipe bankPipeFromXml(XmlPullParser xml, Context context) throws IOException, XmlPullParserException {
+        String t = xml.getAttributeValue(null, "type");
+        pipeType type = pipeType.values()[Integer.getInteger(t)];
+        return new Pipe(context, type);
+    }
+
+    public void bankPipeToXml(XmlSerializer xml) throws IOException {
+        xml.startTag(null, "pipe");
+
+        xml.attribute(null, "type", type.toString());
+
+        xml.endTag(null, "pipe");
     }
 
     public void resetPipe() {
