@@ -155,7 +155,7 @@ public class GameActivity extends AppCompatActivity {
 
     private void waitForPlayerTwo() {
         if (!startGame) {
-            progressDialog = ProgressDialog.show(this,
+            progressDialog = ProgressDialog.show(GameActivity.this,
                     getString(R.string.hold_horses),
                     getString(R.string.waiting_for_p2), true, false);
         }

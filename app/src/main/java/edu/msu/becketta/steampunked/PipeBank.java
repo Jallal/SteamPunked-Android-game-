@@ -78,6 +78,12 @@ public class PipeBank implements Serializable {
 
         bankPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         bankPaint.setColor(Color.argb(90, 0, 100, 0));  // A semi-transparent green
+
+        for(int i = 0; i < bankSize; i++) {
+            if (pipes[i] == null) {
+                pipes[i] = getRandomPipe();
+            }
+        }
     }
 
     public void loadFromSavedState(XmlPullParser xml) throws IOException, XmlPullParserException {
