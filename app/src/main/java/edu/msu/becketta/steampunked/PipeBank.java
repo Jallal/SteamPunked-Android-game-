@@ -86,8 +86,25 @@ public class PipeBank implements Serializable {
         }
     }
 
-    public void loadFromSavedState(XmlPullParser xml) throws IOException, XmlPullParserException {
-        // TODO: load the pipe bank from the xml pull parser/input stream... whatever
+    public void loadFromSavedState(XmlPullParser xml, GameView view) throws IOException, XmlPullParserException {
+
+        final Pipe[] newPipes = new Pipe[bankSize];
+
+        int count = 0;
+        while (count < bankSize && xml.nextTag() == XmlPullParser.START_TAG) {
+            if (xml.getName().equals("pipe")) {
+                newPipes[count] = Pipe.bankPipeFromXml(xml, view.getContext());
+            }
+            Server.skipToEndTag(xml);
+        }
+
+        view.post(new Runnable() {
+
+            @Override
+            public void run() {
+                pipes = newPipes;
+            }
+        });
     }
 
     public void saveToXML(XmlSerializer xml) throws IOException {
