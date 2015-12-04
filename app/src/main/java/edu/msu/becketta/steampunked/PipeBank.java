@@ -148,6 +148,7 @@ public class PipeBank implements Serializable {
             for(int i = 0; i < pipes.length; i++) {
                 if(pipes[i] == activePipe) {
                     pipes[i] = null;
+                    pipes[i] = getRandomPipe();
                 }
             }
         }
