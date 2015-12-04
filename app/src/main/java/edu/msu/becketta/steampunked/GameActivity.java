@@ -17,8 +17,11 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.games.Game;
+
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlSerializer;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -85,6 +88,38 @@ public class GameActivity extends AppCompatActivity {
         updateUI();
     }
 
+    public void saveToXML(XmlSerializer xml) throws IOException {
+        xml.startTag(null, "game");
+
+        String p1 = amPlayerOne ? myName : opponentName;
+        String p2 = amPlayerOne ? opponentName : myName;
+        xml.attribute(null, "player1", p1);
+        xml.attribute(null, "player2", p2);
+
+        String size = "small";
+        switch (getGameView().getBoardSize()) {
+            case SMALL:
+                break;
+            case MEDIUM:
+                size = "medium";
+                break;
+            case LARGE:
+                size = "large";
+                break;
+        }
+        xml.attribute(null, "size", size);
+
+        String over = getGameView().gameOver() ? "true" : "false";
+        xml.attribute(null, "gameover", over);
+        if (getGameView().gameOver()) {
+            xml.attribute(null, "winner", getGameView().getWinner());
+        }
+
+        getGameView().saveToXML(xml);
+
+        xml.endTag(null, "game");
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -107,7 +142,9 @@ public class GameActivity extends AppCompatActivity {
 
     private void waitForPlayerTwo() {
         if (!startGame) {
-            progressDialog = ProgressDialog.show(this, "Hold your horses!", "Waiting for second player...", true, false);
+            progressDialog = ProgressDialog.show(this,
+                    getString(R.string.hold_horses),
+                    getString(R.string.waiting_for_p2), true, false);
         }
     }
 
@@ -138,9 +175,8 @@ public class GameActivity extends AppCompatActivity {
                 super.onPreExecute();
                 // TODO: change strings
                 progressDialog = ProgressDialog.show(GameActivity.this,
-                        getString(R.string.please_wait),
-                        getString(R.string.logging_in),
-                        true, true, new DialogInterface.OnCancelListener() {
+                        getString(R.string.initializing),
+                        null, true, true, new DialogInterface.OnCancelListener() {
                             @Override
                             public void onCancel(DialogInterface dialog) {
                                 cancel = true;
@@ -185,10 +221,9 @@ public class GameActivity extends AppCompatActivity {
             protected void onPostExecute(Boolean success) {
                 progressDialog.dismiss();
                 if (success) {
-                    GameView.dimension size;
+                    GameView.dimension size = GameView.dimension.SMALL;
                     switch (dim) {
                         case "small":
-                            size = GameView.dimension.SMALL;
                             break;
                         case "medium":
                             size = GameView.dimension.MEDIUM;
@@ -197,10 +232,16 @@ public class GameActivity extends AppCompatActivity {
                             size = GameView.dimension.LARGE;
                             break;
                         default:
-                            size = GameView.dimension.SMALL;
-                            break;
+                            size = null;
                     }
-                    initializeGame(p1, p2, size);
+                    if (size != null && p1 != null && p2 != null) {
+                        initializeGame(p1, p2, size);
+                    } else {
+                        Toast.makeText(GameActivity.this,
+                                R.string.init_fail,
+                                Toast.LENGTH_LONG).show();
+                        quitGame();
+                    }
                 }
             }
         }.execute(myName);
@@ -209,6 +250,12 @@ public class GameActivity extends AppCompatActivity {
     private void initializeGame(String p1, String p2, GameView.dimension size) {
         if (!getGameView().isInitialized()) {
             getGameView().initialize(size);
+        }
+        if (!amPlayerOne) {
+            opponentName = p1;
+            getGameView().setPlayerNames(myName, opponentName, Pipe.PipeGroup.PLAYER_TWO);
+        } else {
+            opponentName = p2;
         }
         loadGameState();
     }
@@ -231,15 +278,15 @@ public class GameActivity extends AppCompatActivity {
             private ProgressDialog progressDialog;
             private Server server = new Server();
             private volatile boolean cancel = false;
+            private String winner = "";
 
             @Override
             protected void onPreExecute() {
                 super.onPreExecute();
                 // TODO: change strings
                 progressDialog = ProgressDialog.show(GameActivity.this,
-                        getString(R.string.please_wait),
-                        getString(R.string.logging_in),
-                        true, true, new DialogInterface.OnCancelListener() {
+                        getString(R.string.loading_game),
+                        null, true, true, new DialogInterface.OnCancelListener() {
                             @Override
                             public void onCancel(DialogInterface dialog) {
                                 cancel = true;
@@ -267,8 +314,21 @@ public class GameActivity extends AppCompatActivity {
                         if(gameOver.equals("false")) {
                             // TODO:
                             Log.i("Load Game", "my turn");
+                            /*while(xml.nextTag() == XmlPullParser.START_TAG) {
+                                if (cancel) {
+                                    return 1;
+                                }
+                                if(xml.getName().equals("field")) {
+
+                                } else if (xml.getName().equals("bank")) {
+
+                                }
+
+                                Server.skipToEndTag(xml);
+                            }*/
                         } else {
                             gOver = true;
+                            winner = xml.getAttributeValue(null, "winner");
                         }
 
                     } catch(IOException ex) {
@@ -295,11 +355,14 @@ public class GameActivity extends AppCompatActivity {
             protected void onPostExecute(Integer retCode) {
                 progressDialog.dismiss();
                 if (retCode == 2) {
-                    onGameOver(opponentName);
+                    onGameOver(winner);
                 } else if (retCode == 0) {
                     startTurn();
                 } else {
-                    // TODO: display toast
+                    Toast.makeText(GameActivity.this,
+                            R.string.loading_fail,
+                            Toast.LENGTH_LONG).show();
+                    loadGameState();
                 }
             }
         }.execute(myName);
@@ -307,7 +370,7 @@ public class GameActivity extends AppCompatActivity {
 
     private void uploadGameState(Server.GamePostMode mode) {
         UploadTask update = new UploadTask();
-        update.setGameView(getGameView());
+        update.setGame(this);
         update.setUploadMode(mode);
         switch (mode) {
             case UPDATE:
@@ -380,8 +443,7 @@ public class GameActivity extends AppCompatActivity {
      * Once someone wins or there is a forfeit
      */
     public void onGameOver(String winner) {
-        // TODO: Send the final game state to the server
-        getGameView().setGameOver();
+        getGameView().setGameOver(winner);
         uploadGameState(Server.GamePostMode.UPDATE);
 
         Intent intent = new Intent(this, EndGameActivity.class);
@@ -398,20 +460,21 @@ public class GameActivity extends AppCompatActivity {
     //set the current active player
     private void updateUI(){
         TextView currentPlayer = (TextView)findViewById(R.id.currentPlayer);
-        String baseText = getString(R.string.your_turn) + '\n';
+        String yourTurn = getString(R.string.your_turn) + '\n' + myName;
+        String waitingFor = getString(R.string.waiting_for) + '\n' + opponentName;
         Button discard = (Button) findViewById(R.id.discardButton);
         Button install = (Button) findViewById(R.id.installButton);
         Button surrender = (Button) findViewById(R.id.surrender);
         Button openValve = (Button) findViewById(R.id.openValveButton);
 
         if (getGameView().isMyTurn()) {
-            currentPlayer.setText(baseText + myName);
+            currentPlayer.setText(yourTurn);
             discard.setEnabled(true);
             install.setEnabled(true);
             surrender.setEnabled(true);
             openValve.setEnabled(true);
         } else {
-            currentPlayer.setText(baseText + opponentName);
+            currentPlayer.setText(waitingFor);
             discard.setEnabled(false);
             install.setEnabled(false);
             surrender.setEnabled(false);
@@ -424,17 +487,15 @@ public class GameActivity extends AppCompatActivity {
 
         private ProgressDialog progressDialog;
         private Server server = new Server();
-        private GameView view;
+        private GameActivity game;
         private Server.GamePostMode uploadMode;
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            // TODO: change strings
             progressDialog = ProgressDialog.show(GameActivity.this,
-                    getString(R.string.please_wait),
-                    getString(R.string.logging_in),
-                    true, true, new DialogInterface.OnCancelListener() {
+                    getString(R.string.uploading),
+                    null, true, true, new DialogInterface.OnCancelListener() {
                         @Override
                         public void onCancel(DialogInterface dialog) {
                             server.cancel();
@@ -442,8 +503,8 @@ public class GameActivity extends AppCompatActivity {
                     });
         }
 
-        public void setGameView(GameView view) {
-            this.view = view;
+        public void setGame(GameActivity act) {
+            this.game = act;
         }
         public void setUploadMode(Server.GamePostMode mode) {
             uploadMode = mode;
@@ -451,22 +512,18 @@ public class GameActivity extends AppCompatActivity {
 
         @Override
         protected Boolean doInBackground(String... params) {
-            boolean success = server.sendGameState(params[0], view, uploadMode, params[1]);
+            boolean success = server.sendGameState(params[0], game, uploadMode, params[1]);
             return success;
         }
 
         @Override
         protected void onPostExecute(Boolean success) {
             progressDialog.dismiss();
-            // TODO: change strings
-            if (success) {
+            if (!success) {
                 Toast.makeText(GameActivity.this,
-                        R.string.login_success,
-                        Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(GameActivity.this,
-                        R.string.login_fail,
+                        R.string.upload_fail,
                         Toast.LENGTH_LONG).show();
+                uploadGameState(uploadMode);
             }
         }
     }

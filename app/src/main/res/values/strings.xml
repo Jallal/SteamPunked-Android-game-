@@ -37,4 +37,14 @@
     <string name="password_length_error">Password must be at least 8 characters</string>
     <string name="create_user_success">Created new user!</string>
     <string name="logout">Logout</string>
+
+    <string name="hold_horses">Hold your horses!</string>
+    <string name="waiting_for_p2">Waiting for second player...</string>
+    <string name="initializing">Initializing game...</string>
+    <string name="init_fail">Failed to join game</string>
+    <string name="loading_game">Loading game...</string>
+    <string name="loading_fail">Failed to load game, trying again.</string>
+    <string name="waiting_for">Waiting for</string>
+    <string name="uploading">Uploading game...</string>
+    <string name="upload_fail">Failed to upload game, trying again.</string>
 </resources>

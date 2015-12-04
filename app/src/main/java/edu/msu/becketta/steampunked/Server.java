@@ -69,7 +69,7 @@ public class Server {
         }
     }
 
-    public boolean sendGameState(String usr, GameView view, GamePostMode mode, String token) {
+    public boolean sendGameState(String usr, GameActivity game, GamePostMode mode, String token) {
         // Create an XML packet with the information about the current image
         XmlSerializer xml = Xml.newSerializer();
         StringWriter writer = new StringWriter();
@@ -79,11 +79,7 @@ public class Server {
 
             xml.startDocument(UTF8, true);
 
-            xml.startTag(null, "game");
-
-            view.saveToXML(xml);
-
-            xml.endTag(null, "game");
+            game.saveToXML(xml);
 
             xml.endDocument();
 
