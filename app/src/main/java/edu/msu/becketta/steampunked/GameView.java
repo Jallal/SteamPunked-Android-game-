@@ -125,12 +125,15 @@ public class GameView extends View {
         initializeGameArea(params.boardSize);
     }
 
-    public void loadFromSavedState(XmlPullParser xml) throws IOException, XmlPullParserException {
-        // TODO: load the game from the xml pull parser/input stream... whatever
+    public void loadFieldFromXml(XmlPullParser xml) throws IOException, XmlPullParserException {
+        bank.loadFromSavedState(xml);
+    }
+
+    public void loadBankFromXml(XmlPullParser xml) throws IOException, XmlPullParserException {
+        gameField.loadFromSavedState(xml);
     }
 
     public void saveToXML(XmlSerializer xml) throws IOException {
-        // TODO: save the game to xml
         gameField.saveToXML(xml);
         bank.saveToXML(xml);
     }

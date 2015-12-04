@@ -45,7 +45,7 @@ public class GameActivity extends AppCompatActivity {
     private ProgressDialog progressDialog;
     private boolean startGame = false;
 
-    private BroadcastReceiver gcmReciever;
+    private BroadcastReceiver gcmReceiver;
 
 
     @Override
@@ -77,15 +77,26 @@ public class GameActivity extends AppCompatActivity {
 
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(MyGcmListenerService.MESSAGE);
-        gcmReciever = new BroadcastReceiver() {
+        gcmReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 handleServerMessage(intent);
             }
         };
-        registerReceiver(gcmReciever, intentFilter);
+        registerReceiver(gcmReceiver, intentFilter);
 
         updateUI();
+    }
+
+    public void loadFromXML(XmlPullParser xml, String obj) throws IOException, XmlPullParserException {
+        switch (obj) {
+            case "field":
+                getGameView().loadFieldFromXml(xml);
+                break;
+            case "bank":
+                getGameView().loadBankFromXml(xml);
+                break;
+        }
     }
 
     public void saveToXML(XmlSerializer xml) throws IOException {
@@ -123,7 +134,7 @@ public class GameActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unregisterReceiver(gcmReciever);
+        unregisterReceiver(gcmReceiver);
     }
 
     private void handleServerMessage(Intent intent) {
@@ -132,6 +143,8 @@ public class GameActivity extends AppCompatActivity {
         if (message.equals("turn")) {
             loadGameState();
             startTurn();
+        } else if (message.equals("Quit")) {
+            onGameOver(myName);
         } else if (!message.equals("") && amPlayerOne) {
             opponentName = message;
             getGameView().setPlayerNames(myName, opponentName, Pipe.PipeGroup.PLAYER_ONE);
@@ -273,99 +286,9 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void loadGameState() {
-        new AsyncTask<String, Void, Integer>() {
-
-            private ProgressDialog progressDialog;
-            private Server server = new Server();
-            private volatile boolean cancel = false;
-            private String winner = "";
-
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-                // TODO: change strings
-                progressDialog = ProgressDialog.show(GameActivity.this,
-                        getString(R.string.loading_game),
-                        null, true, true, new DialogInterface.OnCancelListener() {
-                            @Override
-                            public void onCancel(DialogInterface dialog) {
-                                cancel = true;
-                            }
-                        });
-            }
-
-            @Override
-            protected Integer doInBackground(String... params) {
-                InputStream stream = server.getGameState(params[0]);
-                boolean success = stream != null;
-                boolean gOver = false;
-                if(success) {
-                    try {
-                        if (cancel) {
-                            return 1;
-                        }
-
-                        XmlPullParser xml = Xml.newPullParser();
-                        xml.setInput(stream, "UTF-8");
-
-                        xml.nextTag();      // Advance to first tag
-                        xml.require(XmlPullParser.START_TAG, null, "game");
-                        String gameOver = xml.getAttributeValue(null, "gameover");
-                        if(gameOver.equals("false")) {
-                            // TODO:
-                            Log.i("Load Game", "my turn");
-                            /*while(xml.nextTag() == XmlPullParser.START_TAG) {
-                                if (cancel) {
-                                    return 1;
-                                }
-                                if(xml.getName().equals("field")) {
-
-                                } else if (xml.getName().equals("bank")) {
-
-                                }
-
-                                Server.skipToEndTag(xml);
-                            }*/
-                        } else {
-                            gOver = true;
-                            winner = xml.getAttributeValue(null, "winner");
-                        }
-
-                    } catch(IOException ex) {
-                        success = false;
-                    } catch(XmlPullParserException ex) {
-                        success = false;
-                    } finally {
-                        try {
-                            stream.close();
-                        } catch(IOException ex) {
-                        }
-                    }
-                }
-                if (success && gOver) {
-                    return 2;   // Game over
-                } else if (success) {
-                    return 0;   // Game not over, load succeeded
-                } else {
-                    return 1;   // Load failed
-                }
-            }
-
-            @Override
-            protected void onPostExecute(Integer retCode) {
-                progressDialog.dismiss();
-                if (retCode == 2) {
-                    onGameOver(winner);
-                } else if (retCode == 0) {
-                    startTurn();
-                } else {
-                    Toast.makeText(GameActivity.this,
-                            R.string.loading_fail,
-                            Toast.LENGTH_LONG).show();
-                    loadGameState();
-                }
-            }
-        }.execute(myName);
+        LoadTask load = new LoadTask();
+        load.setGame(this);
+        load.execute(myName);
     }
 
     private void uploadGameState(Server.GamePostMode mode) {
@@ -526,5 +449,102 @@ public class GameActivity extends AppCompatActivity {
                 uploadGameState(uploadMode);
             }
         }
+    }
+
+    private class LoadTask extends AsyncTask<String, Void, Integer> {
+
+        private ProgressDialog progressDialog;
+        private Server server = new Server();
+        private volatile boolean cancel = false;
+        private String winner = "";
+        private GameActivity game;
+
+        public void setGame(GameActivity game) {
+            this.game = game;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = ProgressDialog.show(GameActivity.this,
+                    getString(R.string.loading_game),
+                    null, true, true, new DialogInterface.OnCancelListener() {
+                        @Override
+                        public void onCancel(DialogInterface dialog) {
+                            cancel = true;
+                        }
+                    });
+        }
+
+        @Override
+        protected Integer doInBackground(String... params) {
+            InputStream stream = server.getGameState(params[0]);
+            boolean success = stream != null;
+            boolean gOver = false;
+            if(success) {
+                try {
+                    if (cancel) {
+                        return 1;
+                    }
+
+                    XmlPullParser xml = Xml.newPullParser();
+                    xml.setInput(stream, "UTF-8");
+
+                    xml.nextTag();      // Advance to first tag
+                    xml.require(XmlPullParser.START_TAG, null, "game");
+                    String gameOver = xml.getAttributeValue(null, "gameover");
+                    if(gameOver.equals("false")) {
+                        while(xml.nextTag() == XmlPullParser.START_TAG) {
+                            if (cancel) {
+                                return 1;
+                            }
+                            if(xml.getName().equals("field")) {
+                                game.loadFromXML(xml, "field");
+                            } else if (xml.getName().equals("bank")) {
+                                game.loadFromXML(xml, "bank");
+                            }
+
+                            Server.skipToEndTag(xml);
+                        }
+                    } else {
+                        gOver = true;
+                        winner = xml.getAttributeValue(null, "winner");
+                    }
+
+                } catch(IOException ex) {
+                    success = false;
+                } catch(XmlPullParserException ex) {
+                    success = false;
+                } finally {
+                    try {
+                        stream.close();
+                    } catch(IOException ex) {
+                    }
+                }
+            }
+            if (success && gOver) {
+                return 2;   // Game over
+            } else if (success) {
+                return 0;   // Game not over, load succeeded
+            } else {
+                return 1;   // Load failed
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Integer retCode) {
+            progressDialog.dismiss();
+            if (retCode == 2) {
+                onGameOver(winner);
+            } else if (retCode == 0) {
+                startTurn();
+            } else {
+                Toast.makeText(GameActivity.this,
+                        R.string.loading_fail,
+                        Toast.LENGTH_LONG).show();
+                loadGameState();
+            }
+        }
+
     }
 }
