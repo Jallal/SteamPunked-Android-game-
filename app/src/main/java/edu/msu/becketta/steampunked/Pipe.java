@@ -177,18 +177,37 @@ public class Pipe implements Serializable {
         }
     }
 
-    public static Pipe fieldPipeFromXml(XmlPullParser xml, Context context) throws IOException, XmlPullParserException {
-        // TODO: load the pipe from the xml pull parser/input stream... whatever
-        return new Pipe(context, pipeType.STRAIGHT);
+    public static Pipe fieldPipeFromXml(XmlPullParser xml, Context context, PlayingArea field) throws IOException, XmlPullParserException {
+        String t = xml.getAttributeValue(null, "type");
+        pipeType type = pipeType.values()[Integer.getInteger(t)];
+        Pipe newPipe = new Pipe(context, type);
+
+        String g = xml.getAttributeValue(null, "group");
+        PipeGroup group = PipeGroup.values()[Integer.getInteger(g)];
+        newPipe.setGroup(group);
+
+        float rot = Float.parseFloat(xml.getAttributeValue(null, "rotation"));
+        newPipe.setBitmapRotation(rot);
+        newPipe.snapRotation();
+
+        int xCoord = Integer.parseInt(xml.getAttributeValue(null, "x"));
+        int yCoord = Integer.parseInt(xml.getAttributeValue(null, "y"));
+        newPipe.set(field, xCoord, yCoord);
+
+        return newPipe;
     }
 
     public void fieldPipeToXml(XmlSerializer xml) throws IOException {
-        // TODO: save the pipe to xml
         xml.startTag(null, "pipe");
 
         xml.attribute(null, "type", type.toString());
         xml.attribute(null, "group", group.toString());
-        //xml.attribute(null, "rotation", bitmapRotation);
+        xml.attribute(null, "rotation", Float.toString(bitmapRotation));
+        xml.attribute(null, "x", Integer.toString(xCoord));
+        xml.attribute(null, "y", Integer.toString(yCoord));
+        if (type == pipeType.START) {
+            xml.attribute(null, "label", playerName);
+        }
 
         xml.endTag(null, "pipe");
     }
@@ -433,6 +452,14 @@ public class Pipe implements Serializable {
 
     public float getY() {
         return y;
+    }
+
+    public int getXLoc() {
+        return xCoord;
+    }
+
+    public int getYLoc() {
+        return yCoord;
     }
 
     /**

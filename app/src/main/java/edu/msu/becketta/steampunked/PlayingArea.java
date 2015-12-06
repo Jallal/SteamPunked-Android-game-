@@ -59,7 +59,8 @@ public class PlayingArea implements Serializable {
 
         while (xml.nextTag() == XmlPullParser.START_TAG) {
             if (xml.getName().equals("pipe")) {
-                Pipe.bankPipeFromXml(xml, view.getContext());
+                Pipe newPipe = Pipe.fieldPipeFromXml(xml, view.getContext(), this);
+                newPipes[newPipe.getXLoc()][newPipe.getYLoc()] = newPipe;
             }
             Server.skipToEndTag(xml);
         }
