@@ -78,10 +78,33 @@ public class PipeBank implements Serializable {
 
         bankPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         bankPaint.setColor(Color.argb(90, 0, 100, 0));  // A semi-transparent green
+
+        for(int i = 0; i < bankSize; i++) {
+            if (pipes[i] == null) {
+                pipes[i] = getRandomPipe();
+            }
+        }
     }
 
-    public void loadFromSavedState(XmlPullParser xml) throws IOException, XmlPullParserException {
-        // TODO: load the pipe bank from the xml pull parser/input stream... whatever
+    public void loadFromSavedState(XmlPullParser xml, GameView view) throws IOException, XmlPullParserException {
+
+        final Pipe[] newPipes = new Pipe[bankSize];
+
+        int count = 0;
+        while (count < bankSize && xml.nextTag() == XmlPullParser.START_TAG) {
+            if (xml.getName().equals("pipe")) {
+                newPipes[count] = Pipe.bankPipeFromXml(xml, view.getContext());
+            }
+            Server.skipToEndTag(xml);
+        }
+
+        view.post(new Runnable() {
+
+            @Override
+            public void run() {
+                pipes = newPipes;
+            }
+        });
     }
 
     public void saveToXML(XmlSerializer xml) throws IOException {
@@ -125,6 +148,7 @@ public class PipeBank implements Serializable {
             for(int i = 0; i < pipes.length; i++) {
                 if(pipes[i] == activePipe) {
                     pipes[i] = null;
+                    pipes[i] = getRandomPipe();
                 }
             }
         }

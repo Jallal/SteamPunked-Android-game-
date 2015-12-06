@@ -53,13 +53,38 @@ public class PlayingArea implements Serializable {
         debugPaint.setColor(Color.argb(25, 0, 100, 82));  // A transparent blue
     }
 
-    public void loadFromSavedState(XmlPullParser xml) throws IOException, XmlPullParserException {
-        // TODO: load the playing area from the xml pull parser/input stream... whatever
+    public void loadFromSavedState(XmlPullParser xml, GameView view) throws IOException, XmlPullParserException {
+
+        final Pipe[][] newPipes = new Pipe[width][height];
+
+        while (xml.nextTag() == XmlPullParser.START_TAG) {
+            if (xml.getName().equals("pipe")) {
+                Pipe newPipe = Pipe.fieldPipeFromXml(xml, view.getContext(), this);
+                newPipes[newPipe.getXLoc()][newPipe.getYLoc()] = newPipe;
+            }
+            Server.skipToEndTag(xml);
+        }
+
+        view.post(new Runnable() {
+
+            @Override
+            public void run() {
+                pipes = newPipes;
+            }
+        });
     }
 
     public void saveToXML(XmlSerializer xml) throws IOException {
-        // TODO: save the playing area to xml
+
         xml.startTag(null, "field");
+
+        for (Pipe[] row : pipes) {
+            for (Pipe p : row) {
+                if (p != null) {
+                    p.fieldPipeToXml(xml);
+                }
+            }
+        }
 
         xml.endTag(null, "field");
     }

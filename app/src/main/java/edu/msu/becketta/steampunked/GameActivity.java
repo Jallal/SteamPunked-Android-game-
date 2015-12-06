@@ -155,7 +155,7 @@ public class GameActivity extends AppCompatActivity {
 
     private void waitForPlayerTwo() {
         if (!startGame) {
-            progressDialog = ProgressDialog.show(this,
+            progressDialog = ProgressDialog.show(GameActivity.this,
                     getString(R.string.hold_horses),
                     getString(R.string.waiting_for_p2), true, false);
         }
@@ -328,7 +328,16 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void quitGame() {
-        // TODO: alert the server that I've quit the game
+
+        new AsyncTask<String, Void, Void>() {
+
+            @Override
+            protected Void doInBackground(String... params) {
+                Server server = new Server();
+                server.quitGame(params[0]);
+                return null;
+            }
+        }.execute(myName);
 
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

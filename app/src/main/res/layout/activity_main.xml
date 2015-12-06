@@ -27,10 +27,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/spinnerFields"
-        android:layout_above="@+id/loginButton"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="false"
-        android:visibility="gone" />
+        android:visibility="gone"
+        android:layout_centerInParent="true" />
 
     <ImageView
         android:layout_width="wrap_content"
