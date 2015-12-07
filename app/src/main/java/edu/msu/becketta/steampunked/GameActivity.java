@@ -271,7 +271,7 @@ public class GameActivity extends AppCompatActivity {
         } else {
             opponentName = p2;
         }
-        loadGameState();
+        //loadGameState();
     }
 
     @Override
