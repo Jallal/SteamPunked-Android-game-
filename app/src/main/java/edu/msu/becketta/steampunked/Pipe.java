@@ -182,6 +182,15 @@ public class Pipe implements Serializable {
         pipeType type = pipeType.values()[Integer.getInteger(t)];
         Pipe newPipe = new Pipe(context, type);
 
+        if (type == pipeType.START) {
+            String label = xml.getAttributeValue(null, "label");
+            if (!label.equals("")) {
+                newPipe.setPlayerName(label);
+            } else {
+                newPipe.setPlayerName(null);
+            }
+        }
+
         String g = xml.getAttributeValue(null, "group");
         PipeGroup group = PipeGroup.values()[Integer.getInteger(g)];
         newPipe.setGroup(group);
