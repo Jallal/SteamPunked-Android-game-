@@ -23,8 +23,10 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlSerializer;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 
 public class GameActivity extends AppCompatActivity {
 
@@ -186,7 +188,6 @@ public class GameActivity extends AppCompatActivity {
             @Override
             protected void onPreExecute() {
                 super.onPreExecute();
-                // TODO: change strings
                 progressDialog = ProgressDialog.show(GameActivity.this,
                         getString(R.string.initializing),
                         null, true, true, new DialogInterface.OnCancelListener() {

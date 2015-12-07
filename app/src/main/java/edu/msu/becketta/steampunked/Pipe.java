@@ -206,7 +206,11 @@ public class Pipe implements Serializable {
         xml.attribute(null, "x", Integer.toString(xCoord));
         xml.attribute(null, "y", Integer.toString(yCoord));
         if (type == pipeType.START) {
-            xml.attribute(null, "label", playerName);
+            if (playerName != null) {
+                xml.attribute(null, "label", playerName);
+            } else {
+                xml.attribute(null, "label", "");
+            }
         }
 
         xml.endTag(null, "pipe");
