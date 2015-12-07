@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.text.TextPaint;
+import android.util.Log;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -211,7 +212,14 @@ public class Pipe implements Serializable {
         }
 
         String g = xml.getAttributeValue(null, "group");
-        PipeGroup group = PipeGroup.values()[Integer.getInteger(g)];
+        PipeGroup group = PipeGroup.PLAYER_ONE;
+        switch (g) {
+            case "PLAYER_ONE":
+                break;
+            case "PLAYER_TWO":
+                group = PipeGroup.PLAYER_TWO;
+                break;
+        }
         newPipe.setGroup(group);
 
         float rot = Float.parseFloat(xml.getAttributeValue(null, "rotation"));
@@ -229,7 +237,7 @@ public class Pipe implements Serializable {
         xml.startTag(null, "pipe");
 
         xml.attribute(null, "type", type.toString());
-        xml.attribute(null, "group", Integer.toString(group.ordinal()));
+        xml.attribute(null, "group", group.toString());
         xml.attribute(null, "rotation", Float.toString(bitmapRotation));
         xml.attribute(null, "x", Integer.toString(xCoord));
         xml.attribute(null, "y", Integer.toString(yCoord));
