@@ -80,11 +80,11 @@ public class Server {
             }
 
             InputStream stream = conn.getInputStream();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+            /*BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
             String line;
             while ((line = reader.readLine()) != null) {
                 Log.i("game", line);
-            }
+            }*/
             return stream;
 
         } catch (MalformedURLException e) {
