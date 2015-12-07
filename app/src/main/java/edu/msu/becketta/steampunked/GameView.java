@@ -126,13 +126,23 @@ public class GameView extends View {
     }
 
     public void loadFieldFromXml(XmlPullParser xml) throws IOException, XmlPullParserException {
-        bank.loadFromSavedState(xml, this);
-        invalidate();
+        gameField.loadFromSavedState(xml, this);
+        post(new Runnable() {
+            @Override
+            public void run() {
+                invalidate();
+            }
+        });
     }
 
     public void loadBankFromXml(XmlPullParser xml) throws IOException, XmlPullParserException {
-        gameField.loadFromSavedState(xml, this);
-        invalidate();
+        bank.loadFromSavedState(xml, this);
+        post(new Runnable() {
+            @Override
+            public void run() {
+                invalidate();
+            }
+        });
     }
 
     public void saveToXML(XmlSerializer xml) throws IOException {

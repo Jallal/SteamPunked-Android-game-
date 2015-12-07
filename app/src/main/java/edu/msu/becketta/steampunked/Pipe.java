@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.text.TextPaint;
+import android.util.Log;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -179,11 +180,46 @@ public class Pipe implements Serializable {
 
     public static Pipe fieldPipeFromXml(XmlPullParser xml, Context context, PlayingArea field) throws IOException, XmlPullParserException {
         String t = xml.getAttributeValue(null, "type");
-        pipeType type = pipeType.values()[Integer.getInteger(t)];
+        pipeType type = pipeType.STRAIGHT;
+        switch (t) {
+            case "STRAIGHT":
+                break;
+            case "START":
+                type = pipeType.START;
+                break;
+            case "END":
+                type = pipeType.END;
+                break;
+            case "CAP":
+                type = pipeType.CAP;
+                break;
+            case "TEE":
+                type = pipeType.TEE;
+                break;
+            case "RIGHT_ANGLE":
+                type = pipeType.RIGHT_ANGLE;
+                break;
+        }
         Pipe newPipe = new Pipe(context, type);
 
+        if (type == pipeType.START) {
+            String label = xml.getAttributeValue(null, "label");
+            if (!label.equals("")) {
+                newPipe.setPlayerName(label);
+            } else {
+                newPipe.setPlayerName(null);
+            }
+        }
+
         String g = xml.getAttributeValue(null, "group");
-        PipeGroup group = PipeGroup.values()[Integer.getInteger(g)];
+        PipeGroup group = PipeGroup.PLAYER_ONE;
+        switch (g) {
+            case "PLAYER_ONE":
+                break;
+            case "PLAYER_TWO":
+                group = PipeGroup.PLAYER_TWO;
+                break;
+        }
         newPipe.setGroup(group);
 
         float rot = Float.parseFloat(xml.getAttributeValue(null, "rotation"));
@@ -218,7 +254,26 @@ public class Pipe implements Serializable {
 
     public static Pipe bankPipeFromXml(XmlPullParser xml, Context context) throws IOException, XmlPullParserException {
         String t = xml.getAttributeValue(null, "type");
-        pipeType type = pipeType.values()[Integer.getInteger(t)];
+        pipeType type = pipeType.STRAIGHT;
+        switch (t) {
+            case "STRAIGHT":
+                break;
+            case "START":
+                type = pipeType.START;
+                break;
+            case "END":
+                type = pipeType.END;
+                break;
+            case "CAP":
+                type = pipeType.CAP;
+                break;
+            case "TEE":
+                type = pipeType.TEE;
+                break;
+            case "RIGHT_ANGLE":
+                type = pipeType.RIGHT_ANGLE;
+                break;
+        }
         return new Pipe(context, type);
     }
 
