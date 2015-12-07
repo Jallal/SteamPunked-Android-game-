@@ -179,7 +179,26 @@ public class Pipe implements Serializable {
 
     public static Pipe fieldPipeFromXml(XmlPullParser xml, Context context, PlayingArea field) throws IOException, XmlPullParserException {
         String t = xml.getAttributeValue(null, "type");
-        pipeType type = pipeType.values()[Integer.getInteger(t)];
+        pipeType type = pipeType.STRAIGHT;
+        switch (t) {
+            case "STRAIGHT":
+                break;
+            case "START":
+                type = pipeType.START;
+                break;
+            case "END":
+                type = pipeType.END;
+                break;
+            case "CAP":
+                type = pipeType.CAP;
+                break;
+            case "TEE":
+                type = pipeType.TEE;
+                break;
+            case "RIGHT_ANGLE":
+                type = pipeType.RIGHT_ANGLE;
+                break;
+        }
         Pipe newPipe = new Pipe(context, type);
 
         if (type == pipeType.START) {
@@ -227,7 +246,26 @@ public class Pipe implements Serializable {
 
     public static Pipe bankPipeFromXml(XmlPullParser xml, Context context) throws IOException, XmlPullParserException {
         String t = xml.getAttributeValue(null, "type");
-        pipeType type = pipeType.values()[Integer.getInteger(t)];
+        pipeType type = pipeType.STRAIGHT;
+        switch (t) {
+            case "STRAIGHT":
+                break;
+            case "START":
+                type = pipeType.START;
+                break;
+            case "END":
+                type = pipeType.END;
+                break;
+            case "CAP":
+                type = pipeType.CAP;
+                break;
+            case "TEE":
+                type = pipeType.TEE;
+                break;
+            case "RIGHT_ANGLE":
+                type = pipeType.RIGHT_ANGLE;
+                break;
+        }
         return new Pipe(context, type);
     }
 
