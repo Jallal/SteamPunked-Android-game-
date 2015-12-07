@@ -229,7 +229,7 @@ public class Pipe implements Serializable {
         xml.startTag(null, "pipe");
 
         xml.attribute(null, "type", type.toString());
-        xml.attribute(null, "group", group.toString());
+        xml.attribute(null, "group", Integer.toString(group.ordinal()));
         xml.attribute(null, "rotation", Float.toString(bitmapRotation));
         xml.attribute(null, "x", Integer.toString(xCoord));
         xml.attribute(null, "y", Integer.toString(yCoord));
