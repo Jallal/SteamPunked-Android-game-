@@ -1,5 +1,6 @@
 package edu.msu.becketta.steampunked;
 
+import android.util.Log;
 import android.util.Xml;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
@@ -9,8 +10,10 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlSerializer;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
@@ -77,6 +80,11 @@ public class Server {
             }
 
             InputStream stream = conn.getInputStream();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                Log.i("game", line);
+            }
             return stream;
 
         } catch (MalformedURLException e) {
@@ -117,6 +125,7 @@ public class Server {
         } catch (UnsupportedEncodingException e) {
             return false;
         }
+        //postDataStr = "game=" + xmlStr;
 
         /*
          * Send the data to the server
