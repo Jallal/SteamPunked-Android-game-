@@ -94,6 +94,7 @@ public class PipeBank implements Serializable {
         while (count < bankSize && xml.nextTag() == XmlPullParser.START_TAG) {
             if (xml.getName().equals("pipe")) {
                 newPipes[count] = Pipe.bankPipeFromXml(xml, view.getContext());
+                ++count;
             }
             Server.skipToEndTag(xml);
         }
