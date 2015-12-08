@@ -513,8 +513,6 @@ public class GameActivity extends AppCompatActivity {
                             } else if (xml.getName().equals("bank")) {
                                 game.loadFromXML(xml, "bank");
                             }
-
-                            Server.skipToEndTag(xml);
                         }
                     } else {
                         gOver = true;
